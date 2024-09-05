@@ -137,7 +137,7 @@ const App = () => {
           </div>
 
           {/* Second column */}
-          <div className="w-full md:w-1/2  md:ml-20 mt-4 md:mt-5 align-middle">
+          <div className="w-full md:w-1/2  md:ml-20 m-4 md:m-5 align-middle">
             <Image
               src={require("./assets/logo/DemoImg.png")} // Path to your image file
               alt="Full Width Example"
