@@ -1,9 +1,10 @@
+"use client";
 import React, { useState } from "react";
 import { close, logo, menu } from "../assets";
 import { navLinks } from "../constant";
 import Logo from "./common/logo";
 
-const Navbar = () => {
+const Navbar = ({onpress}) => {
   const [toggle, setToggle] = useState(false);
 
   return (
@@ -51,20 +52,20 @@ const Navbar = () => {
       </div>
       <div className=" justify-end  z-10 items-end flex mr-1 ml-5 ">
           <button
-            onClick={() => {}}
+            onClick={onpress}
             type="button"
-            className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-gradient-to-r from-fuchsia-900 to-fuchsia-900 rounded-full flex`}
+            className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors`}
           >
-            Login
+            LOGIN
           </button>
         </div>
         <div className=" justify-end  z-10 items-end flex ml-5 mr-5 ">
           <button
             onClick={() => {}}
             type="button"
-            className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-gradient-to-r from-fuchsia-900 to-fuchsia-900 rounded-full flex`}
+            className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors`}
           >
-            Join Us
+            SIGN UP
           </button>
         </div>
     </nav>

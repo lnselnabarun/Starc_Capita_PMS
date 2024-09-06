@@ -9,8 +9,8 @@ const Logo = () => {
      <Image
       src={require("../../../app/assets/logo/Logo.png")}
       alt="Logo"
-      width={100}
-      height={80}
+      width={120}
+      height={120}
     />
   </div>
   );
