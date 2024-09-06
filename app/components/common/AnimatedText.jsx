@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useAnimation, motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
 
 export default function AnimatedText({ children, isTextAnimationStart }) {
   const ctrls = useAnimation();

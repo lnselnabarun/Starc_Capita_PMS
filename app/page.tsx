@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import styles from "../app/constant/style";
 import { Navbar } from "./components";
-import Head from "next/head";
 import Image from "next/image";
 import Logo from "./components/common/logo";
 import Modal from "./components/common/Modal";
@@ -10,7 +9,6 @@ import Link from 'next/link';
 
 const App = () => {
   const [showModal, setShowModal] = useState(false);
-  const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     phoneNumber: "",
@@ -20,7 +18,8 @@ const App = () => {
   const links = ['Home', 'About', 'Contact US', 'Terms of Use', 'Features', 'Sign Up', 'Reviews', 'Privacy Policy'];
   const firstColumn = links.slice(0, 4);
   const secondColumn = links.slice(4);
-  const handleChange = (e: any) => {
+  //@ts-ignore
+  const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -31,13 +30,8 @@ const App = () => {
     setShowModal(!showModal);
   };
   console.log(showModal, "Hero not in view");
-  const handleClose = () => {
-    setOpen(false);
-  };
 
-  const action = () => {
-    setOpen(false);
-  };
+
 
   const Card = ({ src, alt, header, description }: any) => (
     <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col items-center p-2">

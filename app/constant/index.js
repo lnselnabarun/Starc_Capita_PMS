@@ -1,18 +1,4 @@
-import {
-  people01,
-  people02,
-  people03,
-  facebook,
-  instagram,
-  linkedin,
-  twitter,
-  star,
-  ReactIcon,
-  NextIcon,
-  NodeIcon,
-  PythonIcon,
-  ReactNativeIcon,
-} from "../assets";
+
 
      
      

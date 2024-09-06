@@ -1,7 +1,6 @@
 // Modal.jsx
 "use client";
-import React, { useState, useRef, useEffect } from "react";
-import { close } from "../../assets";
+import React, {  useRef, useEffect } from "react";
 import Image from "next/image";
 
 const Modal = ({

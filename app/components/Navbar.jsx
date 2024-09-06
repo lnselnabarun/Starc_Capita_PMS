@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { close, logo, menu } from "../assets";
 import { navLinks } from "../constant";
 import Logo from "./common/logo";
 
