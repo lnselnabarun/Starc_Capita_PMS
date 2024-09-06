@@ -1,4 +1,3 @@
-"use client";
 import React, { useState } from "react";
 import { navLinks } from "../constant";
 import Logo from "./common/logo";
