@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import styles from "../app/constant/style";
+import styles from "./constant/style";
 import { Navbar } from "./components";
 import Image from "next/image";
 import Logo from "./components/common/logo";
@@ -18,7 +18,7 @@ const App = () => {
   const links = ['Home', 'About', 'Contact US', 'Terms of Use', 'Features', 'Sign Up', 'Reviews', 'Privacy Policy'];
   const firstColumn = links.slice(0, 4);
   const secondColumn = links.slice(4);
-  //@ts-ignore
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -32,8 +32,7 @@ const App = () => {
   console.log(showModal, "Hero not in view");
 
 
-
-  const Card = ({ src, alt, header, description }: any) => (
+  const Card = ({ src, alt, header, description }) => (
     <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col items-center p-2">
       <div className="relative w-full h-40 lg:h-48 xl:h-56">
         <Image
