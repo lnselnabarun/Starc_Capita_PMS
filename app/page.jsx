@@ -9,6 +9,7 @@ import Link from "next/link";
 
 const App = () => {
   const [showModal, setShowModal] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     phoneNumber: "",
@@ -35,10 +36,15 @@ const App = () => {
     });
   };
 
+  // const handleOpenModal = () => {
+  //   setShowModal(!showModal);
+  // };
+
   const handleOpenModal = () => {
     setShowModal(!showModal);
+    setShowOtpModal(!showOtpModal)
   };
-  console.log(showModal, "Hero not in view");
+  console.log(showModal,showOtpModal, "Hero not in view");
 
   const Card = ({ src, alt, header, description }) => (
     <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col items-center p-2">
@@ -126,7 +132,7 @@ const App = () => {
             <h1 className="font-semibold font-poppins text-neutral-800 text-3xl mb-2">
               An automated, multi-asset portfolio tracker
             </h1>
-            <h6 className="font-light font-poppins text-lg text-neutral-500 ml-20 mr-20 ">
+            <h6 className="font-light font-poppins text-lg text-neutral-500 mx-20 ">
               The investment management platform is a standalone web application
               designed to provide users with comprehensive tools to manage and
               analyze their investments. It will integrate with financial data

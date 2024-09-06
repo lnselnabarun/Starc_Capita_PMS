@@ -91,7 +91,7 @@ const Modal = ({
                 Password
               </label>
               <input
-                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
                 type="password"
                 name="password"
                 value={formData.password}
@@ -106,7 +106,7 @@ const Modal = ({
           <div className="mt-6 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Submit button */}
             <button
-              className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-gradient-to-r from-fuchsia-900 to-fuchsia-900 rounded-full flex`}
+              className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors`}
               type="submit"
             >
               Submit

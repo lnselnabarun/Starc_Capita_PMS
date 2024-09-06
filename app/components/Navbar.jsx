@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { navLinks } from "../constant";
 import Logo from "./common/logo";
 
-const Navbar = ({ onpress }) => {
+const Navbar = ({onpress}) => {
   const [toggle, setToggle] = useState(false);
 
   return (
