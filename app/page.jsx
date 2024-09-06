@@ -5,7 +5,7 @@ import { Navbar } from "./components";
 import Image from "next/image";
 import Logo from "./components/common/logo";
 import Modal from "./components/common/Modal";
-import Link from 'next/link';
+import Link from "next/link";
 
 const App = () => {
   const [showModal, setShowModal] = useState(false);
@@ -15,7 +15,16 @@ const App = () => {
     email: "",
     password: "", // Add the password field
   });
-  const links = ['Home', 'About', 'Contact US', 'Terms of Use', 'Features', 'Sign Up', 'Reviews', 'Privacy Policy'];
+  const links = [
+    "Home",
+    "About",
+    "Contact US",
+    "Terms of Use",
+    "Features",
+    "Sign Up",
+    "Reviews",
+    "Privacy Policy",
+  ];
   const firstColumn = links.slice(0, 4);
   const secondColumn = links.slice(4);
 
@@ -30,7 +39,6 @@ const App = () => {
     setShowModal(!showModal);
   };
   console.log(showModal, "Hero not in view");
-
 
   const Card = ({ src, alt, header, description }) => (
     <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col items-center p-2">
@@ -70,7 +78,7 @@ const App = () => {
             priority={true}
             className="filter " // Add blur effect
           />
-           <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+          <div className="absolute inset-0 bg-black bg-opacity-40"></div>
           <div className="absolute top-0 left-24 w-1/2 h-full flex flex-col justify-center items-start">
             <div className="">
               <div className="flex items-center mb-2">
@@ -258,56 +266,90 @@ const App = () => {
           <Logo />
         </div>
         <footer className="py-4 px-4 md:px-8 ">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 border-t-[1px] border-b-[1px] border-dashed border-gray-500 py-3 ">
-        <div>
-          <h3 className="font-bold text-lg mb-4 text-black">Quick Links</h3>
-          <div className="flex flex-col md:flex-row gap-4">
-        {/* First Column */}
-        <div className="flex-1">
-          {firstColumn.map((item, index) => (
-            <p key={index} className="mb-2 font-medium text-[#484848] font-sans text-sm">{item}</p>
-          ))}
-        </div>
+          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 border-t-[1px] border-b-[1px] border-dashed border-gray-500 py-3 ">
+            <div>
+              <h3 className="font-bold text-lg mb-4 text-black">Quick Links</h3>
+              <div className="flex flex-col md:flex-row gap-4">
+                {/* First Column */}
+                <div className="flex-1">
+                  {firstColumn.map((item, index) => (
+                    <p
+                      key={index}
+                      className="mb-2 font-medium text-[#484848] font-sans text-sm"
+                    >
+                      {item}
+                    </p>
+                  ))}
+                </div>
 
-        {/* Second Column */}
-        <div className="flex-1">
-          {secondColumn.map((item, index) => (
-            <p key={index} className="mb-2 font-medium text-[#484848] font-sans text-sm">{item}</p>
-          ))}
-        </div>
-      </div>
-        </div>
-        
-        <div>
-          <h3 className="font-bold text-lg mb-4 text-black">Our Services</h3>
-          <ul className="space-y-2">
-            {['Portfolio Management System', 'Research on Stock Market'].map((item) => (
-              <li key={item}>
-                <Link href="#" className="mb-2 font-medium text-[#484848] font-sans text-sm">
-                  {item}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-        
-        <div>
-          <h3 className="font-bold text-lg mb-4 text-black">Contact Us</h3>
-          <p className="text-gray-600 mb-2">
-            <span className="mb-2 font-bold text-[#484848] font-sans text-sm">✉️</span>
-            {`  support@starkridgepaper.com`}
-          </p>
-          <p className="text-gray-600">
-            <span className="mb-2 font-bold text-[#484848] font-sans text-sm">📞</span>
-            {`  +91 9051460600/9007399454`}
-          </p>
-        </div>
-      </div>
-      
-      <div className="mt-8 text-center text-gray-500 text-sm ">
-        Copyright © {new Date().getFullYear()} - All Rights Reserved - LNSEL
-      </div>
-    </footer>
+                {/* Second Column */}
+                <div className="flex-1">
+                  {secondColumn.map((item, index) => (
+                    <p
+                      key={index}
+                      className="mb-2 font-medium text-[#484848] font-sans text-sm"
+                    >
+                      {item}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-bold text-lg mb-4 text-black">
+                Our Services
+              </h3>
+              <ul className="space-y-2">
+                {[
+                  "Portfolio Management System",
+                  "Research on Stock Market",
+                ].map((item) => (
+                  <li key={item}>
+                    <Link
+                      href="#"
+                      className="mb-2 font-medium text-[#484848] font-sans text-sm"
+                    >
+                      {item}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-bold text-lg mb-4 text-black">Contact Us</h3>
+              <p className="text-gray-600 mb-2 flex items-center">
+                <Image
+                  src={require("../app/assets/logo/Vector_email.png")}
+                  alt="Email icon"
+                  width={16} // Set your preferred width
+                  height={16} // Set your preferred height
+                  className="mr-2" // Add margin to the right for spacing
+                />
+                <span className="font-bold text-[#484848] font-sans text-sm">
+                  support@starkridgepaper.com
+                </span>
+              </p>
+              <p className="text-gray-600 mb-2 flex items-center">
+                <Image
+                  src={require("../app/assets/logo/Phone.png")}
+                  alt="Email icon"
+                  width={16} // Set your preferred width
+                  height={16} // Set your preferred height
+                  className="mr-2" // Add margin to the right for spacing
+                />
+                <span className="font-bold text-[#484848] font-sans text-sm">
+                +91 9051460600 / 9007399454
+                </span>
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-8 text-center text-gray-500 text-sm ">
+            Copyright © {new Date().getFullYear()} - All Rights Reserved - LNSEL
+          </div>
+        </footer>
       </div>
     </>
   );
