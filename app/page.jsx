@@ -9,7 +9,6 @@ import Link from "next/link";
 
 const App = () => {
   const [showModal, setShowModal] = useState(false);
-  const [showOtpModal, setShowOtpModal] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     phoneNumber: "",
@@ -32,7 +31,7 @@ const App = () => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e?.target?.name]: e?.target?.value,
     });
   };
 
@@ -42,9 +41,8 @@ const App = () => {
 
   const handleOpenModal = () => {
     setShowModal(!showModal);
-    setShowOtpModal(!showOtpModal)
   };
-  console.log(showModal,showOtpModal, "Hero not in view");
+  console.log(showModal, "Hero not in view");
 
   const Card = ({ src, alt, header, description }) => (
     <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col items-center p-2">
