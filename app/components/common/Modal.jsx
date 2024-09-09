@@ -13,7 +13,7 @@ const Modal = ({
   const [otpSectionVisible, setotpSectionVisible] = useState(false);
   const handleClickOutside = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
-      // setShowModal(false);
+      setShowModal(false);
     }
   };
   const [otp, setOtp] = useState(["", "", "", ""]);
