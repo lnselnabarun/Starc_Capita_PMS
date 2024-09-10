@@ -8,6 +8,7 @@ const Modal = ({
   setShowModal,
   handleChange,
   formData,
+  router
 }) => {
   const modalRef = useRef();
   const [otpSectionVisible, setotpSectionVisible] = useState(false);
@@ -26,10 +27,10 @@ const Modal = ({
   const handleChangeOTP = (element, index) => {
     if (isNaN(element.value)) return false;
 
-    setOtp([...otp.map((d, idx) => (idx === index ? element.value : d))]);
+    setOtp([...otp?.map((d, idx) => (idx === index ? element?.value : d))]);
 
     // Focus next input
-    if (element.value !== "") {
+    if (element?.value !== "") {
       if (index < 3) {
         inputRefs[index + 1].current?.focus();
       }
@@ -51,6 +52,12 @@ const Modal = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showModal]);
+
+  const handleClick = () => {
+    // Navigate to the desired page
+    setShowModal(false)
+    router.push('/Dashboard');
+  };
 
   return (
     <>
@@ -190,7 +197,7 @@ const Modal = ({
                   <div className="mt-6 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                     {/* Submit button */}
                     <button
-                      onClick={() => setShowModal(false)}
+                      onClick={handleClick}
                       className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors`}
                       type="submit"
                     >

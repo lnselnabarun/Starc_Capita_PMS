@@ -6,9 +6,12 @@ import Image from "next/image";
 import Logo from "./components/common/logo";
 import Modal from "./components/common/Modal";
 import Link from "next/link";
+import { useRouter } from 'next/navigation'
 
 const App = () => {
   const [showModal, setShowModal] = useState(false);
+
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     phoneNumber: "",
@@ -122,6 +125,7 @@ const App = () => {
             handleSubmit={handleChange}
             handleChange={handleChange}
             formData={formData}
+            router={router}
           />
         )}
 
