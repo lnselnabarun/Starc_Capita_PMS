@@ -1,6 +1,6 @@
 // Dashboard.js
 "use client";
-import React, { PureComponent, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Logo from "../components/common/logo";
 import {
