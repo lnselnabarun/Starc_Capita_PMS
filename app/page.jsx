@@ -129,19 +129,19 @@ const App = () => {
           />
         )}
 
-        <div className="flex flex-col justify-center items-center ml-20 mr-20 mt-10 ">
-          <main className="text-center">
-            <h1 className="font-semibold font-poppins text-neutral-800 text-3xl mb-2">
-              An automated, multi-asset portfolio tracker
-            </h1>
-            <h6 className="font-light font-poppins text-lg text-neutral-500 mx-20 ">
-              The investment management platform is a standalone web application
-              designed to provide users with comprehensive tools to manage and
-              analyze their investments. It will integrate with financial data
-              providers to fetch real-time data for stocks and mutual funds.
-            </h6>
-          </main>
-        </div>
+<div className="flex flex-col justify-center items-center px-4 md:px-20 mt-10">
+  <main className="text-center">
+    <h1 className="font-semibold font-poppins text-neutral-800 text-2xl sm:text-3xl mb-4">
+      An automated, multi-asset portfolio tracker
+    </h1>
+    <h6 className="font-light font-poppins text-base sm:text-lg text-neutral-500 mx-4 sm:mx-20">
+      The investment management platform is a standalone web application
+      designed to provide users with comprehensive tools to manage and
+      analyze their investments. It will integrate with financial data
+      providers to fetch real-time data for stocks and mutual funds.
+    </h6>
+  </main>
+</div>
 
         <div className="flex flex-col md:flex-row mx-4 md:mx-20 mt-5">
           <div className="w-full md:w-1/2 flex flex-col space-y-4 p-4">

@@ -81,16 +81,6 @@ const Modal = ({
 
             {/* Right side content */}
             <div className="w-full md:w-3/4 bg-white p-6 rounded-b-lg md:rounded-r-lg relative">
-              {/* <div
-          onClick={() => setShowModal(false)}
-          className="absolute top-4 right-4 cursor-pointer"
-        >
-          <img
-            alt="close"
-            src={close}
-            className="w-[20px] h-[20px] object-contain"
-          />
-        </div> */}
 
               {/* Header */}
               <h2 className="text-2xl font-bold mb-3 text-gray-800 text-left">
