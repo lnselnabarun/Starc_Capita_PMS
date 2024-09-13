@@ -747,7 +747,7 @@ export default function Dashboard() {
               </div>
               {tableData?.map((item) => {
                 return (
-                  <div className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-4">
+                  <div key={item} className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-4">
                     {/* First Section: Image and Text in one row */}
                     <div className="flex items-center space-x-4 w-[70%]">
                       <div className="flex flex-col">
