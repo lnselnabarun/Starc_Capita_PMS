@@ -6,7 +6,7 @@ import Image from "next/image";
 import Logo from "./components/common/logo";
 import Modal from "./components/common/Modal";
 import Link from "next/link";
-import { useRouter } from 'next/navigation'
+import { useRouter } from "next/navigation";
 
 const App = () => {
   const [showModal, setShowModal] = useState(false);
@@ -19,14 +19,38 @@ const App = () => {
     password: "", // Add the password field
   });
   const links = [
-    "Home",
-    "About",
-    "Contact US",
-    "Terms of Use",
-    "Features",
-    "Sign Up",
-    "Reviews",
-    "Privacy Policy",
+    {
+      id: "/",
+      title: "Home",
+    },
+    {
+      id: "/",
+      title: "About",
+    },
+    {
+      id: "/",
+      title: "Contact US",
+    },
+    {
+      id: "/",
+      title: "Terms of Use",
+    },
+    {
+      id: "/",
+      title: "Features",
+    },
+    {
+      id: "SignUp",
+      title: "Sign Up",
+    },
+    {
+      id: "/",
+      title: "Reviews",
+    },
+    {
+      id: "/",
+      title: "Privacy Policy",
+    },
   ];
   const firstColumn = links.slice(0, 4);
   const secondColumn = links.slice(4);
@@ -94,10 +118,10 @@ const App = () => {
                   Portfolios
                 </p>
               </div>
-              <h1 className="text-2xl md:text-4xl font-bold mb-1">
+              <h1 className="text-2xl md:text-4xl font-bold mb-1 text-white">
                 Ready-made portfolios
               </h1>
-              <h1 className="text-2xl md:text-4xl font-bold mb-3">
+              <h1 className="text-2xl md:text-4xl font-bold mb-3 text-white">
                 to fit your investment goals
               </h1>
 
@@ -111,7 +135,7 @@ const App = () => {
               <button
                 onClick={() => {}}
                 type="button"
-                className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors`}
+                className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors text-white`}
               >
                 Know More
               </button>
@@ -129,19 +153,19 @@ const App = () => {
           />
         )}
 
-<div className="flex flex-col justify-center items-center px-4 md:px-20 mt-10">
-  <main className="text-center">
-    <h1 className="font-semibold font-poppins text-neutral-800 text-2xl sm:text-3xl mb-4">
-      An automated, multi-asset portfolio tracker
-    </h1>
-    <h6 className="font-light font-poppins text-base sm:text-lg text-neutral-500 mx-4 sm:mx-20">
-      The investment management platform is a standalone web application
-      designed to provide users with comprehensive tools to manage and
-      analyze their investments. It will integrate with financial data
-      providers to fetch real-time data for stocks and mutual funds.
-    </h6>
-  </main>
-</div>
+        <div className="flex flex-col justify-center items-center px-4 md:px-20 mt-10">
+          <main className="text-center">
+            <h1 className="font-semibold font-poppins text-neutral-800 text-2xl sm:text-3xl mb-4">
+              An automated, multi-asset portfolio tracker
+            </h1>
+            <h6 className="font-light font-poppins text-base sm:text-lg text-neutral-500 mx-4 sm:mx-20">
+              The investment management platform is a standalone web application
+              designed to provide users with comprehensive tools to manage and
+              analyze their investments. It will integrate with financial data
+              providers to fetch real-time data for stocks and mutual funds.
+            </h6>
+          </main>
+        </div>
 
         <div className="flex flex-col md:flex-row mx-4 md:mx-20 mt-5">
           <div className="w-full md:w-1/2 flex flex-col space-y-4 p-4">
@@ -281,24 +305,23 @@ const App = () => {
                 {/* First Column */}
                 <div className="flex-1">
                   {firstColumn.map((item, index) => (
-                    <p
-                      key={index}
-                      className="mb-2 font-medium text-[#484848] font-sans text-sm"
-                    >
-                      {item}
-                    </p>
+                    <Link key={index} href={item?.id} passHref>
+                      <p className="mb-2 font-medium text-[#484848] font-sans text-sm">
+                        {item?.title}
+                      </p>
+                    </Link>
                   ))}
                 </div>
 
                 {/* Second Column */}
+
                 <div className="flex-1">
                   {secondColumn.map((item, index) => (
-                    <p
-                      key={index}
-                      className="mb-2 font-medium text-[#484848] font-sans text-sm"
-                    >
-                      {item}
-                    </p>
+                    <Link key={index} href={item?.id} passHref>
+                      <p className="mb-2 font-medium text-[#484848] font-sans text-sm">
+                        {item?.title}
+                      </p>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -327,7 +350,10 @@ const App = () => {
 
             <div>
               <h3 className="font-bold text-lg mb-4 text-black">Contact Us</h3>
-              <p className="text-gray-600 mb-2 flex items-center">
+              <a
+                href="mailto:support@starkridgepaper.com"
+                className="text-gray-600 mb-2 flex items-center"
+              >
                 <Image
                   src={require("../app/assets/logo/Vector_email.png")}
                   alt="Email icon"
@@ -338,22 +364,24 @@ const App = () => {
                 <span className="font-bold text-[#484848] font-sans text-sm">
                   support@starkridgepaper.com
                 </span>
-              </p>
-              <p className="text-gray-600 mb-2 flex items-center">
+              </a>
+              <a
+                href="tel:+919051460600"
+                className="text-gray-600 mb-2 flex items-center"
+              >
                 <Image
                   src={require("../app/assets/logo/Phone.png")}
-                  alt="Email icon"
+                  alt="Phone icon"
                   width={16} // Set your preferred width
                   height={16} // Set your preferred height
                   className="mr-2" // Add margin to the right for spacing
                 />
                 <span className="font-bold text-[#484848] font-sans text-sm">
-                +91 9051460600 / 9007399454
+                  +91 9051460600 / 9007399454
                 </span>
-              </p>
+              </a>
             </div>
           </div>
-
           <div className="mt-8 text-center text-gray-500 text-sm ">
             Copyright © {new Date().getFullYear()} - All Rights Reserved - LNSEL
           </div>

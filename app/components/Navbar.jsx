@@ -52,18 +52,18 @@ const Navbar = ({onpress}) => {
         <button
           onClick={onpress}
           type="button"
-          className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors`}
+          className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors text-white`}
         >
-          LOGIN
+          Login
         </button>
       </div>
       <div className="justify-end z-10 items-end flex ml-5 mr-5">
   <Link href="/SignUp" passHref>
     <button
       type="button"
-      className="py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors"
+      className="py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors text-white"
     >
-      SIGN UP
+      Sign Up
     </button>
   </Link>
 </div>
