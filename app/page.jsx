@@ -258,7 +258,6 @@ const App = () => {
               </h6>
             </main>
 
-            {/* Card Container */}
             <div className="flex flex-wrap justify-center gap-10 p-6">
               {/* Card 1 */}
               <Card
