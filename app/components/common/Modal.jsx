@@ -10,12 +10,13 @@ const Modal = ({
   formData,
   router
 }) => {
-  const modalRef = useRef();
+  const modalRefs = useRef();
   const [otpSectionVisible, setotpSectionVisible] = useState(false);
   const handleClickOutside = (e) => {
-    if (modalRef.current && !modalRef.current.contains(e.target)) {
+    if (modalRefs.current && !modalRefs.current.contains(e?.target)) {
       setShowModal(false);
     }
+    setShowModal(false);
   };
   const [otp, setOtp] = useState(["", "", "", ""]);
   const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
@@ -64,7 +65,7 @@ const Modal = ({
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div
-            ref={modalRef}
+            ref={modalRefs}
             className="relative flex flex-col md:flex-row w-full max-w-lg md:max-w-2xl h-96 bg-white rounded-lg shadow-lg" // Adjusted for responsiveness
           >
             {/* Left side image */}
