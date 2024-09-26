@@ -82,7 +82,7 @@ const SignUp = () => {
           <div className="w-full md:w-2/3 bg-white px-6 rounded-b-lg md:rounded-r-lg relative">
             {/* Header */}
             <h2 className="text-4xl font-bold mb-4 text-gray-800 text-center md:text-left">
-              SIGN UP
+              Sign Up
             </h2>
 
             {/* Form */}
@@ -252,7 +252,7 @@ const SignUp = () => {
                     onChange={handleRadioChange}
                   />
                   <span className="text-gray-700 text-sm font-normal font-sans ml-2">
-                    I accept
+                    I Accept
                   </span>
                 </label>
 
@@ -274,10 +274,10 @@ const SignUp = () => {
               <div className="mt-6 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                 {/* Submit button */}
                 <button
-                  className="py-3 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors"
+                  className="py-3 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors text-white"
                   type="submit"
                 >
-                  Get started
+                  Get Start
                 </button>
 
                 {/* Forgot password text */}
