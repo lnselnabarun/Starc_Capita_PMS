@@ -52,10 +52,10 @@ export default function Dashboard() {
     "Home",
     "Mutual Funds",
     "Direct Stock",
-    "Other",
     "Home Budgeting",
     "Taxed",
     "Tools",
+    "Other",
   ];
   const data = [
     {
@@ -169,6 +169,30 @@ export default function Dashboard() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeIndexSecond, setActiveIndexSecond] = useState(0);
 
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const items = [
+    {
+      imageSrc1: require("../assets/logo/dashicons_portfolio.png"),
+      text: "Portfolio Asset Allocation",
+      imageSrc2: require("../assets/logo/dashicons_portfolio_White.png"),
+    },
+    {
+      imageSrc1: require("../assets/logo/dashicons_portfolio.png"),
+      text: "Portfolio Market Cap Distribution",
+      imageSrc2: require("../assets/logo/dashicons_portfolio_White.png"),
+    },
+    {
+      imageSrc1: require("../assets/logo/dashicons_portfolio.png"),
+      text: "Category Distribution",
+      imageSrc2: require("../assets/logo/dashicons_portfolio_White.png"),
+    },
+    {
+      imageSrc1: require("../assets/logo/dashicons_portfolio.png"),
+      text: "AMC Distribution",
+      imageSrc2: require("../assets/logo/dashicons_portfolio_White.png"),
+    },
+  ];
+
   const handleClick = (index) => {
     setActiveIndex(index);
   };
@@ -275,6 +299,24 @@ export default function Dashboard() {
     },
     // Add more dummy data as needed
   ];
+
+  const GridItem = ({ imageSrc, text, isSelected, onClick }) => (
+    <div
+      className={`w-full sm:w-[48%] md:w-[23%] h-[160px] flex flex-col items-center justify-center cursor-pointer transition-colors duration-300 border rounded-xl px-3  ${
+        isSelected ? "bg-[#5E2751]" : "bg-white"
+      }`}
+      onClick={onClick}
+    >
+      <Image src={imageSrc} alt={text} width={50} height={50} />
+      <p
+        className={` text-base font-medium mt-2 text-center ${
+          isSelected ? "text-white" : "text-[#5E2751]"
+        }`}
+      >
+        {text}
+      </p>
+    </div>
+  );
   return (
     <>
       <div className="bg-primary w-full overflow-hidden bg-white min-h-screen ">
@@ -307,9 +349,9 @@ export default function Dashboard() {
           {/* Right Image Icon */}
           <div className="flex items-center justify-between rounded-lg">
             {/* Left Text */}
-            <span className="text-sm font-sans font-normal text-gray-700">
+            {/* <span className="text-sm font-sans font-normal text-gray-700">
               Welcome Username!
-            </span>
+            </span> */}
 
             {/* Center Image */}
             <div className="mx-2">
@@ -415,6 +457,11 @@ export default function Dashboard() {
         {activeIndex === 1 && activeIndexSecond === 5 ? (
           <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
             Comparison
+          </span>
+        ) : null}
+        {activeIndex === 2 && activeIndexSecond === 0 ? (
+          <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
+            Direct Stock
           </span>
         ) : null}
 
@@ -1481,7 +1528,7 @@ export default function Dashboard() {
               <div className="container mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-center mb-4">
                   <h1 className="text-xl sm:text-xl lg:text-xl font-bold mb-4 md:mb-0 text-[#3F4765] ">
-                    Transactions LIst
+                    Transactions List
                   </h1>
                   <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                     {/* First Select Box */}
@@ -1600,6 +1647,720 @@ export default function Dashboard() {
               <button className="w-10 h-10 flex items-center justify-center bg-gray-400 text-white rounded-lg">
                 &gt;
               </button>
+            </div>
+          </div>
+        ) : null}
+
+        {activeIndex === 1 && activeIndexSecond === 1 ? (
+          <div className="px-4 sm:px-8 md:px-16 lg:px-28 ">
+            <header className="mb-5 ">
+              <div className="container mx-auto">
+                <div className="flex flex-col md:flex-row justify-between items-center mb-4">
+                  <h1 className="text-xl sm:text-xl lg:text-xl font-bold mb-4 md:mb-0 text-[#3F4765] ">
+                    Transactions List
+                  </h1>
+                  <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    {/* First Select Box */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 space-y-2 sm:space-y-0">
+                      <span className="font-semibold text-xs sm:text-xs lg:text-xs text-[#3F4765] text-left">
+                        Market Cap Distribution:
+                      </span>
+                      <select className="border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700">
+                        <option className="bg-white text-black">
+                          LargeCap
+                        </option>
+                        <option className="bg-white text-black">MidCap</option>
+                        <option className="bg-white text-black">
+                          SmallCap
+                        </option>
+                      </select>
+                    </div>
+
+                    {/* Second Select Box */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 space-y-2 sm:space-y-0">
+                      <span className="font-semibold text-xs sm:text-xs lg:text-xs  text-[#3F4765] text-left">
+                        Net Rolling Returns:
+                      </span>
+                      <select className="border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700">
+                        <option className="bg-white text-black ">1 Year</option>
+                        <option className="bg-white text-black">2 Year</option>
+                        <option className="bg-white text-black">3 Year</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </header>
+
+            <div className="w-full overflow-x-auto">
+              <div className="min-w-max mt-4">
+                <div className="flex bg-[#F5F5F5] font-normal text-sm text-[#848CA9] border rounded-md  ">
+                  {headers.map((header, index) => (
+                    <div key={index} className="p-2 w-36 text-left">
+                      {header}
+                    </div>
+                  ))}
+                </div>
+                {dummyData.map((row, rowIndex) => (
+                  <div
+                    key={rowIndex}
+                    className="flex border-b items-center justify-between px-2"
+                  >
+                    <div className="p-0 w-36 line-clamp-2 overflow-hidden text-ellipsis break-all text-[13px] font-medium text-[#3F4765]">
+                      {row.name}
+                    </div>
+                    <div className=" w-36 text-[13px] font-medium text-[#3F4765]">
+                      {row.category}
+                    </div>
+                    <div className=" w-36 text-[13px] font-medium  text-[#3F4765] ">
+                      {row.dateOfInvestment}
+                    </div>
+                    <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                      {row.currentCost}
+                    </div>
+                    <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                      {row.currentXIRR}
+                    </div>
+                    <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                      {row.aum}
+                    </div>
+                    <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                      {row.expenseRatio}
+                    </div>
+                    <div className=" w-36 items-center">
+                      <Image
+                        src={row.statistic}
+                        alt="Statistic"
+                        width={60}
+                        height={20}
+                        className="h-auto w-auto max-w-full"
+                      />
+                    </div>
+                    <div className=" w-36">
+                      <button className="  md:block text-[#35B26B] border border-[#35B26B] rounded-md px-2 hover:bg-[#e8f5eb] text-sm">
+                        More Details
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center space-x-2 my-10">
+              {/* Previous Button */}
+              <button
+                className="w-10 h-10 flex items-center justify-center bg-gray-400 text-white rounded-lg"
+                disabled
+              >
+                &lt;
+              </button>
+
+              {/* Page Numbers */}
+              <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 text-purple-700 rounded-lg">
+                1
+              </button>
+              <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 text-gray-700 rounded-lg">
+                2
+              </button>
+              <div className="w-10 h-10 flex items-center justify-center text-gray-700">
+                ...
+              </div>
+              <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 text-gray-700 rounded-lg">
+                9
+              </button>
+              <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 text-gray-700 rounded-lg">
+                10
+              </button>
+
+              {/* Next Button */}
+              <button className="w-10 h-10 flex items-center justify-center bg-gray-400 text-white rounded-lg">
+                &gt;
+              </button>
+            </div>
+          </div>
+        ) : null}
+
+        {activeIndex === 1 && activeIndexSecond === 2 ? (
+          <>
+            <div className="px-4 sm:px-8 md:px-16 lg:px-28 mb-5 ">
+              <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg border-[1.5px] border-[#D9D9D9] ">
+                {/* First Content: Bold Text */}
+                <div className="justify-between w-full flex flex-wrap gap-4 h-auto">
+                  <div className="flex flex-col items-start space-y-2">
+                    <div className="font-medium text-lg sm:text-xl md:text-2xl text-[#3F4765] font-sans">
+                      Portfolio Risk Ratios
+                    </div>
+                  </div>
+
+                  {/* Second Content: Four Pressable Divs */}
+                  <div className="flex space-x-4">
+                    {/* Capture Ratio Button */}
+                    <button
+                      onClick={() => setActiveButton("capture")}
+                      className={` text-[#9FA8C7] px-4 rounded-2xl border text-sm ${
+                        activeButton === "capture"
+                          ? "bg-[#ECEFF9] border-[#E5EBEF]"
+                          : " border-[#E5EBEF]"
+                      }`}
+                    >
+                      Capture Ratio
+                    </button>
+
+                    {/* Risk Ratio Button */}
+                    <button
+                      onClick={() => setActiveButton("risk")}
+                      className={` text-[#9FA8C7] px-4 rounded-2xl border text-sm ${
+                        activeButton === "risk"
+                          ? "bg-[#ECEFF9] border-[#E5EBEF]"
+                          : " border-[#E5EBEF]"
+                      }`}
+                    >
+                      Risk Ratio
+                    </button>
+                  </div>
+                </div>
+                <div className="w-full h-48 sm:h-64 md:h-80 lg:h-96">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={data}
+                      margin={{
+                        top: 5,
+                        right: 10,
+                        left: 5,
+                        bottom: 10,
+                      }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+
+                      <Line
+                        type="monotone"
+                        dataKey="tv"
+                        stroke="#FF5733"
+                        activeDot={{ r: 8 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="wv"
+                        stroke="#33FF57"
+                        activeDot={{ r: 8 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="xv"
+                        stroke="#3357FF"
+                        activeDot={{ r: 8 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="yv"
+                        stroke="#FF33C1"
+                        activeDot={{ r: 8 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="zv"
+                        stroke="#FFC733"
+                        activeDot={{ r: 8 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+            <div className="px-4 sm:px-8 md:px-16 lg:px-28 ">
+              <header className="mb-5 ">
+                <div className="container mx-auto">
+                  <div className="flex flex-col md:flex-row justify-between items-center mb-4">
+                    <h1 className="text-xl sm:text-xl lg:text-xl font-bold mb-4 md:mb-0 text-[#3F4765] ">
+                      Transactions List
+                    </h1>
+                    <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                      {/* First Select Box */}
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 space-y-2 sm:space-y-0">
+                        <span className="font-semibold text-xs sm:text-xs lg:text-xs text-[#3F4765] text-left">
+                          Market Cap Distribution:
+                        </span>
+                        <select className="border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700">
+                          <option className="bg-white text-black">
+                            LargeCap
+                          </option>
+                          <option className="bg-white text-black">
+                            MidCap
+                          </option>
+                          <option className="bg-white text-black">
+                            SmallCap
+                          </option>
+                        </select>
+                      </div>
+
+                      {/* Second Select Box */}
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 space-y-2 sm:space-y-0">
+                        <span className="font-semibold text-xs sm:text-xs lg:text-xs  text-[#3F4765] text-left">
+                          Net Rolling Returns:
+                        </span>
+                        <select className="border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700">
+                          <option className="bg-white text-black ">
+                            1 Year
+                          </option>
+                          <option className="bg-white text-black">
+                            2 Year
+                          </option>
+                          <option className="bg-white text-black">
+                            3 Year
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </header>
+
+              <div className="w-full overflow-x-auto">
+                <div className="min-w-max mt-4">
+                  <div className="flex bg-[#F5F5F5] font-normal text-sm text-[#848CA9] border rounded-md  ">
+                    {headers.map((header, index) => (
+                      <div key={index} className="p-2 w-36 text-left">
+                        {header}
+                      </div>
+                    ))}
+                  </div>
+                  {dummyData.map((row, rowIndex) => (
+                    <div
+                      key={rowIndex}
+                      className="flex border-b items-center justify-between px-2"
+                    >
+                      <div className="p-0 w-36 line-clamp-2 overflow-hidden text-ellipsis break-all text-[13px] font-medium text-[#3F4765]">
+                        {row.name}
+                      </div>
+                      <div className=" w-36 text-[13px] font-medium text-[#3F4765]">
+                        {row.category}
+                      </div>
+                      <div className=" w-36 text-[13px] font-medium  text-[#3F4765] ">
+                        {row.dateOfInvestment}
+                      </div>
+                      <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                        {row.currentCost}
+                      </div>
+                      <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                        {row.currentXIRR}
+                      </div>
+                      <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                        {row.aum}
+                      </div>
+                      <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                        {row.expenseRatio}
+                      </div>
+                      <div className=" w-36 items-center">
+                        <Image
+                          src={row.statistic}
+                          alt="Statistic"
+                          width={60}
+                          height={20}
+                          className="h-auto w-auto max-w-full"
+                        />
+                      </div>
+                      <div className=" w-36">
+                        <button className="  md:block text-[#35B26B] border border-[#35B26B] rounded-md px-2 hover:bg-[#e8f5eb] text-sm">
+                          More Details
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-center space-x-2 my-10">
+                {/* Previous Button */}
+                <button
+                  className="w-10 h-10 flex items-center justify-center bg-gray-400 text-white rounded-lg"
+                  disabled
+                >
+                  &lt;
+                </button>
+
+                {/* Page Numbers */}
+                <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 text-purple-700 rounded-lg">
+                  1
+                </button>
+                <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 text-gray-700 rounded-lg">
+                  2
+                </button>
+                <div className="w-10 h-10 flex items-center justify-center text-gray-700">
+                  ...
+                </div>
+                <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 text-gray-700 rounded-lg">
+                  9
+                </button>
+                <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 text-gray-700 rounded-lg">
+                  10
+                </button>
+
+                {/* Next Button */}
+                <button className="w-10 h-10 flex items-center justify-center bg-gray-400 text-white rounded-lg">
+                  &gt;
+                </button>
+              </div>
+            </div>
+          </>
+        ) : null}
+
+        {activeIndex === 2 && activeIndexSecond === 0 ? (
+          <div className="flex flex-col md:flex-row w-full justify-between px-4 sm:px-6 lg:px-28">
+            {/* First div with 70% width on medium and larger screens */}
+            <div className="w-full md:w-[70%] flex flex-wrap justify-between h-auto md:h-52">
+              {items.map((item, index) => (
+                <GridItem
+                  key={index}
+                  imageSrc={
+                    selectedIndex === index ? item?.imageSrc2 : item?.imageSrc1
+                  }
+                  text={item?.text}
+                  isSelected={selectedIndex === index}
+                  onClick={() => setSelectedIndex(index)}
+                />
+              ))}
+
+              <div className="container mx-auto px-4 mt-4">
+                <div className="justify-between w-full flex items-center h-10 mb-2">
+                  {/* First Content */}
+                  <div className="font-medium text-lg sm:text-xl md:text-2xl text-[#3F4765] font-sans">
+                    Recent Transactions
+                  </div>
+
+                  {/* Second Content */}
+                  <div className="flex space-x-4">
+                    {["USD", "24 Hours"].map((option, idx) => (
+                      <div
+                        key={idx}
+                        // onClick={() => handleClickTime(idx)}
+                        className={`px-4 py-1 cursor-pointer rounded-lg text-transparent bg-clip-text text-xs font-medium flex justify-center items-center bg-[#949595]`}
+                      >
+                        {`${option}  ▼`}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* Table Header */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 text-left p-3 bg-[#F5F5F5] rounded-lg">
+                  <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9] ">
+                    {/* Added padding-right */}
+                    CURRENCY NAME
+                  </div>
+                  <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9] ml-4">
+                    {" "}
+                    {/* Added padding-right */}
+                    PRICE
+                  </div>
+                  <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9]">
+                    CAGR/MONTH
+                  </div>
+                  <div className="hidden md:block text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9]">
+                    STATISTIC
+                  </div>
+                  <div className="hidden md:block text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9]">
+                    EXCHANGE
+                  </div>
+                </div>
+
+                {/* Table Body */}
+                {tableData.map((row, index) => (
+                  <div
+                    key={index}
+                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 bg-[#F5F5F5] text-left p-2 my-2 justify-center items-center rounded-lg"
+                  >
+                    <div className="flex items-center space-x-4">
+                      {" "}
+                      {/* Increased space between image and currency */}
+                      <Image
+                        src={row?.coin}
+                        alt="Currency Image"
+                        width={32}
+                        height={32}
+                        className="h-8 w-8"
+                      />
+                      <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765]">
+                        {row.currency}
+                      </div>
+                    </div>
+                    <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765] pl-4">
+                      {" "}
+                      {/* Added padding to price column */}
+                      {row.price}
+                    </div>
+                    <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765]">
+                      {row.cagr}
+                    </div>
+                    <div className="hidden md:flex items-center">
+                      <Image
+                        src={row.statistic}
+                        alt="Statistic"
+                        width={60}
+                        height={20}
+                        className="h-auto w-auto max-w-full"
+                      />
+                    </div>
+                    <button className="hidden md:block text-[#35B26B] border border-[#35B26B] rounded-md px-3 py-1 hover:bg-[#e8f5eb] text-sm">
+                      Transfer now
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Second div with 20% width on medium and larger screens */}
+            <div className="w-full md:w-[27%] bg-[#f5F5F5F5] p-1 sm:p-2 border rounded-md">
+              <div className="flex items-center space-x-4 justify-between">
+                <div className="font-sans text-lg sm:text-base md:text-lg font-medium leading-5 text-left text-[#3F4765]">
+                  My Balance
+                </div>
+                <div className="flex items-center justify-center bg-white rounded-full h-8 w-8 sm:h-10 sm:w-10">
+                  <Image
+                    src={require("../assets/logo/IconPlus.png")}
+                    alt="Centered Image"
+                    width={20}
+                    height={20}
+                    className="h-5 w-5"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row justify-between space-x-0 sm:space-x-4 mt-3">
+                {/* <!-- First Card --> */}
+                <div className="relative bg-[#60BC63] rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto">
+                  {/* <!-- First Two Text Elements in Column --> */}
+                  <div className="flex flex-col space-y-2">
+                    <div className="text-white font-semibold text-base sm:text-sm md:text-base">
+                      US Dollar
+                    </div>
+                    <div className="text-white font-semibold text-base sm:text-sm md:text-base">
+                      80,435.712
+                    </div>
+                  </div>
+
+                  {/* <!-- Dashed Border --> */}
+                  <div className="border-t border-dashed border-white my-4"></div>
+
+                  {/* <!-- Third Text and Image in Column --> */}
+                  <div className="flex flex-col space-y-2">
+                    <div className="text-white font-semibold text-base sm:text-sm md:text-base">
+                      {`$ 0,0014`}
+                    </div>
+                    <div className="w-6 h-6 sm:w-8 sm:h-8">
+                      <Image
+                        src={require("../assets/logo/Credit_Card_green.png")}
+                        alt="Card Image"
+                        width={24}
+                        height={24}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+
+                  {/* <!-- Absolute Image at Bottom Right --> */}
+                  <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10">
+                    <Image
+                      src={require("../assets/logo/Highlight_green.png")}
+                      alt="Value Image"
+                      width={100}
+                      height={100}
+                      objectFit="contain"
+                      className="w-full h-full"
+                    />
+                  </div>
+                </div>
+
+                {/* <!-- Second Card --> */}
+                <div className="relative bg-[#FFBA33] rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto">
+                  {/* <!-- First Two Text Elements in Column --> */}
+                  <div className="flex flex-col space-y-2">
+                    <div className="text-white font-semibold text-base sm:text-sm md:text-base">
+                      Bitcoin
+                    </div>
+                    <div className="text-white font-semibold text-base sm:text-sm md:text-base">
+                      1.84333767
+                    </div>
+                  </div>
+
+                  {/* <!-- Dashed Border --> */}
+                  <div className="border-t border-dashed border-white my-4"></div>
+
+                  {/* <!-- Third Text and Image in Column --> */}
+                  <div className="flex flex-col space-y-2">
+                    <div className="text-white font-semibold text-base sm:text-sm md:text-base">
+                      {`$ 109106,60`}
+                    </div>
+                    <div className="w-6 h-6 sm:w-8 sm:h-8">
+                      <Image
+                        src={require("../assets/logo/Credit_Card_yellow.png")}
+                        alt="Card Image"
+                        width={24}
+                        height={24}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+
+                  {/* <!-- Absolute Image at Bottom Right --> */}
+                  <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10">
+                    <Image
+                      src={require("../assets/logo/Highlight_yellow.png")}
+                      alt="Value Image"
+                      width={100}
+                      height={100}
+                      objectFit="contain"
+                      className="w-full h-full"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex space-x-4 mt-4">
+                <div className="w-1/2">
+                  <Image
+                    src={require("../assets/logo/Withdraw.png")} // replace with your image path
+                    alt="Image 1"
+                    width={500} // adjust the width as needed
+                    height={300} // adjust the height as needed
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+                <div className="w-1/2 ">
+                  <Image
+                    src={require("../assets/logo/Deposit.png")} // replace with your image path
+                    alt="Image 2"
+                    width={500} // adjust the width as needed
+                    height={300} // adjust the height as needed
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center space-x-4 justify-between mt-2">
+                <div className="font-sans text-lg sm:text-base md:text-lg font-medium leading-5 text-left text-[#3F4765]">
+                  Activities
+                </div>
+                <div className="font-sans text-sm sm:text-base md:text-sm font-medium leading-5 text-left text-[#969CCB]">
+                  {`Today  ▼`}
+                </div>
+              </div>
+
+              <div className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-2">
+                {/* First Section: Image and Text in one row */}
+                <div className="flex items-center space-x-4">
+                  <Image
+                    src={require("../assets/logo/Logo_Bit.png")}
+                    alt="Currency Image"
+                    width={46}
+                    height={46}
+                  />
+                  <div className="flex flex-col space-y-2">
+                    <p className="text-xs font-semibold text-[#3F4765] ">
+                      Bitcoin{" "}
+                    </p>
+                    <p className="text-sm font-normal text-[#3F4765]">Sell </p>
+                  </div>
+                </div>
+
+                {/* Second Section: Two text elements column-wise */}
+                <div className="flex flex-col space-y-2">
+                  <p className="text-sm font-semibold text-[#F85842] text-end">
+                    $2,435.80{" "}
+                  </p>
+                  <p className="text-xs font-normal text-[#3F4765] text-end">
+                    Today | 16.40
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-4">
+                {/* First Section: Image and Text in one row */}
+                <div className="flex items-center space-x-4">
+                  <Image
+                    src={require("../assets/logo/Logo_B.png")}
+                    alt="Currency Image"
+                    width={46}
+                    height={46}
+                  />
+                  <div className="flex flex-col space-y-2">
+                    <p className="text-xs font-semibold text-[#3F4765] ">
+                      Ethereum{" "}
+                    </p>
+                    <p className="text-sm font-normal text-[#3F4765]">Buy </p>
+                  </div>
+                </div>
+
+                {/* Second Section: Two text elements column-wise */}
+                <div className="flex flex-col space-y-2">
+                  <p className="text-sm font-semibold text-[#24A959] text-end">
+                    $1,435.72
+                  </p>
+                  <p className="text-xs font-normal text-[#3F4765] text-end">
+                    Today | 16.40
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-4">
+                {/* First Section: Image and Text in one row */}
+                <div className="flex items-center space-x-4">
+                  <Image
+                    src={require("../assets/logo/Logo_A.png")}
+                    alt="Currency Image"
+                    width={46}
+                    height={46}
+                  />
+                  <div className="flex flex-col space-y-2">
+                    <p className="text-xs font-semibold text-[#3F4765] ">
+                      Algorand{" "}
+                    </p>
+                    <p className="text-sm font-normal text-[#3F4765]">Buy</p>
+                  </div>
+                </div>
+
+                {/* Second Section: Two text elements column-wise */}
+                <div className="flex flex-col space-y-2">
+                  <p className="text-sm font-semibold text-[#24A959] text-end">
+                    $1,435.72
+                  </p>
+                  <p className="text-xs font-normal text-[#3F4765] text-end">
+                    Today | 16.40
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-4 justify-between mt-6">
+                <div className="font-sans text-lg sm:text-base md:text-lg font-medium leading-5 text-left text-[#3F4765]">
+                  News
+                </div>
+                <div className="font-sans text-sm sm:text-base md:text-sm font-medium leading-5 text-left text-[#969CCB]">
+                  See All
+                </div>
+              </div>
+              {tableData?.map((item) => {
+                return (
+                  <div
+                    key={item}
+                    className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-4"
+                  >
+                    {/* First Section: Image and Text in one row */}
+                    <div className="flex items-center space-x-4 w-[70%]">
+                      <div className="flex flex-col">
+                        <p className="text-sm font-medium text-[#3F4765] ">
+                          Bitcoin, Ethereum, Crypto News and Price Data
+                        </p>
+                        <p className="text-xs font-light text-[#A2A9C7]">
+                          News Media 1h ago
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Second Section: Two text elements column-wise */}
+                    <div className="flex flex-col  h-10 w-10 bg-[#C4C4C4] border border-gray-300 rounded-md md:h-16 md:w-16"></div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         ) : null}

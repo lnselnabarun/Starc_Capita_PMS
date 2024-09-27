@@ -152,7 +152,6 @@ const App = () => {
             router={router}
           />
         )}
-
         <div className="flex flex-col justify-center items-center px-4 md:px-20 mt-10">
           <main className="text-center">
             <h1 className="font-semibold font-poppins text-neutral-800 text-2xl sm:text-3xl mb-4">

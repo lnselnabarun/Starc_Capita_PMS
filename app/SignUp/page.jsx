@@ -3,8 +3,10 @@ import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Image from "next/image";
 import Modal from "../components/common/Modal";
+import { useRouter } from "next/navigation";
 
 const SignUp = () => {
+  const routers = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null); // Track selected radio button
   const [formData, setFormData] = useState({
@@ -273,7 +275,7 @@ const SignUp = () => {
               {/* Submit Button and Forgot Password Link */}
               <div className="mt-6 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                 {/* Submit button */}
-                <button
+                <button onClick={() => routers.push('/Dashboard')}
                   className="py-3 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors text-white"
                   type="submit"
                 >
