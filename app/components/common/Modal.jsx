@@ -188,7 +188,7 @@ const Modal = ({
                     {/* Submit button */}
                     <button
                       onClick={handleClick}
-                      className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors`}
+                      className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors text-white`}
                       type="submit"
                     >
                       Submit

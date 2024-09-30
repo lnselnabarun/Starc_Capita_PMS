@@ -14,6 +14,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Chart } from "react-google-charts";
+import Link from "next/link";
 
 export default function Dashboard() {
   const google_charts_data = [
@@ -133,7 +134,7 @@ export default function Dashboard() {
   const tableData = [
     {
       currency: "Bitcoin / BTC",
-      price: "$50,000",
+      price: "₹50,000",
       cagr: "2%",
       statistic: require("../assets/logo/Graph.png"),
       exchange: "Binance",
@@ -141,7 +142,7 @@ export default function Dashboard() {
     },
     {
       currency: "Ethereum / ETH",
-      price: "$4,000",
+      price: "₹4,000",
       cagr: "3%",
       statistic: require("../assets/logo/Graph1.png"),
       exchange: "Coinbase",
@@ -149,7 +150,7 @@ export default function Dashboard() {
     },
     {
       currency: "Algorand / ALG",
-      price: "$1.50",
+      price: "₹1.50",
       cagr: "1.5%",
       statistic: require("../assets/logo/Graph2.png"),
       exchange: "Kraken",
@@ -195,6 +196,7 @@ export default function Dashboard() {
 
   const handleClick = (index) => {
     setActiveIndex(index);
+    setActiveIndexSecond(0)
   };
   const handleClickSecond = (index) => {
     setActiveIndexSecond(index);
@@ -347,27 +349,23 @@ export default function Dashboard() {
           </div>
 
           {/* Right Image Icon */}
-          <div className="flex items-center justify-between rounded-lg">
-            {/* Left Text */}
-            {/* <span className="text-sm font-sans font-normal text-gray-700">
-              Welcome Username!
-            </span> */}
+          <Link href="/Profile" passHref>
+            <div className="flex items-center justify-between rounded-lg hover:bg-gray-100 p-2 cursor-pointer transition-colors duration-200">
+              <div className="mx-2">
+                <Image
+                  src={require("../assets/logo/User_Icon.png")} // Replace with your icon path
+                  alt="User Icon"
+                  width={24} // Icon width
+                  height={24} // Icon height
+                />
+              </div>
 
-            {/* Center Image */}
-            <div className="mx-2">
-              <Image
-                src={require("../assets/logo/User_Icon.png")} // Replace with your icon path
-                alt="Search Icon"
-                width={24} // Icon width
-                height={24} // Icon height
-              />
+              {/* Right Text */}
+              <span className="text-sm font-sans font-normal text-gray-700">
+               Nabarun
+              </span>
             </div>
-
-            {/* Right Text */}
-            <span className="text-sm font-sans font-normal text-gray-700">
-              My Account ▼
-            </span>
-          </div>
+          </Link>
         </header>
 
         <div className="bg-black flex items-center justify-start px-4 overflow-x-auto whitespace-nowrap pl-8 md:pl-16 lg:pl-28">
@@ -378,7 +376,7 @@ export default function Dashboard() {
               className={`cursor-pointer text-white text-lg lg:text-base px-7 py-2 font-semibold font-sans
             ${activeIndex == index ? "bg-[#5E2751]" : ""}`}
             >
-              {item}
+              {`${item === "Other" ? "Other    ▼ " : item}`}
             </span>
           ))}
         </div>
@@ -459,7 +457,7 @@ export default function Dashboard() {
             Comparison
           </span>
         ) : null}
-        {activeIndex === 2 && activeIndexSecond === 0 ? (
+        {activeIndex === 2  ? (
           <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
             Direct Stock
           </span>
@@ -470,7 +468,7 @@ export default function Dashboard() {
             {/* First div with 70% width on medium and larger screens */}
             <div className="w-full md:w-[70%] flex flex-wrap gap-4 justify-between">
               {/* Card 1 */}
-              <div className="relative flex-1 min-w-[160px] max-w-[240px] bg-white border border-[#D9D9D9] rounded-lg p-2 h-[100px] sm:h-[110px] md:h-[120px]">
+              <div className="relative flex-1 min-w-[200px] max-w-[275px] bg-white border border-[#D9D9D9] rounded-lg p-2 h-[100px] sm:h-[110px] md:h-[120px]">
                 {/* Row 1 */}
                 <div className="flex items-center mb-3">
                   <Image
@@ -487,7 +485,7 @@ export default function Dashboard() {
                 {/* Row 2 */}
                 <div className="mb-3">
                   <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
-                    $50,435.362
+                    ₹ 50,435.362
                   </p>
                 </div>
 
@@ -515,7 +513,7 @@ export default function Dashboard() {
               </div>
 
               {/* Card 2 */}
-              <div className="relative flex-1 min-w-[160px] max-w-[240px] bg-white border border-[#D9D9D9] rounded-lg p-2 h-[100px] sm:h-[110px] md:h-[120px]">
+              <div className="relative flex-1 min-w-[160px] max-w-[275px] bg-white border border-[#D9D9D9] rounded-lg p-2 h-[100px] sm:h-[110px] md:h-[120px]">
                 {/* Row 1 */}
                 <div className="flex items-center mb-3">
                   <Image
@@ -532,7 +530,7 @@ export default function Dashboard() {
                 {/* Row 2 */}
                 <div className="mb-3">
                   <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
-                    $50,435.362
+                    ₹ 50,435.362
                   </p>
                 </div>
 
@@ -560,7 +558,7 @@ export default function Dashboard() {
               </div>
 
               {/* Card 3 */}
-              <div className="relative flex-1 min-w-[160px] max-w-[240px] bg-white border border-[#D9D9D9] rounded-lg p-2 h-[100px] sm:h-[110px] md:h-[120px]">
+              <div className="relative flex-1 min-w-[160px] max-w-[275px] bg-white border border-[#D9D9D9] rounded-lg p-2 h-[100px] sm:h-[110px] md:h-[120px]">
                 {/* Row 1 */}
                 <div className="flex items-center mb-3">
                   <Image
@@ -577,7 +575,7 @@ export default function Dashboard() {
                 {/* Row 2 */}
                 <div className="mb-3">
                   <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
-                    $50,435.362
+                    ₹ 50,435.362
                   </p>
                 </div>
 
@@ -715,16 +713,115 @@ export default function Dashboard() {
 
                 {/* Second Content: Four Pressable Divs */}
                 <div className="flex gap-4">
-                  {["USD", "24 Hours"].map((option, idx) => (
-                    <div
-                      key={idx}
-                      // onClick={() => handleClickTime(idx)}
-                      className={` px-4 py-1 cursor-pointer rounded-lg ] text-transparent bg-clip-text text-xs font-medium
-                    flex justify-center items-center bg-[#949595]`}
-                    >
-                      {`${option}  ▼`}
+                  <select className="border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700">
+                    <option className="bg-white text-black">USD</option>
+                    <option className="bg-white text-black">USD</option>
+                    <option className="bg-white text-black">USD</option>
+                  </select>
+
+                  <select className="border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700">
+                    <option className="bg-white text-black">24 Hours</option>
+                    <option className="bg-white text-black">24 Hours</option>
+                    <option className="bg-white text-black">24 Hours</option>
+                  </select>
+
+                  <div className="border bg-gray-100 text-gray-700 rounded-3xl text-xs sm:text-sm lg:text-base px-4 py-2 focus:outline-none focus:ring-2 focus:ring-fuchsia-700 hover:bg-gray-200 flex justify-center items-center cursor-pointer">
+                    See All
+                  </div>
+                </div>
+              </div>
+
+              <div className="container mx-auto px-4 py-6">
+                {/* Table Header */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 text-left p-3 bg-[#F5F5F5] rounded-lg">
+                  <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9] ">
+                    {/* Added padding-right */}
+                    CURRENCY NAME
+                  </div>
+                  <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9] ml-4">
+                    {" "}
+                    {/* Added padding-right */}
+                    PRICE
+                  </div>
+                  <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9]">
+                    CAGR/MONTH
+                  </div>
+                  <div className="hidden md:block text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9]">
+                    STATISTIC
+                  </div>
+                  <div className="hidden md:block text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9]">
+                    EXCHANGE
+                  </div>
+                </div>
+
+                {/* Table Body */}
+                {tableData.map((row, index) => (
+                  <div
+                    key={index}
+                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 bg-[#F5F5F5] text-left p-2 my-2 justify-center items-center rounded-lg"
+                  >
+                    <div className="flex items-center space-x-4">
+                      {" "}
+                      {/* Increased space between image and currency */}
+                      <Image
+                        src={row?.coin}
+                        alt="Currency Image"
+                        width={32}
+                        height={32}
+                        className="h-8 w-8"
+                      />
+                      <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765]">
+                        {row.currency}
+                      </div>
                     </div>
-                  ))}
+                    <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765] pl-4">
+                      {" "}
+                      {/* Added padding to price column */}
+                      {row.price}
+                    </div>
+                    <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765]">
+                      {row.cagr}
+                    </div>
+                    <div className="hidden md:flex items-center">
+                      <Image
+                        src={row.statistic}
+                        alt="Statistic"
+                        width={60}
+                        height={20}
+                        className="h-auto w-auto max-w-full"
+                      />
+                    </div>
+                    <button className="hidden md:block text-[#35B26B] border border-[#35B26B] rounded-md px-3 py-1 hover:bg-[#e8f5eb] text-sm">
+                      Transfer now
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="justify-between w-full flex flex-wrap gap-4 h-auto mb-2">
+                <div className="flex flex-col items-start space-y-2">
+                  <div className="font-medium text-lg sm:text-xl md:text-2xl text-[#3F4765] font-sans">
+                    Systematic Transactions
+                  </div>
+                </div>
+
+                {/* Second Content: Four Pressable Divs */}
+                <div className="flex gap-4">
+                  <select className="border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700">
+                    <option className="bg-white text-black">USD</option>
+                    <option className="bg-white text-black">USD</option>
+                    <option className="bg-white text-black">USD</option>
+                  </select>
+
+                  <select className="border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700">
+                    <option className="bg-white text-black">24 Hours</option>
+                    <option className="bg-white text-black">24 Hours</option>
+                    <option className="bg-white text-black">24 Hours</option>
+                  </select>
+
+                  <div className="border bg-gray-100 text-gray-700 rounded-3xl text-xs sm:text-sm lg:text-base px-4 py-2 focus:outline-none focus:ring-2 focus:ring-fuchsia-700 hover:bg-gray-200 flex justify-center items-center cursor-pointer">
+                    See All
+                  </div>
                 </div>
               </div>
 
@@ -819,11 +916,14 @@ export default function Dashboard() {
                   {/* <!-- First Two Text Elements in Column --> */}
                   <div className="flex flex-col space-y-2">
                     <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                      US Dollar
+                      {`Today's Gain`}
                     </div>
                     <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                      80,435.712
+                      Gain
                     </div>
+                    {/* <div className="text-white font-semibold text-base sm:text-sm md:text-base">
+                      80,435.712
+                    </div> */}
                   </div>
 
                   {/* <!-- Dashed Border --> */}
@@ -832,7 +932,7 @@ export default function Dashboard() {
                   {/* <!-- Third Text and Image in Column --> */}
                   <div className="flex flex-col space-y-2">
                     <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                      {`$ 0,0014`}
+                      ₹80,435.712
                     </div>
                     <div className="w-6 h-6 sm:w-8 sm:h-8">
                       <Image
@@ -863,11 +963,14 @@ export default function Dashboard() {
                   {/* <!-- First Two Text Elements in Column --> */}
                   <div className="flex flex-col space-y-2">
                     <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                      Bitcoin
+                      {`Today's`}
                     </div>
                     <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                      1.84333767
+                      Expenses
                     </div>
+                    {/* <div className="text-white font-semibold text-base sm:text-sm md:text-base">
+                      1.84333767
+                    </div> */}
                   </div>
 
                   {/* <!-- Dashed Border --> */}
@@ -876,7 +979,7 @@ export default function Dashboard() {
                   {/* <!-- Third Text and Image in Column --> */}
                   <div className="flex flex-col space-y-2">
                     <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                      {`$ 109106,60`}
+                      ₹1.84333767
                     </div>
                     <div className="w-6 h-6 sm:w-8 sm:h-8">
                       <Image
@@ -903,7 +1006,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="flex space-x-4 mt-4">
+              {/* <div className="flex space-x-4 mt-4">
                 <div className="w-1/2">
                   <Image
                     src={require("../assets/logo/Withdraw.png")} // replace with your image path
@@ -922,7 +1025,7 @@ export default function Dashboard() {
                     className="w-full h-auto object-cover"
                   />
                 </div>
-              </div>
+              </div> */}
               <div className="flex items-center space-x-4 justify-between mt-2">
                 <div className="font-sans text-lg sm:text-base md:text-lg font-medium leading-5 text-left text-[#3F4765]">
                   Activities
@@ -936,14 +1039,14 @@ export default function Dashboard() {
                 {/* First Section: Image and Text in one row */}
                 <div className="flex items-center space-x-4">
                   <Image
-                    src={require("../assets/logo/Logo_Bit.png")}
+                    src={require("../assets/logo/Activity.png")}
                     alt="Currency Image"
                     width={46}
                     height={46}
                   />
                   <div className="flex flex-col space-y-2">
                     <p className="text-xs font-semibold text-[#3F4765] ">
-                      Bitcoin{" "}
+                      Activities Name{" "}
                     </p>
                     <p className="text-sm font-normal text-[#3F4765]">Sell </p>
                   </div>
@@ -952,7 +1055,7 @@ export default function Dashboard() {
                 {/* Second Section: Two text elements column-wise */}
                 <div className="flex flex-col space-y-2">
                   <p className="text-sm font-semibold text-[#F85842] text-end">
-                    $2,435.80{" "}
+                  ₹2,435.80{" "}
                   </p>
                   <p className="text-xs font-normal text-[#3F4765] text-end">
                     Today | 16.40
@@ -971,7 +1074,7 @@ export default function Dashboard() {
                   />
                   <div className="flex flex-col space-y-2">
                     <p className="text-xs font-semibold text-[#3F4765] ">
-                      Ethereum{" "}
+                      Activities Name{" "}
                     </p>
                     <p className="text-sm font-normal text-[#3F4765]">Buy </p>
                   </div>
@@ -980,7 +1083,7 @@ export default function Dashboard() {
                 {/* Second Section: Two text elements column-wise */}
                 <div className="flex flex-col space-y-2">
                   <p className="text-sm font-semibold text-[#24A959] text-end">
-                    $1,435.72
+                  ₹1,435.72
                   </p>
                   <p className="text-xs font-normal text-[#3F4765] text-end">
                     Today | 16.40
@@ -998,7 +1101,7 @@ export default function Dashboard() {
                   />
                   <div className="flex flex-col space-y-2">
                     <p className="text-xs font-semibold text-[#3F4765] ">
-                      Algorand{" "}
+                      Activities Name{" "}
                     </p>
                     <p className="text-sm font-normal text-[#3F4765]">Buy</p>
                   </div>
@@ -1007,7 +1110,7 @@ export default function Dashboard() {
                 {/* Second Section: Two text elements column-wise */}
                 <div className="flex flex-col space-y-2">
                   <p className="text-sm font-semibold text-[#24A959] text-end">
-                    $1,435.72
+                  ₹1,435.72
                   </p>
                   <p className="text-xs font-normal text-[#3F4765] text-end">
                     Today | 16.40
@@ -1304,7 +1407,7 @@ export default function Dashboard() {
                   {/* <!-- Third Text and Image in Column --> */}
                   <div className="flex flex-col space-y-2">
                     <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                      {`$ 0,0014`}
+                      {`₹ 0,0014`}
                     </div>
                     <div className="w-6 h-6 sm:w-8 sm:h-8">
                       <Image
@@ -1348,7 +1451,7 @@ export default function Dashboard() {
                   {/* <!-- Third Text and Image in Column --> */}
                   <div className="flex flex-col space-y-2">
                     <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                      {`$ 109106,60`}
+                      {`₹ 109106,60`}
                     </div>
                     <div className="w-6 h-6 sm:w-8 sm:h-8">
                       <Image
@@ -1424,7 +1527,7 @@ export default function Dashboard() {
                 {/* Second Section: Two text elements column-wise */}
                 <div className="flex flex-col space-y-2">
                   <p className="text-sm font-semibold text-[#F85842] text-end">
-                    $2,435.80{" "}
+                  ₹2,435.80{" "}
                   </p>
                   <p className="text-xs font-normal text-[#3F4765] text-end">
                     Today | 16.40
@@ -1452,7 +1555,7 @@ export default function Dashboard() {
                 {/* Second Section: Two text elements column-wise */}
                 <div className="flex flex-col space-y-2">
                   <p className="text-sm font-semibold text-[#24A959] text-end">
-                    $1,435.72
+                  ₹1,435.72
                   </p>
                   <p className="text-xs font-normal text-[#3F4765] text-end">
                     Today | 16.40
@@ -1479,7 +1582,7 @@ export default function Dashboard() {
                 {/* Second Section: Two text elements column-wise */}
                 <div className="flex flex-col space-y-2">
                   <p className="text-sm font-semibold text-[#24A959] text-end">
-                    $1,435.72
+                  ₹1,435.72
                   </p>
                   <p className="text-xs font-normal text-[#3F4765] text-end">
                     Today | 16.40
@@ -1565,40 +1668,50 @@ export default function Dashboard() {
 
             <div className="w-full overflow-x-auto">
               <div className="min-w-max mt-4">
-                <div className="flex bg-[#F5F5F5] font-normal text-sm text-[#848CA9] border rounded-md  ">
+                <div className="flex bg-[#F5F5F5] font-normal text-sm text-[#848CA9] border rounded-md">
                   {headers.map((header, index) => (
-                    <div key={index} className="p-2 w-36 text-left">
-                      {header}
+                    <div
+                      key={index}
+                      className={`p-2 w-36 text-left ${
+                        index === 0 ? "sticky left-0 bg-[#F5F5F5] z-10" : ""
+                      } ${
+                        index === 1
+                          ? "sticky left-36 bg-[#F5F5F5] z-10 font-semibold"
+                          : "font-semibold"
+                      }`}
+                    >
+                      {`${header}`}
                     </div>
                   ))}
                 </div>
+
                 {dummyData.map((row, rowIndex) => (
                   <div
                     key={rowIndex}
-                    className="flex border-b items-center justify-between px-2"
+                    className="flex border-b items-center justify-between bg-[#DBDDF659] p-1"
                   >
-                    <div className="p-0 w-36 line-clamp-2 overflow-hidden text-ellipsis break-all text-[13px] font-medium text-[#3F4765]">
+                    <div className="p-3 w-36 line-clamp-2 overflow-hidden text-ellipsis break-all text-[13px] font-medium text-[#3F4765] sticky left-0 bg-white z-10">
                       {row.name}
                     </div>
-                    <div className=" w-36 text-[13px] font-medium text-[#3F4765]">
+                    <div className="p-3 w-36 text-[13px] font-medium text-[#3F4765] sticky left-36 bg-white z-10">
                       {row.category}
                     </div>
-                    <div className=" w-36 text-[13px] font-medium  text-[#3F4765] ">
+                    <div className="w-36 text-[13px] font-medium text-[#3F4765] pl-2">
                       {row.dateOfInvestment}
                     </div>
-                    <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                    <div className="w-36 text-[13px] font-medium text-[#3F4765]">
                       {row.currentCost}
                     </div>
-                    <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                    <div className="w-36 text-[13px] font-medium text-[#3F4765]">
                       {row.currentXIRR}
                     </div>
-                    <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                    <div className="w-36 text-[13px] font-medium text-[#3F4765]">
                       {row.aum}
                     </div>
-                    <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                    <div className="w-36 text-[13px] font-medium text-[#3F4765]">
                       {row.expenseRatio}
                     </div>
-                    <div className=" w-36 items-center">
+                    <div className="w-36 items-center">
                       <Image
                         src={row.statistic}
                         alt="Statistic"
@@ -1607,8 +1720,8 @@ export default function Dashboard() {
                         className="h-auto w-auto max-w-full"
                       />
                     </div>
-                    <div className=" w-36">
-                      <button className="  md:block text-[#35B26B] border border-[#35B26B] rounded-md px-2 hover:bg-[#e8f5eb] text-sm">
+                    <div className="w-36">
+                      <button className="md:block text-[#35B26B] border border-[#35B26B] rounded-md px-2 hover:bg-[#e8f5eb] text-sm">
                         More Details
                       </button>
                     </div>
@@ -1617,7 +1730,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="flex items-center justify-center space-x-2 mt-5">
+            <div className="flex items-center justify-center space-x-2 my-5">
               {/* Previous Button */}
               <button
                 className="w-10 h-10 flex items-center justify-center bg-gray-400 text-white rounded-lg"
@@ -1694,40 +1807,50 @@ export default function Dashboard() {
 
             <div className="w-full overflow-x-auto">
               <div className="min-w-max mt-4">
-                <div className="flex bg-[#F5F5F5] font-normal text-sm text-[#848CA9] border rounded-md  ">
+                <div className="flex bg-[#F5F5F5] font-normal text-sm text-[#848CA9] border rounded-md">
                   {headers.map((header, index) => (
-                    <div key={index} className="p-2 w-36 text-left">
-                      {header}
+                    <div
+                      key={index}
+                      className={`p-2 w-36 text-left ${
+                        index === 0 ? "sticky left-0 bg-[#F5F5F5] z-10" : ""
+                      } ${
+                        index === 1
+                          ? "sticky left-36 bg-[#F5F5F5] z-10 font-semibold"
+                          : "font-semibold"
+                      }`}
+                    >
+                      {`${header}`}
                     </div>
                   ))}
                 </div>
+
                 {dummyData.map((row, rowIndex) => (
                   <div
                     key={rowIndex}
-                    className="flex border-b items-center justify-between px-2"
+                    className="flex border-b items-center justify-between bg-[#DBDDF659] p-1"
                   >
-                    <div className="p-0 w-36 line-clamp-2 overflow-hidden text-ellipsis break-all text-[13px] font-medium text-[#3F4765]">
+                    <div className="p-3 w-36 line-clamp-2 overflow-hidden text-ellipsis break-all text-[13px] font-medium text-[#3F4765] sticky left-0 bg-white z-10">
                       {row.name}
                     </div>
-                    <div className=" w-36 text-[13px] font-medium text-[#3F4765]">
+                    <div className="p-3 w-36 text-[13px] font-medium text-[#3F4765] sticky left-36 bg-white z-10">
                       {row.category}
                     </div>
-                    <div className=" w-36 text-[13px] font-medium  text-[#3F4765] ">
+                    <div className="w-36 text-[13px] font-medium text-[#3F4765] pl-2">
                       {row.dateOfInvestment}
                     </div>
-                    <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                    <div className="w-36 text-[13px] font-medium text-[#3F4765]">
                       {row.currentCost}
                     </div>
-                    <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                    <div className="w-36 text-[13px] font-medium text-[#3F4765]">
                       {row.currentXIRR}
                     </div>
-                    <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                    <div className="w-36 text-[13px] font-medium text-[#3F4765]">
                       {row.aum}
                     </div>
-                    <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                    <div className="w-36 text-[13px] font-medium text-[#3F4765]">
                       {row.expenseRatio}
                     </div>
-                    <div className=" w-36 items-center">
+                    <div className="w-36 items-center">
                       <Image
                         src={row.statistic}
                         alt="Statistic"
@@ -1736,8 +1859,8 @@ export default function Dashboard() {
                         className="h-auto w-auto max-w-full"
                       />
                     </div>
-                    <div className=" w-36">
-                      <button className="  md:block text-[#35B26B] border border-[#35B26B] rounded-md px-2 hover:bg-[#e8f5eb] text-sm">
+                    <div className="w-36">
+                      <button className="md:block text-[#35B26B] border border-[#35B26B] rounded-md px-2 hover:bg-[#e8f5eb] text-sm">
                         More Details
                       </button>
                     </div>
@@ -1921,40 +2044,50 @@ export default function Dashboard() {
 
               <div className="w-full overflow-x-auto">
                 <div className="min-w-max mt-4">
-                  <div className="flex bg-[#F5F5F5] font-normal text-sm text-[#848CA9] border rounded-md  ">
+                  <div className="flex bg-[#F5F5F5] font-normal text-sm text-[#848CA9] border rounded-md">
                     {headers.map((header, index) => (
-                      <div key={index} className="p-2 w-36 text-left">
-                        {header}
+                      <div
+                        key={index}
+                        className={`p-2 w-36 text-left ${
+                          index === 0 ? "sticky left-0 bg-[#F5F5F5] z-10" : ""
+                        } ${
+                          index === 1
+                            ? "sticky left-36 bg-[#F5F5F5] z-10 font-semibold"
+                            : "font-semibold"
+                        }`}
+                      >
+                        {`${header}`}
                       </div>
                     ))}
                   </div>
+
                   {dummyData.map((row, rowIndex) => (
                     <div
                       key={rowIndex}
-                      className="flex border-b items-center justify-between px-2"
+                      className="flex border-b items-center justify-between bg-[#DBDDF659] p-1"
                     >
-                      <div className="p-0 w-36 line-clamp-2 overflow-hidden text-ellipsis break-all text-[13px] font-medium text-[#3F4765]">
+                      <div className="p-3 w-36 line-clamp-2 overflow-hidden text-ellipsis break-all text-[13px] font-medium text-[#3F4765] sticky left-0 bg-white z-10">
                         {row.name}
                       </div>
-                      <div className=" w-36 text-[13px] font-medium text-[#3F4765]">
+                      <div className="p-3 w-36 text-[13px] font-medium text-[#3F4765] sticky left-36 bg-white z-10">
                         {row.category}
                       </div>
-                      <div className=" w-36 text-[13px] font-medium  text-[#3F4765] ">
+                      <div className="w-36 text-[13px] font-medium text-[#3F4765] pl-2">
                         {row.dateOfInvestment}
                       </div>
-                      <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                      <div className="w-36 text-[13px] font-medium text-[#3F4765]">
                         {row.currentCost}
                       </div>
-                      <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                      <div className="w-36 text-[13px] font-medium text-[#3F4765]">
                         {row.currentXIRR}
                       </div>
-                      <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                      <div className="w-36 text-[13px] font-medium text-[#3F4765]">
                         {row.aum}
                       </div>
-                      <div className=" w-36 text-[13px] font-medium  text-[#3F4765]">
+                      <div className="w-36 text-[13px] font-medium text-[#3F4765]">
                         {row.expenseRatio}
                       </div>
-                      <div className=" w-36 items-center">
+                      <div className="w-36 items-center">
                         <Image
                           src={row.statistic}
                           alt="Statistic"
@@ -1963,8 +2096,8 @@ export default function Dashboard() {
                           className="h-auto w-auto max-w-full"
                         />
                       </div>
-                      <div className=" w-36">
-                        <button className="  md:block text-[#35B26B] border border-[#35B26B] rounded-md px-2 hover:bg-[#e8f5eb] text-sm">
+                      <div className="w-36">
+                        <button className="md:block text-[#35B26B] border border-[#35B26B] rounded-md px-2 hover:bg-[#e8f5eb] text-sm">
                           More Details
                         </button>
                       </div>
@@ -2008,7 +2141,7 @@ export default function Dashboard() {
           </>
         ) : null}
 
-        {activeIndex === 2 && activeIndexSecond === 0 ? (
+        {activeIndex === 2 ? (
           <div className="flex flex-col md:flex-row w-full justify-between px-4 sm:px-6 lg:px-28">
             {/* First div with 70% width on medium and larger screens */}
             <div className="w-full md:w-[70%] flex flex-wrap justify-between h-auto md:h-52">
@@ -2032,16 +2165,22 @@ export default function Dashboard() {
                   </div>
 
                   {/* Second Content */}
-                  <div className="flex space-x-4">
-                    {["USD", "24 Hours"].map((option, idx) => (
-                      <div
-                        key={idx}
-                        // onClick={() => handleClickTime(idx)}
-                        className={`px-4 py-1 cursor-pointer rounded-lg text-transparent bg-clip-text text-xs font-medium flex justify-center items-center bg-[#949595]`}
-                      >
-                        {`${option}  ▼`}
-                      </div>
-                    ))}
+                  <div className="flex gap-4">
+                    <select className="border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700">
+                      <option className="bg-white text-black">USD</option>
+                      <option className="bg-white text-black">USD</option>
+                      <option className="bg-white text-black">USD</option>
+                    </select>
+
+                    <select className="border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700">
+                      <option className="bg-white text-black">24 Hours</option>
+                      <option className="bg-white text-black">24 Hours</option>
+                      <option className="bg-white text-black">24 Hours</option>
+                    </select>
+
+                    <div className="border bg-gray-100 text-gray-700 rounded-3xl text-xs sm:text-sm lg:text-base px-4 py-2 focus:outline-none focus:ring-2 focus:ring-fuchsia-700 hover:bg-gray-200 flex justify-center items-center cursor-pointer">
+                      See All
+                    </div>
                   </div>
                 </div>
                 {/* Table Header */}
