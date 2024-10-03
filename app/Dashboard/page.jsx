@@ -29,8 +29,8 @@ export default function Dashboard() {
     "Equity",
     "Hybrid",
     "Debt",
-    "AMC",
     "Comparison",
+    "AMC",
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);
