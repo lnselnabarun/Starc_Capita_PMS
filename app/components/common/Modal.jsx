@@ -12,6 +12,8 @@ const Modal = ({
 }) => {
   const modalRef = useRef();
   const [otpSectionVisible, setotpSectionVisible] = useState(false);
+ 
+ 
   const handleClickOutside = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
       setShowModal(false);
@@ -55,6 +57,7 @@ const Modal = ({
 
   const handleClick = () => {
     // Navigate to the desired page
+    localStorage.setItem('myData', JSON.stringify(formData?.phoneNumber));
     setShowModal(false)
     router.push('/Dashboard');
   };

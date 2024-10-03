@@ -13,6 +13,15 @@ const config: Config = {
         foreground: "var(--foreground)",
       },
     },
+    keyframes: {
+      fadeIn: {
+        '0%': { opacity: '0' }, // wrap opacity value in quotes
+        '100%': { opacity: '1' }, // wrap opacity value in quotes
+      },
+    },
+    animation: {
+      fadeIn: 'fadeIn 2s ease-in-out',  // ensure the duration is a string
+    },
   },
   plugins: [],
 };
