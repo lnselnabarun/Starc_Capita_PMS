@@ -92,8 +92,6 @@ const App = () => {
   useEffect(() => {
     if (state === true && typeof savedData === 'string') {
       router.push("/Dashboard");
-    } else if (state === true && typeof savedData !== 'string') {
-      router.push("/");
     }
   }, [state, savedData]);
 
