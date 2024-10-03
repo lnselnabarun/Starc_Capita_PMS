@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 
 const App = () => {
   const [showModal, setShowModal] = useState(false);
+  const [savedData, setSavedData] = useState(null); // Track localStorage data
   const [state, setState] = useState(null);
   useEffect(() => {
     // Set a timeout to change state after 2 seconds (2000ms)
@@ -77,17 +78,21 @@ const App = () => {
   // const handleOpenModal = () => {
   //   setShowModal(!showModal);
   // };
-
+  useEffect(() => {
+    // Check if localStorage is available (client-side only)
+    if (typeof window !== "undefined") {
+      const data = localStorage.getItem('myData');
+      setSavedData(data);
+    }
+  }, []);
   const handleOpenModal = () => {
     setShowModal(!showModal);
   };
-  const savedData = localStorage.getItem('myData');
-  console.log(showModal,typeof(savedData),state, "Hero not in view");
 
   useEffect(() => {
-    if (state === true && typeof(savedData) === 'string') {
+    if (state === true && typeof savedData === 'string') {
       router.push("/Dashboard");
-    } else if (state === true && typeof(savedData) !== 'string') {
+    } else if (state === true && typeof savedData !== 'string') {
       router.push("/");
     }
   }, [state, savedData]);
