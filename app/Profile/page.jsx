@@ -1,5 +1,4 @@
-// pages/profile.js
-"use client";
+"use client"
 import React, { useState } from "react";
 import Image from "next/image";
 import {
@@ -10,8 +9,10 @@ import {
   Edit2,
   Save,
   ArrowLeft,
+  LogOut
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+
 const UserProfile = () => {
   // Mock initial user data
   const initialUser = {
@@ -19,10 +20,10 @@ const UserProfile = () => {
     email: "nabarun.lnsel@.com",
     address: "123 Main St, Anytown, USA",
     family: ["Jane Doe", "Jimmy Doe", "Jenny Doe"],
-    coverImage: require("../assets/logo/Rectangle_5.png"),
-    profileImage: require("../assets/logo/User_Icon.png"),
+    coverImage: require('../assets/logo/Rectangle_5.png'),
+    profileImage: require('../assets/logo/User_Icon.png'),
   };
-  const route = useRouter();
+  const router = useRouter();
 
   const [user, setUser] = useState(initialUser);
   const [isEditing, setIsEditing] = useState(false);
@@ -31,12 +32,6 @@ const UserProfile = () => {
     const { name, value } = e.target;
     setUser((prevUser) => ({ ...prevUser, [name]: value }));
   };
-
-  // const handleFamilyChange = (index, value) => {
-  //   const newFamily = [...user.family];
-  //   newFamily[index] = value;
-  //   setUser((prevUser) => ({ ...prevUser, family: newFamily }));
-  // };
 
   const toggleEdit = () => {
     setIsEditing(!isEditing);
@@ -47,10 +42,18 @@ const UserProfile = () => {
     console.log("Saving user data:", user);
     setIsEditing(false);
   };
+
   const handleBack = () => {
-    // Implement your back navigation logic here
-    route.back();
-    console.log("Navigating back");
+    router.back();
+  };
+
+  const handleLogout = () => {
+    // Implement logout logic here
+    // For example, clear local storage, reset auth state, etc.
+    localStorage.clear();
+    console.log("Logging out...");
+    // Redirect to login page or home page
+    router.push("/"); // Adjust this to your app's login route
   };
 
   return (
@@ -162,7 +165,7 @@ const UserProfile = () => {
           </div>
 
           {/* Edit/Save Button */}
-          <div className="p-4 sm:p-6 lg:p-8 border-t border-gray-200">
+          <div className="p-4 sm:p-6 lg:p-8 border-t border-gray-200 space-y-4">
             <button
               onClick={isEditing ? handleSave : toggleEdit}
               className="w-full bg-gradient-to-r from-fuchsia-950 to-[#5E2751] text-white py-3 px-6 rounded-lg hover:from-blue-600 hover:to-blue-700 transition duration-300 flex items-center justify-center text-lg font-semibold shadow-md"
@@ -176,6 +179,14 @@ const UserProfile = () => {
                   <Edit2 size={20} className="mr-2" /> Edit Profile
                 </>
               )}
+            </button>
+            
+            {/* Logout Button */}
+            <button
+              onClick={handleLogout}
+              className="w-full bg-red-500 text-white py-3 px-6 rounded-lg hover:bg-red-600 transition duration-300 flex items-center justify-center text-lg font-semibold shadow-md"
+            >
+              <LogOut size={20} className="mr-2" /> Logout
             </button>
           </div>
         </div>

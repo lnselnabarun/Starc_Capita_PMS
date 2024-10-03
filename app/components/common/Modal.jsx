@@ -140,7 +140,7 @@ const Modal = ({
                   <div className="mt-6 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                     {/* Submit button */}
                     <button
-                      className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors`}
+                      className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors text-white`}
                       type="submit"
                     >
                       Submit

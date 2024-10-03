@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -7,6 +6,7 @@ import Navbar from "../components/Navbar";
 import Modal from "../components/common/Modal";
 
 const SignUp = () => {
+  
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [errors, setErrors] = useState({});
