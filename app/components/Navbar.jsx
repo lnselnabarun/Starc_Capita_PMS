@@ -15,7 +15,9 @@ const Navbar = ({onpress}) => {
               index === navLinks.length - 1 ? "mr-0" : "mr-10"
             } text-neutral-900 `}
           >
-            <a href={`#${nav.id}`}>{nav.title}</a>
+           <Link href={`/${nav?.id}`} className="block">
+             {nav.title}
+           </Link>
           </li>
         ))}
       </ul>
@@ -36,15 +38,17 @@ const Navbar = ({onpress}) => {
       >
         <ul className="list-none flex flex-col justify-end items-center flex-1">
           {navLinks.map((nav, index) => (
-            <li
-              onClick={() => setToggle(false)}
-              key={nav.id}
-              className={` text-neutral-900 font-poppins font-medium  cursor-pointer text[16px] ${
-                index === navLinks.length - 1 ? "mb-0" : "mb-4"
-              } text-neutral-900 `}
-            >
-              <a href={`#${nav.id}`}>{nav.title}</a>
-            </li>
+           <li
+           onClick={() => setToggle(false)}
+           key={nav.id}
+           className={`text-neutral-900 font-poppins font-medium cursor-pointer text-[16px] ${
+             index === navLinks.length - 1 ? "mb-0" : "mb-4"
+           } text-neutral-900`}
+         >
+           <Link href={`/${nav.title}`} className="block">
+             {nav.title}
+           </Link>
+         </li>
           ))}
         </ul>
       </div>

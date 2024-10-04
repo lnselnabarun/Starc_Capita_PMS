@@ -3,17 +3,10 @@
 import React, { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 
-const Modal = ({
-  showModal,
-  setShowModal,
-  handleChange,
-  formData,
-  router
-}) => {
+const Modal = ({ showModal, setShowModal, handleChange, formData, router }) => {
   const modalRef = useRef();
   const [otpSectionVisible, setotpSectionVisible] = useState(false);
- 
- 
+
   const handleClickOutside = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
       setShowModal(false);
@@ -57,9 +50,9 @@ const Modal = ({
 
   const handleClick = () => {
     // Navigate to the desired page
-    localStorage.setItem('myData', JSON.stringify(formData?.phoneNumber));
-    setShowModal(false)
-    router.push('/Dashboard');
+    localStorage.setItem("myData", JSON.stringify(formData?.phoneNumber));
+    setShowModal(false);
+    router.push("/Dashboard");
   };
 
   return (
@@ -79,29 +72,30 @@ const Modal = ({
                 objectFit="cover" // Ensures the image covers the entire container
                 className="rounded-t-lg md:rounded-l-lg md:rounded-tr-none"
               />
-               <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+              <div className="absolute inset-0 bg-black bg-opacity-40"></div>
             </div>
 
             {/* Right side content */}
             <div className="w-full md:w-3/4 bg-white p-6 rounded-b-lg md:rounded-r-lg relative">
-
               {/* Header */}
               <h2 className="text-2xl font-bold mb-3 text-gray-800 text-left">
                 Login
               </h2>
               {otpSectionVisible === false ? (
                 <form
-                // onClick={() => {
-                //   if (
-                //     formData?.phoneNumber?.length >= 10 &&
-                //     formData?.password >= 8
-                //   ) {
-                //     setotpSectionVisible(true);
-                //   } else {
-                //     setShowModal(true);
-                //   };
-                // }}
-                  onSubmit={() => { setotpSectionVisible(true) }}
+                  // onClick={() => {
+                  //   if (
+                  //     formData?.phoneNumber?.length >= 10 &&
+                  //     formData?.password >= 8
+                  //   ) {
+                  //     setotpSectionVisible(true);
+                  //   } else {
+                  //     setShowModal(true);
+                  //   };
+                  // }}
+                  onSubmit={() => {
+                    setotpSectionVisible(true);
+                  }}
                 >
                   <div className="space-y-4">
                     {/* Email input */}
