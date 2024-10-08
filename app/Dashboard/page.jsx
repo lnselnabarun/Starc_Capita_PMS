@@ -1,4 +1,5 @@
 // Dashboard.js
+
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
@@ -173,12 +174,12 @@ export default function Dashboard() {
 
         {activeIndex === 1 && activeIndexSecond === 4 ? (
           <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
-            AMC
+            Comparison
           </span>
         ) : null}
         {activeIndex === 1 && activeIndexSecond === 5 ? (
           <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
-            Comparison
+            AMC
           </span>
         ) : null}
         {activeIndex === 2 ? (

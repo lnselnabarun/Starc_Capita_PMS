@@ -88,7 +88,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
       zv: 4200,
     },
   ];
-  console.log(params?.slug, "bbbbbb");
+  
   const allDetails = [
     {
       name: "Name",

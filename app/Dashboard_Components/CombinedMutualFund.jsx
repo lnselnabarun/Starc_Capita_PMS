@@ -1,11 +1,14 @@
 // Dashboard.js
 "use client";
-import React from "react";
+import React, {useState} from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import FilterModal from "../components/common/FilterModal";
 
 export default function CombinedMutualFund() {
   const route = useRouter();
+
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const headers = [
     "Name",
@@ -102,6 +105,10 @@ export default function CombinedMutualFund() {
     // Add more dummy data as needed
   ];
 
+  const toggleFilter = () => {
+    setIsFilterOpen(!isFilterOpen);
+  };
+
   return (
     <>
       <div className="px-4 sm:px-8 md:px-16 lg:px-28 ">
@@ -113,6 +120,15 @@ export default function CombinedMutualFund() {
               </h1>
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                 {/* First Select Box */}
+
+                <div onClick={() => toggleFilter()} className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 space-y-2 sm:space-y-0">
+                <Image
+                    src={require('../assets/logo/FilterModal.png')}
+                    alt="Statistic"
+                    width={70}
+                    height={20}
+                  />
+                </div>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 space-y-2 sm:space-y-0">
                   <span className="font-semibold text-xs sm:text-xs lg:text-xs text-[#3F4765] text-left">
                     Market Cap Distribution:
@@ -201,7 +217,7 @@ export default function CombinedMutualFund() {
                     }
                     className="md:block text-[#35B26B] border border-[#35B26B] rounded-md px-2 hover:bg-[#e8f5eb] text-sm"
                   >
-                    More Details
+                   Detail
                   </button>
                 </div>
               </div>
@@ -241,6 +257,8 @@ export default function CombinedMutualFund() {
           </button>
         </div>
       </div>
+
+      <FilterModal isOpen={isFilterOpen} onClose={toggleFilter} />
     </>
   );
 }

@@ -100,7 +100,7 @@ const EquityDetailsMutualFund = ({ params }) => {
       details: "Unit Value",
     },
     {
-      name: "Date of Investment",
+      name: "DOI",
       details: "QTY Value",
     },
     {

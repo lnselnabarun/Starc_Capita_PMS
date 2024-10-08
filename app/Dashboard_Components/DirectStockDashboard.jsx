@@ -145,7 +145,7 @@ export default function DirectStockDashboard() {
                 {tableData.map((row, index) => (
                   <div
                     key={index}
-                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 bg-[#F5F5F5] text-left p-2 my-2 justify-center items-center rounded-lg"
+                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 bg-[#F5F5F5] text-left p-2 my-2 justify-center items-center rounded-lg mt-4"
                   >
                     <div className="flex items-center space-x-4">
                       {" "}

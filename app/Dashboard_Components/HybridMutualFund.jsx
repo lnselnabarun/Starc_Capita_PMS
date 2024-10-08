@@ -12,8 +12,11 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import FilterModal from "../components/common/FilterModal";
 
 export default function HybridMutualFund() {
+
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   
   const data = [
     {
@@ -183,7 +186,9 @@ export default function HybridMutualFund() {
     },
     // Add more dummy data as needed
   ];
-
+  const toggleFilter = () => {
+    setIsFilterOpen(!isFilterOpen);
+  };
   
   return (
     <>
@@ -285,6 +290,14 @@ export default function HybridMutualFund() {
             </h1>
             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
               {/* First Select Box */}
+              <div onClick={() => toggleFilter()} className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 space-y-2 sm:space-y-0">
+                <Image
+                    src={require('../assets/logo/FilterModal.png')}
+                    alt="Statistic"
+                    width={70}
+                    height={20}
+                  />
+                </div>
               <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 space-y-2 sm:space-y-0">
                 <span className="font-semibold text-xs sm:text-xs lg:text-xs text-[#3F4765] text-left">
                   Market Cap Distribution:
@@ -380,7 +393,7 @@ export default function HybridMutualFund() {
               </div>
               <div className="w-36">
                 <button className="md:block text-[#35B26B] border border-[#35B26B] rounded-md px-2 hover:bg-[#e8f5eb] text-sm">
-                  More Details
+                  Detail
                 </button>
               </div>
             </div>
@@ -420,6 +433,7 @@ export default function HybridMutualFund() {
         </button>
       </div>
     </div>
+    <FilterModal isOpen={isFilterOpen} onClose={toggleFilter} />
   </>
   );
 }
