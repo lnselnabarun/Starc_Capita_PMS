@@ -12,8 +12,10 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { useRouter } from "next/navigation";
 
 export default function DashboardMain() {
+  const router = useRouter();
   const data = [
     {
       name: "JAN",
@@ -340,7 +342,7 @@ export default function DashboardMain() {
                 <option className="bg-white text-black">24 Hours</option>
               </select>
 
-              <div className="border bg-gray-100 text-gray-700 rounded-3xl text-xs sm:text-sm lg:text-base px-4 py-2 focus:outline-none focus:ring-2 focus:ring-fuchsia-700 hover:bg-gray-200 flex justify-center items-center cursor-pointer">
+              <div onClick={() => router.push('/RecentTransactions')} className="border bg-gray-100 text-gray-700 rounded-3xl text-xs sm:text-sm lg:text-base px-4 py-2 focus:outline-none focus:ring-2 focus:ring-fuchsia-700 hover:bg-gray-200 flex justify-center items-center cursor-pointer">
                 See All
               </div>
             </div>
@@ -434,7 +436,7 @@ export default function DashboardMain() {
                 <option className="bg-white text-black">24 Hours</option>
               </select>
 
-              <div className="border bg-gray-100 text-gray-700 rounded-3xl text-xs sm:text-sm lg:text-base px-4 py-2 focus:outline-none focus:ring-2 focus:ring-fuchsia-700 hover:bg-gray-200 flex justify-center items-center cursor-pointer">
+              <div  onClick={() => router.push('/SystematicTransactions')} className="border bg-gray-100 text-gray-700 rounded-3xl text-xs sm:text-sm lg:text-base px-4 py-2 focus:outline-none focus:ring-2 focus:ring-fuchsia-700 hover:bg-gray-200 flex justify-center items-center cursor-pointer">
                 See All
               </div>
             </div>
@@ -706,7 +708,7 @@ export default function DashboardMain() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-4 justify-between mt-6">
+          <div  onClick={() =>router.push('/Newslist')} className="flex items-center space-x-4 justify-between mt-6 p-4 rounded-lg transition-all duration-300 ease-in-out hover:bg-gray-100 hover:shadow-md">
             <div className="font-sans text-lg sm:text-base md:text-lg font-medium leading-5 text-left text-[#3F4765]">
               News
             </div>

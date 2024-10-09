@@ -13,9 +13,10 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Chart } from "react-google-charts";
+import { useRouter } from "next/navigation";
 
 export default function AnalysisMain() {
-  
+  const router = useRouter();
   const google_charts_data = [
     ["Task", "Hours per Day"],
     ["Equity", 13],
@@ -587,14 +588,14 @@ export default function AnalysisMain() {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4 justify-between mt-6">
-                <div className="font-sans text-lg sm:text-base md:text-lg font-medium leading-5 text-left text-[#3F4765]">
-                  News
-                </div>
-                <div className="font-sans text-sm sm:text-base md:text-sm font-medium leading-5 text-left text-[#969CCB]">
-                  See All
-                </div>
-              </div>
+              <div  onClick={() =>router.push('/Newslist')} className="flex items-center space-x-4 justify-between mt-6 p-4 rounded-lg transition-all duration-300 ease-in-out hover:bg-gray-100 hover:shadow-md">
+            <div className="font-sans text-lg sm:text-base md:text-lg font-medium leading-5 text-left text-[#3F4765]">
+              News
+            </div>
+            <div className="font-sans text-sm sm:text-base md:text-sm font-medium leading-5 text-left text-[#969CCB]">
+              See All
+            </div>
+          </div>
               {tableData?.map((item) => {
                 return (
                   <div
