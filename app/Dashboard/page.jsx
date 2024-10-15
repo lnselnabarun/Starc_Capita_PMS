@@ -11,9 +11,9 @@ import CombinedMutualFund from "../Dashboard_Components/CombinedMutualFund";
 import EquityMutualFund from "../Dashboard_Components/EquityMutualFund";
 import HybridMutualFund from "../Dashboard_Components/HybridMutualFund";
 import DirectStockDashboard from "../Dashboard_Components/DirectStockDashboard";
+import Compare_Mutual_Fund from '../Dashboard_Components/Compare_Mutual_Fund';
 
 export default function Dashboard() {
-
   const menuItems = [
     "Home",
     "Mutual Funds",
@@ -172,11 +172,11 @@ export default function Dashboard() {
           </span>
         ) : null}
 
-        {activeIndex === 1 && activeIndexSecond === 4 ? (
+        {/* {activeIndex === 1 && activeIndexSecond === 4 ? (
           <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
-            Comparison
+            Compare Mutual Funds
           </span>
-        ) : null}
+        ) : null} */}
         {activeIndex === 1 && activeIndexSecond === 5 ? (
           <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
             AMC
@@ -204,6 +204,9 @@ export default function Dashboard() {
 
         {activeIndex === 1 && activeIndexSecond === 2 ? (
           <HybridMutualFund />
+        ) : null}
+         {activeIndex === 1 && activeIndexSecond === 4 ? (
+          <Compare_Mutual_Fund/>
         ) : null}
 
         {activeIndex === 2 ? <DirectStockDashboard /> : null}

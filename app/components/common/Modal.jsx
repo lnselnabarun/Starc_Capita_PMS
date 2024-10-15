@@ -7,6 +7,9 @@ const Modal = ({ showModal, setShowModal, handleChange, formData, router }) => {
   const modalRef = useRef();
   const [otpSectionVisible, setotpSectionVisible] = useState(false);
 
+  const [OpenForgtModal, setOpenForgtModal] = useState(false);
+  const [OpenForgtModalSecond, setOpenForgtModalSecond] = useState(false);
+
   const handleClickOutside = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
       setShowModal(false);
@@ -78,127 +81,342 @@ const Modal = ({ showModal, setShowModal, handleChange, formData, router }) => {
             {/* Right side content */}
             <div className="w-full md:w-3/4 bg-white p-6 rounded-b-lg md:rounded-r-lg relative">
               {/* Header */}
-              <h2 className="text-2xl font-bold mb-3 text-gray-800 text-left">
-                Login
-              </h2>
-              {otpSectionVisible === false ? (
-                <form
-                  // onClick={() => {
-                  //   if (
-                  //     formData?.phoneNumber?.length >= 10 &&
-                  //     formData?.password >= 8
-                  //   ) {
-                  //     setotpSectionVisible(true);
-                  //   } else {
-                  //     setShowModal(true);
-                  //   };
-                  // }}
-                  onSubmit={() => {
-                    setotpSectionVisible(true);
-                  }}
-                >
-                  <div className="space-y-4">
-                    {/* Email input */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Mobile
-                      </label>
-                      <input
-                        className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
-                        type="tel"
-                        name="phoneNumber"
-                        value={formData.phoneNumber}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-
-                    {/* Password input (Secure Entry) */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Password
-                      </label>
-                      <input
-                        className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                        minLength={8} // Optional: Enforce minimum password length
-                      />
-                    </div>
-                  </div>
-
-                  {/* Submit Button and Forgot Password Link */}
-                  <div className="mt-6 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                    {/* Submit button */}
-                    <button
-                      className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors text-white`}
-                      type="submit"
-                    >
-                      Submit
-                    </button>
-
-                    {/* Forgot password text */}
-                    <p className="text-fuchsia-950 font-semibold text-sm cursor-pointer">
-                      Forgot your password?
-                    </p>
-                  </div>
-                </form>
-              ) : (
+              {showModal &&
+              OpenForgtModal === false &&
+              OpenForgtModalSecond === false ? (
                 <>
-                  <label className="block text-sm font-semibold text-gray-700">
-                    Enter Verification code
-                  </label>
-                  <label className="block text-sm font-medium text-[#484848] mt-2">
-                    {`We are automatically detecting a SMS`}
-                  </label>
-                  <label className="block text-sm font-medium text-[#484848] mb-2">
-                    {`send to your mobile Number ${formData?.phoneNumber}`}
-                  </label>
-
-                  <div className="flex space-x-2 sm:space-x-4">
-                    {otp?.map((data, index) => (
-                      <input
-                        key={index}
-                        type="text"
-                        ref={inputRefs[index]}
-                        value={data}
-                        onChange={(e) => handleChangeOTP(e.target, index)}
-                        onKeyDown={(e) => handleKeyDown(e, index)}
-                        className="w-12 h-12 sm:w-16 sm:h-16 text-2xl text-center border-2 border-gray-300 rounded-lg focus:border-x-fuchsia-950 focus:outline-none transition-colors text-black"
-                        maxLength={1}
-                      />
-                    ))}
-                  </div>
-                  <div className="flex w-full max-w-md mx-auto my-2">
-                    <span className="text-[#484848] font-medium text-sm font-serif ">
-                      Dont receive the OTP?{" "}
-                    </span>
-                    <span className="text-[#5E2751] font-semibold text-sm font-serif ml-1 ">
-                      RESEND OTP
-                    </span>
-                  </div>
-                  {/* Submit Button and Forgot Password Link */}
-                  <div className="mt-6 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                    {/* Submit button */}
-                    <button
-                      onClick={handleClick}
-                      className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors text-white`}
-                      type="submit"
+                  <h2 className="text-2xl font-bold mb-3 text-gray-800 text-left">
+                    Login
+                  </h2>
+                  {otpSectionVisible === false ? (
+                    <form
+                      // onClick={() => {
+                      //   if (
+                      //     formData?.phoneNumber?.length >= 10 &&
+                      //     formData?.password >= 8
+                      //   ) {
+                      //     setotpSectionVisible(true);
+                      //   } else {
+                      //     setShowModal(true);
+                      //   };
+                      // }}
+                      onSubmit={() => {
+                        setotpSectionVisible(true);
+                      }}
                     >
-                      Submit
-                    </button>
+                      <div className="space-y-4">
+                        {/* Email input */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">
+                            Mobile
+                          </label>
+                          <input
+                            className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
+                            type="tel"
+                            name="phoneNumber"
+                            value={formData.phoneNumber}
+                            onChange={handleChange}
+                            required
+                          />
+                        </div>
 
-                    {/* Forgot password text */}
-                    <p className="text-fuchsia-950 font-semibold text-sm cursor-pointer">
-                      Forgot your password?
-                    </p>
-                  </div>
+                        {/* Password input (Secure Entry) */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">
+                            Password
+                          </label>
+                          <input
+                            className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required
+                            minLength={8} // Optional: Enforce minimum password length
+                          />
+                        </div>
+                      </div>
+
+                      {/* Submit Button and Forgot Password Link */}
+                      <div className="mt-6 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                        {/* Submit button */}
+                        <button
+                          className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors text-white`}
+                          type="submit"
+                        >
+                          Submit
+                        </button>
+
+                        {/* Forgot password text */}
+                        <p
+                          onClick={() => setOpenForgtModal(true)}
+                          className="text-fuchsia-950 font-semibold text-sm cursor-pointer"
+                        >
+                          Forgot your password?
+                        </p>
+                      </div>
+                    </form>
+                  ) : (
+                    <>
+                      <label className="block text-sm font-semibold text-gray-700">
+                        Enter Verification code
+                      </label>
+                      <label className="block text-sm font-medium text-[#484848] mt-2">
+                        {`We are automatically detecting a SMS`}
+                      </label>
+                      <label className="block text-sm font-medium text-[#484848] mb-2">
+                        {`send to your mobile Number ${formData?.phoneNumber}`}
+                      </label>
+
+                      <div className="flex space-x-2 sm:space-x-4">
+                        {otp?.map((data, index) => (
+                          <input
+                            key={index}
+                            type="text"
+                            ref={inputRefs[index]}
+                            value={data}
+                            onChange={(e) => handleChangeOTP(e.target, index)}
+                            onKeyDown={(e) => handleKeyDown(e, index)}
+                            className="w-12 h-12 sm:w-16 sm:h-16 text-2xl text-center border-2 border-gray-300 rounded-lg focus:border-x-fuchsia-950 focus:outline-none transition-colors text-black"
+                            maxLength={1}
+                          />
+                        ))}
+                      </div>
+                      <div className="flex w-full max-w-md mx-auto my-2">
+                        <span className="text-[#484848] font-medium text-sm font-serif ">
+                          Dont receive the OTP?{" "}
+                        </span>
+                        <span className="text-[#5E2751] font-semibold text-sm font-serif ml-1 ">
+                          RESEND OTP
+                        </span>
+                      </div>
+                      {/* Submit Button and Forgot Password Link */}
+                      <div className="mt-6 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                        {/* Submit button */}
+                        <button
+                          onClick={handleClick}
+                          className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors text-white`}
+                          type="submit"
+                        >
+                          Submit
+                        </button>
+
+                        {/* Forgot password text */}
+                        <p className="text-fuchsia-950 font-semibold text-sm cursor-pointer">
+                          Forgot your password?
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </>
-              )}
-              {/* Form */}
+              ) : null}
+
+              {showModal &&
+              OpenForgtModal === true &&
+              OpenForgtModalSecond === false ? (
+                <>
+                  <h2 className="text-2xl font-bold mb-3 text-gray-800 text-left">
+                    Forgot Password?
+                  </h2>
+
+                  <form
+                    // onClick={() => {
+                    //   if (
+                    //     formData?.phoneNumber?.length >= 10 &&
+                    //     formData?.password >= 8
+                    //   ) {
+                    //     setotpSectionVisible(true);
+                    //   } else {
+                    //     setShowModal(true);
+                    //   };
+                    // }}
+                    onSubmit={() => {
+                      setotpSectionVisible(true);
+                    }}
+                  >
+                    <div className="">
+                      {/* Email input */}
+                      <label className="block text-sm font-normal text-gray-700">
+                        Enter your Phone number, and
+                      </label>
+
+                      <label className="block text-sm font-normal text-gray-700 mb-2">
+                        we'll give you reset instruction.
+                      </label>
+                      {/* Password input (Secure Entry) */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Mobile
+                        </label>
+                        <input
+                          className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
+                          type="tel"
+                          name="phoneNumber"
+                          value={formData.phoneNumber}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* Submit Button and Forgot Password Link */}
+                    <div className="mt-6 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                      {/* Submit button */}
+                      <button
+                        onClick={() => {
+                          setOpenForgtModal(false),
+                            setotpSectionVisible(false),
+                            setOpenForgtModalSecond(true);
+                        }}
+                        className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors text-white`}
+                        type="submit"
+                      >
+                        Send New Password
+                      </button>
+
+                      {/* Forgot password text */}
+                      {/* <p onClick={() =>{setOpenForgtModal(false), setotpSectionVisible(false), setOpenForgtModalSecond(false)}} className="text-fuchsia-950 font-semibold text-sm cursor-pointer">
+                         Back To Login
+                        </p> */}
+                      <div
+                        onClick={() => {
+                          setOpenForgtModal(false),
+                            setotpSectionVisible(false),
+                            setOpenForgtModalSecond(false);
+                        }}
+                        className=""
+                      >
+                        <span className="text-[#484848] font-medium text-sm font-serif ">
+                          Back To
+                        </span>
+                        <span className="text-[#5E2751] font-semibold text-sm font-serif ml-1 ">
+                          Login
+                        </span>
+                      </div>
+                    </div>
+                  </form>
+                </>
+              ) : null}
+
+              {showModal &&
+              OpenForgtModal === false &&
+              OpenForgtModalSecond === true ? (
+                <>
+                  <h2 className="text-2xl font-bold mb-3 text-gray-800 text-left">
+                    Reset Password
+                  </h2>
+
+                  <form
+                    // onClick={() => {
+                    //   if (
+                    //     formData?.phoneNumber?.length >= 10 &&
+                    //     formData?.password >= 8
+                    //   ) {
+                    //     setotpSectionVisible(true);
+                    //   } else {
+                    //     setShowModal(true);
+                    //   };
+                    // }}
+                    onSubmit={() => {
+                      setotpSectionVisible(true);
+                    }}
+                  >
+                    <div className="">
+                      {/* Email input */}
+                      <label className="block text-sm font-normal text-gray-700">
+                        Enter your Phone number, and
+                      </label>
+
+                      <label className="block text-sm font-normal text-gray-700 mb-2">
+                        we'll give you reset instruction.
+                      </label>
+                      {/* Password input (Secure Entry) */}
+                      <div className="space-y-4">
+                        {/* Email input */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">
+                            New Password
+                          </label>
+                          <input
+                            className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required
+                            minLength={8} // Optional: Enforce minimum password length
+                          />
+                        </div>
+
+                        {/* Password input (Secure Entry) */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">
+                            Confirm Password
+                          </label>
+                          <input
+                            className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required
+                            minLength={8} // Optional: Enforce minimum password length
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Submit Button and Forgot Password Link */}
+                    <div className="mt-6 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                      {/* Submit button */}
+                      <div className="flex flex-row justify-center">
+                        <button
+                          onClick={() => {
+                            setOpenForgtModal(false),
+                              setotpSectionVisible(false),
+                              setOpenForgtModalSecond(true);
+                            handleClick();
+                          }}
+                          className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors text-white mr-2`}
+                          type="submit"
+                        >
+                          Continue
+                        </button>
+                        <button
+                          onClick={() => {
+                            setOpenForgtModal(false),
+                              setotpSectionVisible(false),
+                              setOpenForgtModalSecond(false);
+                          }}
+                          className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-white rounded-full flex hover:bg-[#5E2751] transition-colors text-[#5E2751] border border-[#5E2751] shadow-sm`}
+                          type="submit"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                      {/* Forgot password text */}
+                      {/* <p onClick={() =>{setOpenForgtModal(false), setotpSectionVisible(false), setOpenForgtModalSecond(false)}} className="text-fuchsia-950 font-semibold text-sm cursor-pointer">
+                         Back To Login
+                        </p> */}
+                      <div
+                        onClick={() => {
+                          setOpenForgtModal(false),
+                            setotpSectionVisible(false),
+                            setOpenForgtModalSecond(false);
+                        }}
+                        className=""
+                      >
+                        <span className="text-[#484848] font-medium text-sm font-serif ">
+                          Back To
+                        </span>
+                        <span className="text-[#5E2751] font-semibold text-sm font-serif ml-1 ">
+                          Login
+                        </span>
+                      </div>
+                    </div>
+                  </form>
+                </>
+              ) : null}
             </div>
           </div>
         </div>
