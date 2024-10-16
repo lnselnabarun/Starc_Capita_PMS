@@ -225,7 +225,7 @@ export default function CombinedMutualFund() {
           </div>
         </div>
 
-        <div className="flex items-center justify-center space-x-2 my-5">
+        <div className="flex items-center justify-center space-x-2 my-10">
           {/* Previous Button */}
           <button
             className="w-10 h-10 flex items-center justify-center bg-gray-400 text-white rounded-lg"

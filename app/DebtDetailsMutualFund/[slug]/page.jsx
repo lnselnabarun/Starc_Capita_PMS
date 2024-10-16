@@ -13,7 +13,7 @@ import {
 } from "recharts";
 import { useRouter } from "next/navigation";
 
-const CombinedDetailsMutualFund = ({ params }) => {
+const DebtDetailsMutualFund = ({ params }) => {
   const [activeButton, setActiveButton] = useState("capture");
   const route = useRouter();
   const data = [
@@ -88,7 +88,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
       zv: 4200,
     },
   ];
-  
+
   const allDetails = [
     {
       name: "Name",
@@ -195,19 +195,18 @@ const CombinedDetailsMutualFund = ({ params }) => {
   return (
     <div className="min-h-screen  bg-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="px-4 sm:px-8 md:px-16 lg:px-28">
-        {/* Fund Title */}
         <div className="flex items-center font-medium text-lg sm:text-xl md:text-2xl text-[#25282C] font-sans pb-10">
           <button
+            aria-label="Go-back"
             onClick={handleBack}
-            className=" mr-5 bg-white text-gray-800 p-2 rounded-full shadow-md flex items-center z-10 hover:bg-white transition duration-300"
-            aria-label="Go back"
+            className=" mr-5 bg-white text-gray-800 p-2 rounded-full shadow-md flex items-center z-10 hover:bg-white transition duration-300 "
           >
             <ArrowLeft size={24} />
           </button>
-          <div className="text-black">Canara Robeco Bluechip Combind Mutual Fund</div>
+          <div className="text-lg sm:text-xl md:text-2xl font-bold text-center text-gray-600">
+            Canara Robeco Bluechip Combined Debt Details
+          </div>
         </div>
-
-        {/* Main Container */}
         <div className="w-full flex flex-wrap gap-4 p-4 rounded-lg border-[1.5px] border-[#D9D9D9] bg-white">
           {/* First Content: Bold Text */}
           <div className="w-full flex flex-wrap justify-between gap-4 h-auto">
@@ -309,16 +308,17 @@ const CombinedDetailsMutualFund = ({ params }) => {
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="font-medium text-lg sm:text-xl md:text-2xl text-[#25282C] font-sans py-4">
-          All Details
+        <div className=" font-medium text-lg sm:text-xl md:text-2xl text-[#25282C] font-sans py-4">
+        All Details
         </div>
         <div className="flex flex-wrap justify-between">
-          {allDetails.map((detail, index) => (
+        {allDetails.map((detail, index) => {
+          return (
             <div
               key={index}
               className="w-full md:w-[48%] mb-4 p-4 rounded-lg bg-[#F5F5F5] shadow-lg transition-all duration-300 ease-in-out hover:transform hover:scale-105 hover:shadow-xl"
             >
-              <div className="flex justify-between items-center">
+               <div className="flex justify-between items-center">
                 <div className="text-[12px] font-semibold text-left text-black">
                   {detail.name}
                 </div>
@@ -327,11 +327,13 @@ const CombinedDetailsMutualFund = ({ params }) => {
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
+      </div>
+     
     </div>
   );
 };
 
-export default CombinedDetailsMutualFund;
+export default DebtDetailsMutualFund;

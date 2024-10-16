@@ -21,6 +21,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/page.jsx", "app/CombinedDetailsMutualFund/[slug]/page.jsx", "tailwind.config.js", "app/Newslist/page.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/page.jsx", "app/CombinedDetailsMutualFund/[slug]/page.jsx", "tailwind.config.js", "app/Newslist/page.jsx", "app/DebtDetailsMutualFund/[slug]/page.jsx"],
   "exclude": ["node_modules"]
 }
