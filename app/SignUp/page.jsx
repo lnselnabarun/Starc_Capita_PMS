@@ -4,12 +4,26 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Navbar from "../components/Navbar";
 import Modal from "../components/common/Modal";
+import OtpVerifyModalSignUp from "../Dashboard_Components/OtpVerifyModalSignUp";
 
 const SignUp = () => {
-  
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [errors, setErrors] = useState({});
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [otpType, setOtpType] = useState("");
+  const [otp, setOtp] = useState("");
+  const handleOTPVerifyClick = (type) => {
+    setOtpType(type);
+    setShowOTPModal(true);
+  };
+  const handleOTPVerify = (otp) => {
+    console.log(`Verifying ${otpType} OTP:`, otp);
+    setOtp('')
+    // Here you would typically send the OTP to your backend for verification
+    // For now, we'll just close the modal
+    setShowOTPModal(false);
+  };
   const [formData, setFormData] = useState({
     fullName: "",
     panNumber: "",
@@ -184,8 +198,7 @@ const SignUp = () => {
                 <button
                   type="button"
                   className="absolute inset-y-0 right-0 px-3 flex items-center bg-fuchsia-100 text-fuchsia-900 rounded-r-md text-sm"
-                  onClick={() => console.log("OTP Verify clicked")}
-                >
+                  onClick={() => handleOTPVerifyClick("mobile")}>
                   OTP Verify
                 </button>
               }
@@ -202,40 +215,51 @@ const SignUp = () => {
                 <button
                   type="button"
                   className="absolute inset-y-0 right-0 px-3 flex items-center bg-fuchsia-100 text-fuchsia-900 rounded-r-md text-sm"
-                  onClick={() => console.log("Email OTP Verify clicked")}
+                  onClick={() => handleOTPVerifyClick("email")}
                 >
                   OTP Verify
                 </button>
               }
             />
 
-            <div>
-              <label
-                htmlFor="family"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Select Family
-              </label>
-              <div className="relative rounded-md shadow-sm justify-between items-center">
-                <input
-                  id="family"
-                  type="text"
-                  name="family"
-                  value={formData.family}
-                  onChange={handleChange}
-                  className={`block w-full px-3 py-2 border rounded-md shadow-sm text-sm text-black ${
-                    errors.family
-                      ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                      : "border-gray-300 focus:ring-fuchsia-950 focus:border-fuchsia-950"
-                  }`}
-                  readOnly
-                />
-                <FamilyDropdown onSelect={handleFamilySelect} />
-              </div>
-              {errors.family && (
-                <p className="mt-1 text-sm text-red-500">{errors.family}</p>
-              )}
-            </div>
+
+<div>
+  <label
+    htmlFor="family"
+    className="block text-sm font-medium text-gray-700 mb-1"
+  >
+    Select Family
+  </label>
+  <div className="flex space-x-2"> {/* Added flex container with spacing */}
+    <div className="relative rounded-md shadow-sm flex-grow"> {/* Added flex-grow to make input take available space */}
+      <input
+        id="family"
+        type="text"
+        name="family"
+        value={formData.family}
+        onChange={handleChange}
+        className={`block w-full px-3 py-2 border rounded-md shadow-sm text-sm text-black ${
+          errors.family
+            ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+            : "border-gray-300 focus:ring-fuchsia-950 focus:border-fuchsia-950"
+        }`}
+        readOnly
+      />
+      <FamilyDropdown onSelect={handleFamilySelect} />
+    </div>
+    <button
+      type="button"
+      onClick={() => {router.push('/CreateFamily')}}
+      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-fuchsia-950 hover:bg-fuchsia-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fuchsia-950 transition-colors duration-200"
+    >
+      Create Family
+    </button>
+  </div>
+  {errors.family && (
+    <p className="mt-1 text-sm text-red-500">{errors.family}</p>
+  )}
+</div>
+
 
             <InputField
               label="Password"
@@ -290,6 +314,13 @@ const SignUp = () => {
               </p> */}
             </div>
           </form>
+          <OtpVerifyModalSignUp
+            isOpen={showOTPModal}
+            onClose={() => setShowOTPModal(false)}
+            onVerify={handleOTPVerify}
+            otp={otp}
+            setOtp={setOtp}
+          />
         </div>
       </div>
     </div>

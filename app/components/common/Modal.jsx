@@ -1,12 +1,18 @@
 // Modal.jsx
 "use client";
 import React, { useRef, useEffect, useState } from "react";
+import { Loader } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
-const Modal = ({ showModal, setShowModal, handleChange, formData, router }) => {
+const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
   const modalRef = useRef();
+  const route = useRouter();
   const [otpSectionVisible, setotpSectionVisible] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
   const [OpenForgtModal, setOpenForgtModal] = useState(false);
   const [OpenForgtModalSecond, setOpenForgtModalSecond] = useState(false);
 
@@ -55,7 +61,57 @@ const Modal = ({ showModal, setShowModal, handleChange, formData, router }) => {
     // Navigate to the desired page
     localStorage.setItem("myData", JSON.stringify(formData?.phoneNumber));
     setShowModal(false);
-    router.push("/Dashboard");
+    route.push("/Dashboard");
+  };
+
+  const handleSubmit = async (e) => {
+    {
+      // setLoading(true);
+      // setError(null);
+      // // setotpSectionVisible(true);
+      // try {
+      //   const Data = {
+      //     phone: formData?.phoneNumber,
+      //     password: formData?.password,
+      //   };
+      //   const response = await axios.post(
+      //     "https://jsonplaceholder.typicode.com/posts",
+      //     Data
+      //   ).then(() => {
+      //     console.log("API response:", response.data);
+      //     setSuccess(true);
+      //     handleClick()
+      //   })
+
+      // } catch (error) {
+      //   console.error("Error submitting form:", error);
+      //   setError("Failed to submit the form. Please try again later.");
+      // } finally {
+      //   setLoading(false);
+      e.preventDefault();
+      setLoading(true);
+      setError(null);
+      const Data = {
+        phone: formData?.phoneNumber,
+        password: formData?.password,
+      };
+      try {
+        const response = await axios.post(
+          "https://jsonplaceholder.typicode.com/posts",
+          Data
+        );
+        console.log("API response:", response.data);
+        setSuccess(true);
+        localStorage.setItem("myData", JSON.stringify(formData?.phoneNumber));
+        setShowModal(false);
+        route.push("/Dashboard");
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        setError("Failed to submit the form. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   return (
@@ -98,11 +154,9 @@ const Modal = ({ showModal, setShowModal, handleChange, formData, router }) => {
                       //     setotpSectionVisible(true);
                       //   } else {
                       //     setShowModal(true);
-                      //   };
+                      //   }
                       // }}
-                      onSubmit={() => {
-                        setotpSectionVisible(true);
-                      }}
+                      onSubmit={handleSubmit}
                     >
                       <div className="space-y-4">
                         {/* Email input */}
@@ -140,12 +194,23 @@ const Modal = ({ showModal, setShowModal, handleChange, formData, router }) => {
                       {/* Submit Button and Forgot Password Link */}
                       <div className="mt-6 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                         {/* Submit button */}
-                        <button
-                          className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors text-white`}
-                          type="submit"
-                        >
-                          Submit
-                        </button>
+                        {loading === false ? (
+                          <button
+                            onClick={handleSubmit}
+                            className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors text-white`}
+                            type="submit"
+                          >
+                            Submit
+                          </button>
+                        ) : (
+                          <button
+                            disabled
+                            className={`py-2 px-6 font-poppins font-semibold text-[15px] text-primary outline-none bg-fuchsia-900 rounded-full flex hover:bg-fuchsia-700 transition-colors text-white`}
+                            type="submit"
+                          >
+                            <Loader size={20} color="#fff" />
+                          </button>
+                        )}
 
                         {/* Forgot password text */}
                         <p
