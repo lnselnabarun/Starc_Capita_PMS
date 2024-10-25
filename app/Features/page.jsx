@@ -1,11 +1,19 @@
 // Dashboard.js
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Logo from "../components/common/logo";
 import Link from "next/link";
 
 export default function Features() {
+  const [savedData, setSavedData] = useState(null); // Track localStorage data
+  useEffect(() => {
+    // Check if localStorage is available (client-side only)
+    if (typeof window !== "undefined") {
+      const data = localStorage.getItem("myData");
+      setSavedData(data);
+    }
+  }, []);
   return (
     <>
       <div className="bg-primary w-full overflow-hidden bg-white min-h-screen ">
@@ -22,23 +30,31 @@ export default function Features() {
           </div>
 
           {/* Right Image Icon */}
-          <Link href="/Profile" passHref>
-            <div className="flex items-center justify-between rounded-lg hover:bg-gray-100 p-2 cursor-pointer transition-colors duration-200">
-              <div className="mx-2">
-                <Image
-                  src={require("../assets/logo/User_Icon.png")} // Replace with your icon path
-                  alt="User Icon"
-                  width={24} // Icon width
-                  height={24} // Icon height
-                />
-              </div>
+          {typeof savedData === "string" ? (
+            <>
+              <Link href="/Profile" passHref>
+                <div className="flex items-center justify-between rounded-lg hover:bg-gray-100 p-2 cursor-pointer transition-colors duration-200">
+                  <div className="mx-2">
+                    <Image
+                      src={require("../assets/logo/User_Icon.png")} // Replace with your icon path
+                      alt="User Icon"
+                      width={24} // Icon width
+                      height={24} // Icon height
+                    />
+                  </div>
 
-              {/* Right Text */}
-              <span className="text-sm font-sans font-normal text-gray-700">
-                Nabarun
-              </span>
-            </div>
-          </Link>
+                  {/* Right Text */}
+                  <span className="text-sm font-sans font-normal text-gray-700">
+                    Nabarun
+                  </span>
+                </div>
+              </Link>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center justify-between rounded-lg hover:bg-gray-100 p-2 cursor-pointer transition-colors duration-200"></div>
+            </>
+          )}
         </header>
       </div>
     </>

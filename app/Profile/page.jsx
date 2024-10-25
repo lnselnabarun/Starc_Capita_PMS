@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import Image from "next/image";
 import {
@@ -9,9 +9,11 @@ import {
   Edit2,
   Save,
   ArrowLeft,
-  LogOut
+  LogOut,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+import { Loader } from "lucide-react";
 
 const UserProfile = () => {
   // Mock initial user data
@@ -20,11 +22,14 @@ const UserProfile = () => {
     email: "nabarun.lnsel@.com",
     address: "123 Main St, Anytown, USA",
     family: ["Jane Doe", "Jimmy Doe", "Jenny Doe"],
-    coverImage: require('../assets/logo/Rectangle_5.png'),
-    profileImage: require('../assets/logo/User_Icon.png'),
+    coverImage: require("../assets/logo/Rectangle_5.png"),
+    profileImage: require("../assets/logo/User_Icon.png"),
   };
   const router = useRouter();
-
+  const [loading, setLoading] = useState(false);
+  const [Logoutloading, setLogoutloading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
   const [user, setUser] = useState(initialUser);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -37,23 +42,43 @@ const UserProfile = () => {
     setIsEditing(!isEditing);
   };
 
-  const handleSave = () => {
-    // Here you would typically send the updated user data to your backend
-    console.log("Saving user data:", user);
-    setIsEditing(false);
-  };
-
   const handleBack = () => {
     router.back();
   };
 
   const handleLogout = () => {
+    setLogoutloading(true);
     // Implement logout logic here
     // For example, clear local storage, reset auth state, etc.
     localStorage.clear();
     console.log("Logging out...");
     // Redirect to login page or home page
     router.push("/"); // Adjust this to your app's login route
+  };
+
+  const handleSave = async (e) => {
+    {
+      setIsEditing(false);
+      e.preventDefault();
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axios.post(
+          "https://jsonplaceholder.typicode.com/posts",
+          initialUser
+        );
+        console.log("API response:", response.data);
+        setSuccess(true);
+        localStorage.setItem("myData", JSON.stringify(formData?.phoneNumber));
+        setShowModal(false);
+        route.push("/Dashboard");
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        setError("Failed to submit the form. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   return (
@@ -170,23 +195,33 @@ const UserProfile = () => {
               onClick={isEditing ? handleSave : toggleEdit}
               className="w-full bg-gradient-to-r from-fuchsia-950 to-[#5E2751] text-white py-3 px-6 rounded-lg hover:from-blue-600 hover:to-blue-700 transition duration-300 flex items-center justify-center text-lg font-semibold shadow-md"
             >
-              {isEditing ? (
-                <>
-                  <Save size={20} className="mr-2" /> Save Changes
-                </>
+              {loading === false ? (
+                isEditing ? (
+                  <>
+                    <Save size={20} className="mr-2" /> Save Changes
+                  </>
+                ) : (
+                  <>
+                    <Edit2 size={20} className="mr-2" /> Edit Profile
+                  </>
+                )
               ) : (
-                <>
-                  <Edit2 size={20} className="mr-2" /> Edit Profile
-                </>
+                <Loader size={20} className="mr-2" color="#fff" />
               )}
             </button>
-            
+
             {/* Logout Button */}
             <button
               onClick={handleLogout}
               className="w-full bg-red-500 text-white py-3 px-6 rounded-lg hover:bg-red-600 transition duration-300 flex items-center justify-center text-lg font-semibold shadow-md"
             >
-              <LogOut size={20} className="mr-2" /> Logout
+              {Logoutloading === false ? (
+                <>
+                  <LogOut size={20} className="mr-2" /> Logout
+                </>
+              ) : (
+                <Loader size={20} className="mr-2" color="#fff" />
+              )}
             </button>
           </div>
         </div>
