@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const AlertIcon = ({ type }) => {
   switch (type) {
-    case 'success':
+    case "success":
       return (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <svg
+          className="w-5 h-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -13,9 +18,14 @@ const AlertIcon = ({ type }) => {
           />
         </svg>
       );
-    case 'error':
+    case "error":
       return (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <svg
+          className="w-5 h-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -24,9 +34,14 @@ const AlertIcon = ({ type }) => {
           />
         </svg>
       );
-    case 'warning':
+    case "warning":
       return (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <svg
+          className="w-5 h-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -35,9 +50,14 @@ const AlertIcon = ({ type }) => {
           />
         </svg>
       );
-    case 'info':
+    case "info":
       return (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <svg
+          className="w-5 h-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -51,37 +71,37 @@ const AlertIcon = ({ type }) => {
   }
 };
 
-const Alert = ({ 
-  type = 'info', 
-  title, 
-  message, 
-  show, 
-  onClose, 
-  autoClose = true, 
-  duration = 5000 
+const Alert = ({
+  type = "info",
+  title,
+  message,
+  show,
+  onClose,
+  autoClose = true,
+  duration = 5000,
 }) => {
   const [isVisible, setIsVisible] = useState(show);
   const [progress, setProgress] = useState(100);
 
   const typeStyles = {
-    success: 'bg-green-50 text-green-800 border-green-200',
-    error: 'bg-red-50 text-red-800 border-red-200',
-    warning: 'bg-yellow-50 text-yellow-800 border-yellow-200',
-    info: 'bg-blue-50 text-blue-800 border-blue-200'
+    success: "bg-green-50 text-green-800 border-green-200",
+    error: "bg-red-50 text-red-800 border-red-200",
+    warning: "bg-yellow-50 text-yellow-800 border-yellow-200",
+    info: "bg-blue-50 text-blue-800 border-blue-200",
   };
 
   const iconStyles = {
-    success: 'text-green-400',
-    error: 'text-red-400',
-    warning: 'text-yellow-400',
-    info: 'text-blue-400'
+    success: "text-green-400",
+    error: "text-red-400",
+    warning: "text-yellow-400",
+    info: "text-blue-400",
   };
 
   const progressStyles = {
-    success: 'bg-green-200',
-    error: 'bg-red-200',
-    warning: 'bg-yellow-200',
-    info: 'bg-blue-200'
+    success: "bg-green-200",
+    error: "bg-red-200",
+    warning: "bg-yellow-200",
+    info: "bg-blue-200",
   };
 
   useEffect(() => {
@@ -93,7 +113,7 @@ const Alert = ({
             clearInterval(progressInterval);
             return 0;
           }
-          return prev - (100 / (duration / 100));
+          return prev - 100 / (duration / 100);
         });
       }, 100);
 
@@ -113,7 +133,7 @@ const Alert = ({
 
   return (
     <div className="fixed z-50 top-4 right-4 left-4 md:left-auto md:w-96 animate-slide-in">
-      <div 
+      <div
         className={`relative overflow-hidden rounded-lg border p-4 ${typeStyles[type]} shadow-lg`}
         role="alert"
       >
@@ -122,16 +142,8 @@ const Alert = ({
             <AlertIcon type={type} />
           </div>
           <div className="flex-1 min-w-0">
-            {title && (
-              <h3 className="text-sm font-medium mb-1">
-                {title}
-              </h3>
-            )}
-            {message && (
-              <p className="text-sm opacity-90">
-                {message}
-              </p>
-            )}
+            {title && <h3 className="text-sm font-medium mb-1">{title}</h3>}
+            {message && <p className="text-sm opacity-90">{message}</p>}
           </div>
           <button
             onClick={() => {
@@ -139,27 +151,26 @@ const Alert = ({
               onClose();
             }}
             className={`flex-shrink-0 ml-4 rounded-lg p-1.5 inline-flex hover:bg-opacity-20 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-              type === 'success' ? 'hover:bg-green-800 focus:ring-green-500' :
-              type === 'error' ? 'hover:bg-red-800 focus:ring-red-500' :
-              type === 'warning' ? 'hover:bg-yellow-800 focus:ring-yellow-500' :
-              'hover:bg-blue-800 focus:ring-blue-500'
+              type === "success"
+                ? "hover:bg-green-800 focus:ring-green-500"
+                : type === "error"
+                ? "hover:bg-red-800 focus:ring-red-500"
+                : type === "warning"
+                ? "hover:bg-yellow-800 focus:ring-yellow-500"
+                : "hover:bg-blue-800 focus:ring-blue-500"
             }`}
           >
             <span className="sr-only">Close</span>
-            <svg 
-              className="h-4 w-4" 
-              viewBox="0 0 20 20" 
-              fill="currentColor"
-            >
-              <path 
-                fillRule="evenodd" 
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" 
-                clipRule="evenodd" 
+            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                fillRule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clipRule="evenodd"
               />
             </svg>
           </button>
         </div>
-        
+
         {/* Progress bar */}
         {autoClose && (
           <div className="absolute bottom-0 left-0 right-0 h-1 bg-black bg-opacity-10">
@@ -196,9 +207,9 @@ const styles = `
 const AlertExample = () => {
   const [alert, setAlert] = useState({
     show: false,
-    type: 'info',
-    title: '',
-    message: ''
+    type: "info",
+    title: "",
+    message: "",
   });
 
   const showAlert = (type, title, message) => {
@@ -206,39 +217,45 @@ const AlertExample = () => {
       show: true,
       type,
       title,
-      message
+      message,
     });
   };
 
   const hideAlert = () => {
-    setAlert(prev => ({ ...prev, show: false }));
+    setAlert((prev) => ({ ...prev, show: false }));
   };
 
   return (
     <div className="space-y-4">
       <button
-        onClick={() => showAlert('success', 'Success!', 'Operation completed successfully.')}
+        onClick={() =>
+          showAlert("success", "Success!", "Operation completed successfully.")
+        }
         className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
       >
         Show Success Alert
       </button>
-      
+
       <button
-        onClick={() => showAlert('error', 'Error!', 'Something went wrong.')}
+        onClick={() => showAlert("error", "Error!", "Something went wrong.")}
         className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
       >
         Show Error Alert
       </button>
-      
+
       <button
-        onClick={() => showAlert('warning', 'Warning!', 'Please proceed with caution.')}
+        onClick={() =>
+          showAlert("warning", "Warning!", "Please proceed with caution.")
+        }
         className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
       >
         Show Warning Alert
       </button>
-      
+
       <button
-        onClick={() => showAlert('info', 'Info', 'Here is some useful information.')}
+        onClick={() =>
+          showAlert("info", "Info", "Here is some useful information.")
+        }
         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
       >
         Show Info Alert

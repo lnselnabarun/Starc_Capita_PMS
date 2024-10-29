@@ -10,10 +10,10 @@ import {
   Save,
   ArrowLeft,
   LogOut,
+  Loader
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { Loader } from "lucide-react";
 
 const UserProfile = () => {
   // Mock initial user data
