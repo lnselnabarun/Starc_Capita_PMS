@@ -20,9 +20,11 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
   });
 
   const [otp, setOtp] = useState(INITIAL_OTP_STATE);
-  const inputRefs = Array(4)
-    .fill(null)
-    .map(() => useRef(null));
+  const inputRef1 = useRef(null);
+  const inputRef2 = useRef(null);
+  const inputRef3 = useRef(null);
+  const inputRef4 = useRef(null);
+  const inputRefss = [inputRef1, inputRef2, inputRef3, inputRef4];
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -42,7 +44,7 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
 
   useEffect(() => {
     if (modalState.showForgotPasswordOtp) {
-      inputRefs[0].current?.focus();
+      inputRefss[0].current?.focus();
     }
   }, [modalState.showForgotPasswordOtp]);
 
@@ -54,13 +56,13 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
     setOtp(newOtp);
 
     if (element.value !== "" && index < 3) {
-      inputRefs[index + 1].current?.focus();
+      inputRefss[index + 1].current?.focus();
     }
   };
 
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
-      inputRefs[index - 1].current?.focus();
+      inputRefss[index - 1].current?.focus();
     }
   };
 
@@ -232,7 +234,7 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
         {otp.map((digit, index) => (
           <input
             key={index}
-            ref={inputRefs[index]}
+            ref={inputRefss[index]}
             type="text"
             value={digit}
             onChange={(e) => handleOtpChange(e.target, index)}
