@@ -71,7 +71,7 @@ const UserProfile = () => {
         setSuccess(true);
         localStorage.setItem("myData", JSON.stringify(formData?.phoneNumber));
         setShowModal(false);
-        route.push("/Dashboard");
+        router.push("/Dashboard");
       } catch (error) {
         console.error("Error submitting form:", error);
         setError("Failed to submit the form. Please try again later.");
