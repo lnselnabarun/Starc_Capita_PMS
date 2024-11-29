@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Navbar from "../components/Navbar";
@@ -18,6 +18,66 @@ const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [FamilyData, setFamilyData] = useState([]);
+  const [formData, setFormData] = useState({
+    name: "",
+    pan_no: "",
+    mobile_no: "",
+    email: "",
+    family: "",
+    password: "",
+    confirm_password: "",
+    familId: "", // Using consistent naming
+  });
+
+  const validateForm = useCallback(() => {
+    const newErrors = {};
+
+    // Required field validation
+    if (!formData.name.trim()) newErrors.name = "Full Name is required";
+    if (!formData.pan_no.trim()) newErrors.pan_no = "PAN Number is required";
+    if (!formData.mobile_no.trim())
+      newErrors.mobile_no = "Mobile Number is required";
+    if (!formData.email.trim()) newErrors.email = "Email is required";
+    if (!formData.family.trim()) newErrors.family = "Family is required";
+    if (!formData.password.trim()) newErrors.password = "Password is required";
+    if (!formData.confirm_password.trim())
+      newErrors.confirm_password = "Confirm Password is required";
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (formData?.email && !emailRegex.test(formData.email)) {
+      newErrors.email = "Invalid email format";
+    }
+
+    // Mobile number validation
+    const mobileRegex = /^[0-9]{10}$/;
+    if (formData.mobile_no && !mobileRegex.test(formData.mobile_no)) {
+      newErrors.mobile_no = "Invalid mobile number format";
+    }
+
+    // PAN validation
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    if (formData.pan_no && !panRegex.test(formData.pan_no)) {
+      newErrors.pan_no = "Invalid PAN number format";
+    }
+
+    // Password validation
+    if (formData.password && formData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters long";
+    }
+
+    // Confirm password validation
+    if (formData.password !== formData.confirm_password) {
+      newErrors.confirm_password = "Passwords do not match";
+    }
+
+    setErrors(newErrors);
+
+    // Return true if there are no errors
+    return Object.keys(newErrors).length === 0;
+  }, [formData]);
+
   const handleOTPVerifyClick = (type) => {
     setOtpType(type);
     setShowOTPModal(true);
@@ -29,75 +89,96 @@ const SignUp = () => {
     // For now, we'll just close the modal
     setShowOTPModal(false);
   };
-  const [formData, setFormData] = useState({
-    fullName: "",
-    panNumber: "",
-    mobileNumber: "",
-    email: "",
-    family: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const handleFamilySelect = useCallback((selectedFamily) => {
+
+  const handleFamilySelect = useCallback((selectedFamily,familId) => {
     setFormData((prevData) => ({
       ...prevData,
       family: selectedFamily,
+      familId: familId,
     }));
   }, []);
   const [acceptTerms, setAcceptTerms] = useState(false);
-
-  const validateForm = useCallback(() => {
-    const newErrors = {};
-    // Existing validation logic...
-
-    // Check for empty fields
-    Object.keys(formData).forEach((key) => {
-      if (!formData[key].trim()) {
-        newErrors[key] = `${
-          key.charAt(0).toUpperCase() + key.slice(1)
-        } is required`;
-      }
-    });
-
-    // Additional validation logic...
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }, [formData, acceptTerms]);
 
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: name === "panNumber" ? value.toUpperCase() : value,
+      [name]: name === "pan_no" ? value.toUpperCase() : value,
     }));
   }, []);
 
+  async function GetFamilyListAPI() {
+    try {
+      const response = await axios({
+        method: "post",
+        url: "https://dev.netrumusa.com/starkcapital/api-backend/family_list",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {}, // empty object as body
+      });
+
+      console.log("Test Response:", response.data);
+      if (response.data?.status === "success") {
+        setFamilyData(response.data?.data);
+      }
+    } catch (error) {
+      console.error("Test Error:", error?.response?.data || error.message);
+    }
+  }
+
+  useEffect(() => {
+    GetFamilyListAPI();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        general: "Please fill in all required fields and correct any errors.",
-      }));
+      setError("Please fill in all required fields correctly.");
+      console.log(formData, "formDataformDataformDataformData");
       return;
     }
-  
+
     setLoading(true);
     setError(null);
+
+    const requestBody = {
+      name: formData.name,
+      email: formData.email,
+      mobile_no: formData.mobile_no,
+      pan_no: formData.pan_no,
+      password: formData.password,
+      confirm_password: formData.confirm_password,
+      family: formData.family,
+      family_id:formData?.familId
+    };
+    console.log(requestBody, "requestBodyrequestBody");
     try {
       const response = await axios.post(
-        "https://jsonplaceholder.typicode.com/posts",
-        formData
+        "https://dev.netrumusa.com/starkcapital/api-backend/registration",
+        requestBody,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
-      console.log("API response:", response.data);
-      localStorage.setItem("myData", JSON.stringify(formData?.mobileNumber));
-      router.push("/Dashboard");
-      setSuccess(true);
+      console.log(response?.data, "ggggggg");
+
+      if (response.data?.status === "success") {
+        setSuccess(true);
+        localStorage.setItem("myData", JSON.stringify(formData.mobile_no));
+        router.push("/Dashboard");
+      } else {
+        setError(
+          response.data?.message || "Registration failed. Please try again."
+        );
+      }
     } catch (error) {
-      console.error("Error submitting form:", error.response?.data || error.message);
-      setError("Failed to submit the form. Please try again later.");
+      setError(
+        error.response?.data?.message ||
+          "Registration failed. Please try again later."
+      );
     } finally {
       setLoading(false);
     }
@@ -122,23 +203,27 @@ const SignUp = () => {
         </button>
         {isOpen && (
           <div className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-            {families.map((family) => (
-              <div
-                key={family}
-                className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-fuchsia-100 text-gray-600"
-                onClick={() => {
-                  onSelect(family);
-                  setIsOpen(false);
-                }}
-              >
-                {family}
-              </div>
-            ))}
+            {FamilyData?.map((item, index) => {
+              return (
+                <div
+                  key={index}
+                  className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-fuchsia-100 text-gray-600"
+                  onClick={() => {
+                    onSelect(item?.family_name, item?.family_id);
+                    setIsOpen(false);
+                  }}
+                >
+                  {item?.family_name}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
     );
   };
+
+  console.log(FamilyData, "FamilyDataFamilyData");
 
   return (
     <div className="bg-white min-h-screen w-full overflow-hidden">
@@ -187,30 +272,30 @@ const SignUp = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <InputField
               label="Full Name"
-              name="fullName"
+              name="name"
               type="text"
-              value={formData.fullName}
+              value={formData.name}
               onChange={handleChange}
-              error={errors.fullName}
+              error={errors.name}
             />
 
             <InputField
               label="PAN Number"
-              name="panNumber"
+              name="pan_no"
               type="text"
-              value={formData.panNumber}
+              value={formData.pan_no}
               onChange={handleChange}
-              error={errors.panNumber}
+              error={errors.pan_no}
               autoCapitalize="characters"
             />
 
             <InputField
               label="Mobile Number"
-              name="mobileNumber"
+              name="mobile_no"
               type="tel"
-              value={formData.mobileNumber}
+              value={formData.mobile_no}
               onChange={handleChange}
-              error={errors.mobileNumber}
+              error={errors.mobile_no}
               rightElement={
                 <button
                   type="button"
@@ -226,7 +311,7 @@ const SignUp = () => {
               label="Email"
               name="email"
               type="email"
-              value={formData.email}
+              value={formData?.email}
               onChange={handleChange}
               error={errors.email}
               rightElement={
@@ -294,11 +379,11 @@ const SignUp = () => {
 
             <InputField
               label="Confirm Password"
-              name="confirmPassword"
+              name="confirm_password" // Ensure this matches the state key
               type="password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              error={errors.confirmPassword}
+              value={formData.confirm_password} // Use the correct state field
+              onChange={handleChange} // Use the existing change handler
+              error={errors.confirm_password} // Match the validation errors object
             />
 
             <div className="flex items-center mt-4">
@@ -317,31 +402,21 @@ const SignUp = () => {
                 </span>
               </label>
             </div>
-            {errors.terms && (
-              <p className="text-red-500 text-sm mt-1">{errors.terms}</p>
-            )}
+            {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
 
-            <div className="mt-6 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-              <button
-                disabled={loading}
-                className="w-full sm:w-auto py-3 px-6 font-semibold text-base text-white bg-fuchsia-900 rounded-full hover:bg-fuchsia-700 transition-colors"
-                type="submit"
-              >
-                {loading ? (
-                  <div className="flex items-center justify-center">
-                    <Loader size={20} color="#fff" />
-                  </div>
-                ) : (
-                  "Get Startedy"
-                )}
-              </button>
-              {/* <p className="text-sm text-gray-600">
-                Already have an account?{" "}
-                <a href="#" className="text-fuchsia-950 font-semibold">
-                  Login
-                </a>
-              </p> */}
-            </div>
+            <button
+              disabled={loading}
+              className="w-full sm:w-auto py-3 px-6 font-semibold text-base text-white bg-fuchsia-900 rounded-full hover:bg-fuchsia-700 transition-colors"
+              type="submit"
+            >
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <Loader size={20} color="#fff" />
+                </div>
+              ) : (
+                "Get Started"
+              )}
+            </button>
           </form>
           <OtpVerifyModalSignUp
             isOpen={showOTPModal}
@@ -399,3 +474,5 @@ const InputField = React.memo(
 InputField.displayName = "InputField";
 
 export default SignUp;
+
+

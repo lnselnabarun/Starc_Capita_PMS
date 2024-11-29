@@ -91,6 +91,49 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
     }
   };
 
+
+  const Login_User = async (e) => {
+    console.log("Login_UserLogin_User")
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    const requestBody = {
+      phoneno: formData.phoneNumber,
+      password: formData.password,
+    };
+    console.log(requestBody, "requestBodyrequestBody");
+    try {
+      const response = await axios.post(
+        "https://dev.netrumusa.com/starkcapital/api-backend/login",
+        requestBody,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response?.data, "ggggggg");
+
+      if (response?.data?.message === "Login successful") {
+        localStorage.setItem("myData", JSON.stringify(response.data?.data?.token));
+        localStorage.setItem("email", JSON.stringify(response.data?.data?.email));
+        router.push("/Dashboard");
+      } else {
+        setError(
+          response.data?.message || "Registration failed. Please try again."
+        );
+      }
+    } catch (error) {
+      setError(
+        error.response?.data?.message ||
+          "Registration failed. Please try again later."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const resetModalState = () => {
     setModalState({
       showOtpSection: false,
@@ -118,7 +161,7 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
   };
 
   const renderLoginForm = () => (
-    <form onSubmit={handleLogin}>
+    <form onSubmit={Login_User}>
       <h2 className="text-2xl font-bold mb-3 text-gray-800">Login</h2>
       <div className="space-y-4">
         <div>
@@ -147,7 +190,6 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
             value={formData.password}
             onChange={handleChange}
             required
-            minLength={8}
           />
         </div>
       </div>

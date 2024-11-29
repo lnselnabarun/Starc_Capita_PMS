@@ -11,9 +11,9 @@ import CombinedMutualFund from "../Dashboard_Components/CombinedMutualFund";
 import EquityMutualFund from "../Dashboard_Components/EquityMutualFund";
 import HybridMutualFund from "../Dashboard_Components/HybridMutualFund";
 import DirectStockDashboard from "../Dashboard_Components/DirectStockDashboard";
-import Compare_Mutual_Fund from '../Dashboard_Components/Compare_Mutual_Fund';
-import DebtMutualFund from '../Dashboard_Components/DebtMutualFund';
-import AMCGrid from  '../Dashboard_Components/AMCGrid'
+import Compare_Mutual_Fund from "../Dashboard_Components/Compare_Mutual_Fund";
+import DebtMutualFund from "../Dashboard_Components/DebtMutualFund";
+import AMCGrid from "../Dashboard_Components/AMCGrid";
 
 export default function Dashboard() {
   const menuItems = [
@@ -180,11 +180,11 @@ export default function Dashboard() {
           </span>
         ) : null} */}
         {activeIndex === 1 && activeIndexSecond === 5 ? (
-         <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
-         Asset Management Company (AMC)
-       </span>
+          <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
+            Asset Management Company (AMC)
+          </span>
         ) : null}
-        
+
         {activeIndex === 2 ? (
           <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
             Direct Stock
@@ -209,15 +209,12 @@ export default function Dashboard() {
           <HybridMutualFund />
         ) : null}
         {activeIndex === 1 && activeIndexSecond === 3 ? (
-         <DebtMutualFund/>
+          <DebtMutualFund />
         ) : null}
-         {activeIndex === 1 && activeIndexSecond === 4 ? (
-          <Compare_Mutual_Fund/>
+        {activeIndex === 1 && activeIndexSecond === 4 ? (
+          <Compare_Mutual_Fund />
         ) : null}
-        {activeIndex === 1 && activeIndexSecond === 5 ? (
-          <AMCGrid/>
-        ) : null}
-
+        {activeIndex === 1 && activeIndexSecond === 5 ? <AMCGrid /> : null}
         {activeIndex === 2 ? <DirectStockDashboard /> : null}
       </div>
     </>

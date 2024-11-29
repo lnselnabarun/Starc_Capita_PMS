@@ -1,15 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import {
-  User,
-  Users,
-  Phone,
-  Mail,
-  MapPin,
-  Heart,
-  Loader,
-} from "lucide-react";
-
+import { User, Phone, Mail, Heart, Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import AlertExample from "../components/AlertExample";
@@ -22,16 +13,16 @@ const CreateFamilyForm = () => {
     title: "",
     message: "",
   });
+  
   const [formData, setFormData] = useState({
     familyName: "",
-    primaryContact: "",
+    family_code: "",
     email: "",
     phone: "",
-    address: "",
-    members: [""],
-    familyType: "Nuclear",
+    primaryContact: "",
     description: "",
   });
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -44,39 +35,6 @@ const CreateFamilyForm = () => {
     }));
   };
 
-  // const showAlert = () => {
-  //   setAlert({
-  //     show: true,
-  //     type: "success",
-  //     title: "Success!",
-  //     message: "Operation completed successfully",
-  //   });
-  // };
-
-  const handleMemberChange = (index, value) => {
-    const newMembers = [...formData.members];
-    newMembers[index] = value;
-    setFormData((prev) => ({
-      ...prev,
-      members: newMembers,
-    }));
-  };
-
-  const addMember = () => {
-    setFormData((prev) => ({
-      ...prev,
-      members: [...prev.members, ""],
-    }));
-  };
-
-  const removeMember = (index) => {
-    const newMembers = formData.members.filter((_, i) => i !== index);
-    setFormData((prev) => ({
-      ...prev,
-      members: newMembers,
-    }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -84,14 +42,28 @@ const CreateFamilyForm = () => {
 
     try {
       const response = await axios.post(
-        "https://jsonplaceholder.typicode.com/posts",
+        "https://dev.netrumusa.com/starkcapital/api-backend/family_create",
         formData
       );
       console.log("API response:", response.data);
       setSuccess(true);
+      setAlert({
+        show: true,
+        type: "success",
+        title: "Success!",
+        message: "Family created successfully",
+      });
+      route.back();
+
     } catch (error) {
       console.error("Error submitting form:", error);
       setError("Failed to submit the form. Please try again later.");
+      setAlert({
+        show: true,
+        type: "error",
+        title: "Error",
+        message: "Failed to create family. Please try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -110,7 +82,6 @@ const CreateFamilyForm = () => {
         </div>
 
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          {/* Header */}
           <div className="bg-gradient-to-r from-fuchsia-950 to-purple-900 text-white p-6">
             <div className="flex items-center space-x-2">
               <Heart className="w-6 h-6" />
@@ -119,19 +90,19 @@ const CreateFamilyForm = () => {
           </div>
 
           <form onSubmit={handleSubmit}>
-            {/* Form Content */}
             <div className="p-6 space-y-6">
-              {/* Family Name Section */}
               <div className="space-y-4">
+                {/* Family Name */}
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Family Name
+                    Family Name*
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Users className="h-5 w-5 text-gray-400" />
+                      <User className="h-5 w-5 text-gray-400" />
                     </div>
                     <input
+                      required
                       type="text"
                       name="familyName"
                       value={formData.familyName}
@@ -142,16 +113,38 @@ const CreateFamilyForm = () => {
                   </div>
                 </div>
 
-                {/* Primary Contact */}
+                {/* Family Code */}
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Primary Contact Person
+                    Family Code*
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <User className="h-5 w-5 text-gray-400" />
                     </div>
                     <input
+                      required
+                      type="text"
+                      name="family_code"
+                      value={formData.family_code}
+                      onChange={handleChange}
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-fuchsia-950 focus:border-fuchsia-950 text-sm"
+                      placeholder="Enter family code"
+                    />
+                  </div>
+                </div>
+
+                {/* Primary Contact */}
+                <div className="relative">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Primary Contact Person*
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <User className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      required
                       type="text"
                       name="primaryContact"
                       value={formData.primaryContact}
@@ -166,13 +159,14 @@ const CreateFamilyForm = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="relative">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email
+                      Email*
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Mail className="h-5 w-5 text-gray-400" />
                       </div>
                       <input
+                        required
                         type="email"
                         name="email"
                         value={formData.email}
@@ -185,13 +179,14 @@ const CreateFamilyForm = () => {
 
                   <div className="relative">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Phone
+                      Phone*
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Phone className="h-5 w-5 text-gray-400" />
                       </div>
                       <input
+                        required
                         type="tel"
                         name="phone"
                         value={formData.phone}
@@ -203,84 +198,10 @@ const CreateFamilyForm = () => {
                   </div>
                 </div>
 
-                {/* Address */}
-                <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Address
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <MapPin className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <textarea
-                      name="address"
-                      value={formData.address}
-                      onChange={handleChange}
-                      rows="3"
-                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-fuchsia-950 focus:border-fuchsia-950 text-sm"
-                      placeholder="Enter complete address"
-                    />
-                  </div>
-                </div>
-
-                {/* Family Type */}
-                <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Family Type
-                  </label>
-                  <select
-                    name="familyType"
-                    value={formData.familyType}
-                    onChange={handleChange}
-                    className="block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-fuchsia-950 focus:border-fuchsia-950 text-sm"
-                  >
-                    <option value="Nuclear">Nuclear Family</option>
-                    <option value="Joint">Joint Family</option>
-                    <option value="Extended">Extended Family</option>
-                    <option value="Single">Single Parent Family</option>
-                  </select>
-                </div>
-
-                {/* Family Members */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Family Members
-                  </label>
-                  {formData.members.map((member, index) => (
-                    <div key={index} className="flex space-x-2">
-                      <input
-                        type="text"
-                        value={member}
-                        onChange={(e) =>
-                          handleMemberChange(index, e.target.value)
-                        }
-                        className="flex-grow py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-fuchsia-950 focus:border-fuchsia-950 text-sm"
-                        placeholder={`Member ${index + 1}`}
-                      />
-                      {index > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => removeMember(index)}
-                          className="px-3 py-2 text-red-600 hover:text-red-800 transition-colors duration-200"
-                        >
-                          Remove
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={addMember}
-                    className="mt-2 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fuchsia-950"
-                  >
-                    Add Member
-                  </button>
-                </div>
-
                 {/* Description */}
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Additional Notes
+                    Description
                   </label>
                   <textarea
                     name="description"
@@ -310,7 +231,7 @@ const CreateFamilyForm = () => {
               >
                 {loading ? (
                   <div className="flex items-center justify-center">
-                    <Loader size={20} color="#fff" />
+                    <Loader className="animate-spin" size={20} />
                   </div>
                 ) : (
                   "Create Family"
@@ -319,20 +240,22 @@ const CreateFamilyForm = () => {
             </div>
           </form>
         </div>
+        
         <div
           onClick={() => route.back()}
-          className="inline-block text-fuchsia-900 hover:text-fuchsia-700 font-semibold mt-6 transition-colors"
+          className="inline-block text-fuchsia-900 hover:text-fuchsia-700 font-semibold mt-6 transition-colors cursor-pointer"
         >
           ← Back to Home
         </div>
       </div>
-      <AlertExample
+
+      {/* <AlertExample
         show={alert.show}
         type={alert.type}
         title={alert.title}
         message={alert.message}
         onClose={() => setAlert({ ...alert, show: false })}
-      />
+      /> */}
     </div>
   );
 };
