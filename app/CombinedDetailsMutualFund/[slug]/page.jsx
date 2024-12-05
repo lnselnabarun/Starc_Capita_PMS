@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import {
   LineChart,
@@ -12,10 +12,17 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 const CombinedDetailsMutualFund = ({ params }) => {
+  console.log(params?.slug, "gggggggg");
   const [activeButton, setActiveButton] = useState("capture");
   const route = useRouter();
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [DetailsData, setDetailsData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentDataName, SetcurrentDataName] = useState("");
   const data = [
     {
       name: "JAN",
@@ -88,7 +95,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
       zv: 4200,
     },
   ];
-  
+
   const allDetails = [
     {
       name: "Name",
@@ -192,6 +199,66 @@ const CombinedDetailsMutualFund = ({ params }) => {
     route.back();
     console.log("Navigating back");
   };
+
+  useEffect(() => {
+    const fetchMutualFundDetails = async () => {
+      try {
+        setIsLoading(true);
+        const token = localStorage.getItem("myData");
+
+        if (!token) {
+          setError("No authentication token found");
+          return;
+        }
+
+        const parsedToken = JSON.parse(token);
+        console.log(`Bearer ${parsedToken}`, "`Bearer ${parsedToken}`");
+
+        const response = await axios.get(
+          `https://dev.netrumusa.com/starkcapital/api-backend/portfolio-details/${params?.slug}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${parsedToken}`,
+            },
+          }
+        );
+        console.log(response, "ggggggggggggg");
+        if (response.data?.status === "success") {
+          setDetailsData(response?.data?.data?.details || []);
+          SetcurrentDataName(response?.data?.data?.scheme);
+        } else {
+          throw new Error(
+            response.data?.message || "Failed to fetch mutual fund data"
+          );
+        }
+      } catch (err) {
+        console.error("Error fetching mutual fund data:", err);
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMutualFundDetails();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-red-600">
+        Error: {error}
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen  bg-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="px-4 sm:px-8 md:px-16 lg:px-28">
@@ -204,7 +271,9 @@ const CombinedDetailsMutualFund = ({ params }) => {
           >
             <ArrowLeft size={24} />
           </button>
-          <div className="text-black">Canara Robeco Bluechip Combind Mutual Fund</div>
+          <div className="text-black">
+            {currentDataName !== "" ? currentDataName : ""}
+          </div>
         </div>
 
         {/* Main Container */}
@@ -313,7 +382,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
           All Details
         </div>
         <div className="flex flex-wrap justify-between">
-          {allDetails.map((detail, index) => (
+          {DetailsData?.map((detail, index) => (
             <div
               key={index}
               className="w-full md:w-[48%] mb-4 p-4 rounded-lg bg-[#F5F5F5] shadow-lg transition-all duration-300 ease-in-out hover:transform hover:scale-105 hover:shadow-xl"
