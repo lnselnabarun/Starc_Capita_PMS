@@ -47,6 +47,7 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showModal, setShowModal]);
+  
 
   useEffect(() => {
     if (modalState.showForgotPasswordOtp) {
