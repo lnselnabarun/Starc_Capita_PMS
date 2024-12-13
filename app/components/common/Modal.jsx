@@ -9,22 +9,28 @@ const INITIAL_OTP_STATE = ["", "", "", ""];
 
 const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
   const modalRef = useRef();
+  const inputRef0 = useRef(null);
+  const inputRef1 = useRef(null);
+  const inputRef2 = useRef(null);
+  const inputRef3 = useRef(null);
+  const inputRefs = [inputRef0, inputRef1, inputRef2, inputRef3];
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [Latestotp, setLatestotp] = useState("");
+  const [newPassword, SetnewPassword] = useState("");
+  const [confirmPassword, SetconfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [modalState, setModalState] = useState({
     showOtpSection: false,
     showForgotPassword: false,
     showForgotPasswordOtp: false,
     showResetPassword: false,
   });
-
   const [otp, setOtp] = useState(INITIAL_OTP_STATE);
-  const inputRef1 = useRef(null);
-  const inputRef2 = useRef(null);
-  const inputRef3 = useRef(null);
-  const inputRef4 = useRef(null);
-  const inputRefss = [inputRef1, inputRef2, inputRef3, inputRef4];
+  // const inputRefs = Array(4)
+  //   .fill(null)
+  //   .map(() => useRef(null));
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -44,7 +50,7 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
 
   useEffect(() => {
     if (modalState.showForgotPasswordOtp) {
-      inputRefss[0].current?.focus();
+      inputRefs[0].current?.focus();
     }
   }, [modalState.showForgotPasswordOtp]);
 
@@ -56,13 +62,13 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
     setOtp(newOtp);
 
     if (element.value !== "" && index < 3) {
-      inputRefss[index + 1].current?.focus();
+      inputRefs[index + 1].current?.focus();
     }
   };
 
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
-      inputRefss[index - 1].current?.focus();
+      inputRefs[index - 1].current?.focus();
     }
   };
 
@@ -71,38 +77,10 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
     setLoading(true);
     setError(null);
 
-    try {
-      const response = await axios.post(
-        "https://jsonplaceholder.typicode.com/posts",
-        {
-          phone: formData?.phoneNumber,
-          password: formData?.password,
-        }
-      );
-
-      localStorage.setItem("myData", JSON.stringify(formData?.phoneNumber));
-      setShowModal(false);
-      router.push("/Dashboard");
-    } catch (error) {
-      setError("Failed to submit the form. Please try again later.");
-      console.error("Error submitting form:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
-  const Login_User = async (e) => {
-    console.log("Login_UserLogin_User")
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
     const requestBody = {
-      phoneno: formData.phoneNumber,
-      password: formData.password,
+      phoneno: formData?.phoneNumber,
+      password: formData?.password,
     };
-    console.log(requestBody, "requestBodyrequestBody");
     try {
       const response = await axios.post(
         "https://dev.netrumusa.com/starkcapital/api-backend/login",
@@ -113,11 +91,16 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
           },
         }
       );
-      console.log(response?.data, "ggggggg");
 
       if (response?.data?.message === "Login successful") {
-        localStorage.setItem("myData", JSON.stringify(response.data?.data?.token));
-        localStorage.setItem("email", JSON.stringify(response.data?.data?.email));
+        localStorage.setItem(
+          "myData",
+          JSON.stringify(response.data?.data?.token)
+        );
+        localStorage.setItem(
+          "email",
+          JSON.stringify(response.data?.data?.email)
+        );
         router.push("/Dashboard");
       } else {
         setError(
@@ -133,6 +116,74 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
       setLoading(false);
     }
   };
+const validatePasswords = () => {
+  // Reset errors
+  setPasswordError("");
+  setError("");
+
+  // Check if passwords are empty
+  if (!newPassword || !confirmPassword) {
+    setPasswordError("Both password fields are required");
+    return false;
+  }
+
+  // Check minimum length
+  if (newPassword.length < 8) {
+    setPasswordError("Password must be at least 8 characters long");
+    return false;
+  }
+
+  // Check if passwords match
+  if (newPassword !== confirmPassword) {
+    setPasswordError("Passwords do not match");
+    return false;
+  }
+
+  return true;
+};
+const ChangePassword = async (e) => {
+  e.preventDefault();
+  
+  // Validate passwords before submission
+  if (!validatePasswords()) {
+    return;
+  }
+
+  setLoading(true);
+  setError(null);
+  
+  const requestBody = {
+    mobile_no: formData?.phoneNumber,
+    new_password: newPassword,
+  };
+
+  try {
+    const response = await axios.post(
+      "https://dev.netrumusa.com/starkcapital/api-backend/changePassword",
+      requestBody,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response?.data?.status === "success") {
+      // Password changed successfully
+      resetModalState();
+      // You might want to show a success message
+      setShowModal(false);
+    } else {
+      setError(response.data?.message || "Password change failed. Please try again.");
+    }
+  } catch (error) {
+    setError(
+      error.response?.data?.message ||
+      "Password change failed. Please try again later."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   const resetModalState = () => {
     setModalState({
@@ -143,25 +194,81 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
     });
   };
 
-  const handleSendNewPassword = (e) => {
+  const handleSendNewPassword = async (e) => {
     e.preventDefault();
-    setModalState((prev) => ({
-      ...prev,
-      showForgotPassword: false,
-      showForgotPasswordOtp: true,
-    }));
+    const requestBody = {
+      mobile_no: formData?.phoneNumber,
+    };
+    try {
+      const response = await axios.post(
+        "https://dev.netrumusa.com/starkcapital/api-backend/forgot-password",
+        requestBody,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response?.data?.status === "success") {
+        setLatestotp(response?.data?.otp);
+        setModalState((prev) => ({
+          ...prev,
+          showForgotPassword: false,
+          showForgotPasswordOtp: true,
+        }));
+      } else {
+        setError(
+          response.data?.message || "Registration failed. Please try again."
+        );
+      }
+    } catch (error) {
+      setError(
+        error.response?.data?.message ||
+          "Registration failed. Please try again later."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
-
-  const handleVerifyOtp = () => {
-    setModalState((prev) => ({
-      ...prev,
-      showForgotPasswordOtp: false,
-      showResetPassword: true,
-    }));
+  const handleVerifyOtp = async () => {
+    const requestBody = {
+      mobile_no: formData?.phoneNumber,
+      otp: otp.join(""),
+    };
+    try {
+      const response = await axios.post(
+        "https://dev.netrumusa.com/starkcapital/api-backend/verifyOtp",
+        requestBody,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response?.data?.status === "success") {
+        // setLatestotp(response?.data?.otp);
+        setModalState((prev) => ({
+          ...prev,
+          showForgotPasswordOtp: false,
+          showResetPassword: true,
+        }));
+      } else {
+        setError(
+          response.data?.message || "Registration failed. Please try again."
+        );
+      }
+    } catch (error) {
+      setError(
+        error.response?.data?.message ||
+          "Registration failed. Please try again later."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const renderLoginForm = () => (
-    <form onSubmit={Login_User}>
+    <form onSubmit={handleLogin}>
       <h2 className="text-2xl font-bold mb-3 text-gray-800">Login</h2>
       <div className="space-y-4">
         <div>
@@ -190,6 +297,7 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
             value={formData.password}
             onChange={handleChange}
             required
+            minLength={8}
           />
         </div>
       </div>
@@ -269,19 +377,19 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
         Enter Verification Code
       </h2>
       <p className="text-sm text-gray-600">
-        We are automatically detecting a SMS sent to {formData?.phoneNumber}
+        A SMS sent to {formData?.phoneNumber}
       </p>
 
       <div className="flex space-x-4 justify-center">
         {otp.map((digit, index) => (
           <input
             key={index}
-            ref={inputRefss[index]}
+            ref={inputRefs[index]}
             type="text"
             value={digit}
             onChange={(e) => handleOtpChange(e.target, index)}
             onKeyDown={(e) => handleKeyDown(e, index)}
-            className="w-16 h-16 text-2xl text-center border-2 border-gray-300 rounded-lg focus:border-fuchsia-950 focus:outline-none"
+            className="w-16 h-16 text-2xl text-center border-2 border-gray-300 rounded-lg focus:border-fuchsia-950 focus:outline-none text-black font-semibold"
             maxLength={1}
           />
         ))}
@@ -289,10 +397,20 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
 
       <div className="flex justify-center gap-2 text-sm">
         <span className="text-gray-600">Didn't receive the OTP?</span>
-        <button type="button" className="text-fuchsia-950 font-semibold">
+        <button
+          onClick={handleSendNewPassword}
+          type="button"
+          className="text-fuchsia-950 font-semibold"
+        >
           RESEND OTP
         </button>
       </div>
+
+      {Latestotp !== "" ? (
+        <h2 className="text-l font-bold mb-3 text-green-800 items-center justify-center">
+          {`Your OTP - ${Latestotp}`}
+        </h2>
+      ) : null}
 
       <div className="mt-6 flex justify-center">
         <button
@@ -306,8 +424,15 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
   );
 
   const renderResetPasswordForm = () => (
-    <form onSubmit={handleLogin}>
+    <form onSubmit={ChangePassword}>
       <h2 className="text-2xl font-bold mb-3 text-gray-800">Reset Password</h2>
+      
+      {passwordError && (
+        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+          {passwordError}
+        </div>
+      )}
+      
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700">
@@ -318,6 +443,11 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
             type="password"
             name="newPassword"
             required
+            value={newPassword}
+            onChange={(e) => {
+              SetnewPassword(e.target.value);
+              setPasswordError(""); // Clear error on change
+            }}
             minLength={8}
           />
         </div>
@@ -331,6 +461,11 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
             type="password"
             name="confirmPassword"
             required
+            value={confirmPassword}
+            onChange={(e) => {
+              SetconfirmPassword(e.target.value);
+              setPasswordError(""); // Clear error on change
+            }}
             minLength={8}
           />
         </div>
@@ -340,9 +475,10 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
         <div className="flex gap-2">
           <button
             type="submit"
-            className="py-2 px-6 font-poppins font-semibold text-[15px] text-white outline-none bg-fuchsia-900 rounded-full hover:bg-fuchsia-700 transition-colors"
+            disabled={loading}
+            className="py-2 px-6 font-poppins font-semibold text-[15px] text-white outline-none bg-fuchsia-900 rounded-full hover:bg-fuchsia-700 transition-colors disabled:bg-fuchsia-300"
           >
-            Continue
+            {loading ? <Loader size={20} className="animate-spin" /> : "Continue"}
           </button>
           <button
             type="button"

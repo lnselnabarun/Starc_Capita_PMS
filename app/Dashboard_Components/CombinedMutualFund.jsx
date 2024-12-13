@@ -45,7 +45,7 @@ export default function CombinedMutualFund() {
   }, []);
 
   async function GetCombindMutualFund(token) {
-    console.log(token, "tokentokentokentokentoken");
+    console.log(token,"tokentoken")
     try {
       const response = await axios({
         method: "post",

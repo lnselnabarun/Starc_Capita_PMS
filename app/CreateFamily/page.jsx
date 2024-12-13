@@ -66,6 +66,7 @@ const CreateFamilyForm = () => {
       });
     } finally {
       setLoading(false);
+      route.back();
     }
   };
 
