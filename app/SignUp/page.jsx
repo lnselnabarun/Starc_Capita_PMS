@@ -223,7 +223,7 @@ const SignUp = () => {
     );
   };
 
-  console.log(FamilyData, "FamilyDataFamilyData");
+  // console.log(FamilyData, "FamilyDataFamilyData");
 
   return (
     <div className="bg-white min-h-screen w-full overflow-hidden">
