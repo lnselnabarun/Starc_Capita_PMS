@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 
 const CombinedDetailsMutualFund = ({ params }) => {
-  console.log(params?.slug, "gggggggg");
+
   const [activeButton, setActiveButton] = useState("capture");
   const route = useRouter();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -241,7 +241,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
     };
 
     fetchMutualFundDetails();
-  }, []);
+  }, [params?.slug]);
 
   if (isLoading) {
     return (
