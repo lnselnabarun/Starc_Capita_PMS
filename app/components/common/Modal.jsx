@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useMemo } from "react";
 import { Loader } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -13,7 +13,7 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
   const inputRef1 = useRef(null);
   const inputRef2 = useRef(null);
   const inputRef3 = useRef(null);
-  const inputRefs = [inputRef0, inputRef1, inputRef2, inputRef3];
+  const inputRefs = useMemo(() => [inputRef0, inputRef1, inputRef2, inputRef3], []);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -47,13 +47,15 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showModal, setShowModal]);
-  
+
 
   useEffect(() => {
-    if (modalState.showForgotPasswordOtp) {
-      inputRefs[0].current?.focus();
+    // Since we're referencing modalState.showForgotPasswordOtp directly,
+    // we can optimize by using it as a dependency instead of the entire modalState
+    if (modalState.showForgotPasswordOtp && inputRefs[0].current) {
+      inputRefs[0].current.focus();
     }
-  }, [modalState.showForgotPasswordOtp]);
+  }, [modalState.showForgotPasswordOtp, inputRefs]);
 
   const handleOtpChange = (element, index) => {
     if (isNaN(element.value)) return;
