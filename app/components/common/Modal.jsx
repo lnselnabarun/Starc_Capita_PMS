@@ -116,74 +116,76 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
       setLoading(false);
     }
   };
-const validatePasswords = () => {
-  // Reset errors
-  setPasswordError("");
-  setError("");
+  const validatePasswords = () => {
+    // Reset errors
+    setPasswordError("");
+    setError("");
 
-  // Check if passwords are empty
-  if (!newPassword || !confirmPassword) {
-    setPasswordError("Both password fields are required");
-    return false;
-  }
-
-  // Check minimum length
-  if (newPassword.length < 8) {
-    setPasswordError("Password must be at least 8 characters long");
-    return false;
-  }
-
-  // Check if passwords match
-  if (newPassword !== confirmPassword) {
-    setPasswordError("Passwords do not match");
-    return false;
-  }
-
-  return true;
-};
-const ChangePassword = async (e) => {
-  e.preventDefault();
-  
-  // Validate passwords before submission
-  if (!validatePasswords()) {
-    return;
-  }
-
-  setLoading(true);
-  setError(null);
-  
-  const requestBody = {
-    mobile_no: formData?.phoneNumber,
-    new_password: newPassword,
-  };
-
-  try {
-    const response = await axios.post(
-      "https://dev.netrumusa.com/starkcapital/api-backend/changePassword",
-      requestBody,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    if (response?.data?.status === "success") {
-      // Password changed successfully
-      resetModalState();
-      // You might want to show a success message
-      setShowModal(false);
-    } else {
-      setError(response.data?.message || "Password change failed. Please try again.");
+    // Check if passwords are empty
+    if (!newPassword || !confirmPassword) {
+      setPasswordError("Both password fields are required");
+      return false;
     }
-  } catch (error) {
-    setError(
-      error.response?.data?.message ||
-      "Password change failed. Please try again later."
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+
+    // Check minimum length
+    if (newPassword.length < 8) {
+      setPasswordError("Password must be at least 8 characters long");
+      return false;
+    }
+
+    // Check if passwords match
+    if (newPassword !== confirmPassword) {
+      setPasswordError("Passwords do not match");
+      return false;
+    }
+
+    return true;
+  };
+  const ChangePassword = async (e) => {
+    e.preventDefault();
+
+    // Validate passwords before submission
+    if (!validatePasswords()) {
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    const requestBody = {
+      mobile_no: formData?.phoneNumber,
+      new_password: newPassword,
+    };
+
+    try {
+      const response = await axios.post(
+        "https://dev.netrumusa.com/starkcapital/api-backend/changePassword",
+        requestBody,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response?.data?.status === "success") {
+        // Password changed successfully
+        resetModalState();
+        // You might want to show a success message
+        setShowModal(false);
+      } else {
+        setError(
+          response.data?.message || "Password change failed. Please try again."
+        );
+      }
+    } catch (error) {
+      setError(
+        error.response?.data?.message ||
+          "Password change failed. Please try again later."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const resetModalState = () => {
     setModalState({
@@ -426,13 +428,13 @@ const ChangePassword = async (e) => {
   const renderResetPasswordForm = () => (
     <form onSubmit={ChangePassword}>
       <h2 className="text-2xl font-bold mb-3 text-gray-800">Reset Password</h2>
-      
+
       {passwordError && (
         <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
           {passwordError}
         </div>
       )}
-      
+
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700">
@@ -478,7 +480,11 @@ const ChangePassword = async (e) => {
             disabled={loading}
             className="py-2 px-6 font-poppins font-semibold text-[15px] text-white outline-none bg-fuchsia-900 rounded-full hover:bg-fuchsia-700 transition-colors disabled:bg-fuchsia-300"
           >
-            {loading ? <Loader size={20} className="animate-spin" /> : "Continue"}
+            {loading ? (
+              <Loader size={20} className="animate-spin" />
+            ) : (
+              "Continue"
+            )}
           </button>
           <button
             type="button"
