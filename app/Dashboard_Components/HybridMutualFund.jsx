@@ -153,96 +153,102 @@ export default function EquityMutualFund() {
         </div>
 
         {/* Table Section */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  {headers.map((header, index) => (
-                    <th
-                      key={index}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
-                    >
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {familyData?.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-normal">
-                      <div className="text-sm font-medium text-gray-900 max-w-xs line-clamp-2">
-                        {item?.scheme}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-normal">
-                      <div className="text-sm text-gray-900">{item.amc}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        ₹{item?.ac_close?.toLocaleString()}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {item?.["DP-Return1Yr"]}%
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">₹{item?.aum}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {item?.["ARF-InterimNetExpenseRatio"]}%
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        onClick={() =>
-                          router.push(`/CombinedDetailsMutualFund/${item.id}`)
-                        }
-                        className="text-green-600 hover:text-green-900 px-3 py-1 border border-green-600 rounded-md hover:bg-green-50"
+        {familyData?.length !== 0 ? (
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    {headers.map((header, index) => (
+                      <th
+                        key={index}
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
                       >
-                        Detail
-                      </button>
-                    </td>
+                        {header}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {familyData?.map((item) => (
+                    <tr key={item.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-normal">
+                        <div className="text-sm font-medium text-gray-900 max-w-xs line-clamp-2">
+                          {item?.["FSCBI-FundLegalName"]}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-normal">
+                        <div className="text-sm text-gray-900">
+                          {item?.["AT-FundLevelCategoryName"]}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          ₹{item?.close_calculated}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {item?.["DP-Return1Yr"]}%
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          ₹{item?.["FNA-AsOfOriginalReported"]}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {item?.["ARF-InterimNetExpenseRatio"]}%
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button
+                          onClick={() =>
+                            router.push(`/CombinedDetailsMutualFund/${item.id}`)
+                          }
+                          className="text-green-600 hover:text-green-900 px-3 py-1 border border-green-600 rounded-md hover:bg-green-50"
+                        >
+                          Detail
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-          {/* Pagination */}
-          <div className="bg-white px-4 py-3 flex items-center justify-center border-t border-gray-200 sm:px-6">
-            <nav
-              className="flex items-center space-x-2"
-              aria-label="Pagination"
-            >
-              <button className="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                Previous
-              </button>
-              <button className="relative inline-flex items-center px-3 py-2 rounded-md border border-purple-500 bg-purple-50 text-sm font-medium text-purple-600">
-                1
-              </button>
-              <button className="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                2
-              </button>
-              <span className="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700">
-                ...
-              </span>
-              <button className="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                9
-              </button>
-              <button className="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                10
-              </button>
-              <button className="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                Next
-              </button>
-            </nav>
+            {/* Pagination */}
+            <div className="bg-white px-4 py-3 flex items-center justify-center border-t border-gray-200 sm:px-6">
+              <nav
+                className="flex items-center space-x-2"
+                aria-label="Pagination"
+              >
+                <button className="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                  Previous
+                </button>
+                <button className="relative inline-flex items-center px-3 py-2 rounded-md border border-purple-500 bg-purple-50 text-sm font-medium text-purple-600">
+                  1
+                </button>
+                <button className="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                  2
+                </button>
+                <span className="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700">
+                  ...
+                </span>
+                <button className="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                  9
+                </button>
+                <button className="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                  10
+                </button>
+                <button className="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                  Next
+                </button>
+              </nav>
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
 
       <FilterModal

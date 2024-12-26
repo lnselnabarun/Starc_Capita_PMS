@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const App = () => {
+  const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [savedData, setSavedData] = useState(null); // Track localStorage data
   const [state, setState] = useState(null);
@@ -23,7 +24,6 @@ const App = () => {
   }, [state]);
 
 
-  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     phoneNumber: "",

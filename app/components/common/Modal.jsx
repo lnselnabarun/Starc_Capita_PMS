@@ -28,10 +28,6 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
     showResetPassword: false,
   });
   const [otp, setOtp] = useState(INITIAL_OTP_STATE);
-  // const inputRefs = Array(4)
-  //   .fill(null)
-  //   .map(() => useRef(null));
-
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (modalRef.current && !modalRef.current.contains(e.target)) {

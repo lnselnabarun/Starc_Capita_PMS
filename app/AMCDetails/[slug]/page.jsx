@@ -203,7 +203,7 @@ const AMCDetails = ({ params }) => {
             <ArrowLeft size={24} />
           </button>
           <div className="text-lg sm:text-xl md:text-2xl font-bold text-center text-gray-600">
-           AMC Details Canara Robeco 
+           {params?.slug}
           </div>
         </div>
         

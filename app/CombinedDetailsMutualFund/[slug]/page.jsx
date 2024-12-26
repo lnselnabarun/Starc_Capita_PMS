@@ -226,7 +226,15 @@ const CombinedDetailsMutualFund = ({ params }) => {
         console.log(response, "ggggggggggggg");
         if (response.data?.status === "success") {
           setDetailsData(response?.data?.data?.details || []);
-          SetcurrentDataName(response?.data?.data?.scheme);
+          
+          const fundNameDetail = response?.data?.data?.details.find(
+            detail => detail._key === "FSCBI-FundLegalName"
+          );
+          
+          // Set the fund name if found, otherwise use the scheme name as fallback
+          SetcurrentDataName(
+            fundNameDetail?.details || response?.data?.data?.scheme
+          );
         } else {
           throw new Error(
             response.data?.message || "Failed to fetch mutual fund data"

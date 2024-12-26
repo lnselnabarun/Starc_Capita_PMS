@@ -88,8 +88,8 @@ export default function Dashboard() {
               </div>
 
               {/* Right Text */}
-              <span className="text-sm font-sans font-normal text-gray-700">
-                Nabarun
+              <span className="text-sm font-sans font-medium text-gray-700 ">
+               My Profile
               </span>
             </div>
           </Link>
