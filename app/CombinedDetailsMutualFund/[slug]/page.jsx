@@ -265,29 +265,29 @@ const CombinedDetailsMutualFund = ({ params }) => {
   };
 
   // Filter transactions based on search term and filters
-  const filteredTransactions = transactions.filter(transaction => {
-    const matchesSearch = Object.values(transaction).some(value => 
-      value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  // const filteredTransactions = transactions.filter(transaction => {
+  //   const matchesSearch = Object.values(transaction).some(value => 
+  //     value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+  //   );
     
-    const matchesType = typeFilter === 'All Types' || transaction.type === typeFilter;
+  //   const matchesType = typeFilter === 'All Types' || transaction.type === typeFilter;
     
-    // Simple date filter logic - could be enhanced based on needs
-    const transactionDate = new Date(transaction.date);
-    const today = new Date();
-    const daysDifference = (today - transactionDate) / (1000 * 60 * 60 * 24);
+  //   // Simple date filter logic - could be enhanced based on needs
+  //   const transactionDate = new Date(transaction.date);
+  //   const today = new Date();
+  //   const daysDifference = (today - transactionDate) / (1000 * 60 * 60 * 24);
     
-    let matchesDate = true;
-    if (dateFilter === 'Last 30 days') {
-      matchesDate = daysDifference <= 30;
-    } else if (dateFilter === 'Last 90 days') {
-      matchesDate = daysDifference <= 90;
-    } else if (dateFilter === 'Last year') {
-      matchesDate = daysDifference <= 365;
-    }
+  //   let matchesDate = true;
+  //   if (dateFilter === 'Last 30 days') {
+  //     matchesDate = daysDifference <= 30;
+  //   } else if (dateFilter === 'Last 90 days') {
+  //     matchesDate = daysDifference <= 90;
+  //   } else if (dateFilter === 'Last year') {
+  //     matchesDate = daysDifference <= 365;
+  //   }
     
-    return matchesSearch && matchesType && matchesDate;
-  });
+  //   return matchesSearch && matchesType && matchesDate;
+  // });
 
   useEffect(() => {
     const options = {
