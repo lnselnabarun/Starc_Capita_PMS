@@ -107,7 +107,7 @@ export default function EquityMutualFund() {
             {/* Title and Filter Row */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
               <h1 className="text-2xl font-bold text-gray-900">
-                Transactions List
+              Fund List
               </h1>
               <div className="flex items-center space-x-4">
                 <button

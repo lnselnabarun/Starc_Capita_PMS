@@ -11,7 +11,7 @@ export default function DebtMutualFund() {
     "Date of Investment",
     "Current Cost",
     "Current XIRR",
-    "AUM (in Rs.)",
+    "Current VALUE",
     "Expense Ratio",
     "Statistic",
     "Action",
@@ -107,7 +107,7 @@ export default function DebtMutualFund() {
             <div className=" container mx-auto">
               <div className="flex flex-col md:flex-row justify-between items-center mb-4">
                 <h1 className="text-xl sm:text-xl lg:text-xl font-bold mb-4 md:mb-0 text-[#3F4765]">
-                  Transactions List
+                  Fund List
                 </h1>
                 <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 ">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center sm-space-x-2 space-y-2 sm:space-y-0">
