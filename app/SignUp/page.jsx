@@ -90,7 +90,7 @@ const SignUp = () => {
     setShowOTPModal(false);
   };
 
-  const handleFamilySelect = useCallback((selectedFamily,familId) => {
+  const handleFamilySelect = useCallback((selectedFamily, familId) => {
     setFormData((prevData) => ({
       ...prevData,
       family: selectedFamily,
@@ -150,7 +150,7 @@ const SignUp = () => {
       password: formData.password,
       confirm_password: formData.confirm_password,
       family: formData.family,
-      family_id:formData?.familId
+      family_id: formData?.familId,
     };
     console.log(requestBody, "requestBodyrequestBody");
     try {
@@ -163,7 +163,7 @@ const SignUp = () => {
           },
         }
       );
-      console.log(response?.data, "ggggggg");
+      console.log(response?.data, "Registrationnnnnnn");
 
       if (response.data?.status === "success") {
         setSuccess(true);
@@ -175,6 +175,7 @@ const SignUp = () => {
         );
       }
     } catch (error) {
+      console.log(error, "error");
       setError(
         error.response?.data?.message ||
           "Registration failed. Please try again later."

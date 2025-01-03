@@ -111,9 +111,7 @@ export default function CombinedMutualFund() {
           <div className="space-y-6">
             {/* Title and Filter Row */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-              <h1 className="text-2xl font-bold text-gray-900">
-              Fund List
-              </h1>
+              <h1 className="text-2xl font-bold text-gray-900">Fund List</h1>
               <div className="flex items-center space-x-4">
                 <button
                   onClick={() => setIsFilterOpen(true)}

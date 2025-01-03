@@ -13,26 +13,24 @@ import {
 } from "recharts";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import moment from "moment";
 
 const CombinedDetailsMutualFund = ({ params }) => {
   const [activeButton, setActiveButton] = useState("capture");
   const [selectedButton, setselectedButton] = useState("Details");
   const route = useRouter();
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [DetailsData, setDetailsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentDataName, SetcurrentDataName] = useState("");
-  
+
   const [transactions, setTransactions] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [typeFilter, setTypeFilter] = useState('All Types');
-  const [dateFilter, setDateFilter] = useState('Last 30 days');
   const lastTransactionRef = useRef();
   const observer = useRef();
+  const [pageSize] = useState(10);
   const data = [
     {
       name: "JAN",
@@ -121,10 +119,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
           setError("No authentication token found");
           return;
         }
-
         const parsedToken = JSON.parse(token);
-        console.log(`Bearer ${parsedToken}`, "`Bearer ${parsedToken}`");
-
         const response = await axios.get(
           `https://dev.netrumusa.com/starkcapital/api-backend/portfolio-details/${params?.slug}`,
           {
@@ -134,7 +129,6 @@ const CombinedDetailsMutualFund = ({ params }) => {
             },
           }
         );
-        console.log(response, "ggggggggggggg");
         if (response.data?.status === "success") {
           setDetailsData(response?.data?.data?.details || []);
 
@@ -162,155 +156,74 @@ const CombinedDetailsMutualFund = ({ params }) => {
     fetchMutualFundDetails();
   }, [params?.slug]);
 
-
   // Simulated transaction data - replace with your actual API call
-  const staticTransactions = [
-    {
-      date: "2024-12-30",
-      type: "Purchase",
-      units: "235.457",
-      nav: "₹32.45",
-      amount: "₹7,640.58",
-      status: "Completed"
-    },
-    {
-      date: "2024-12-28",
-      type: "Redemption",
-      units: "100.000",
-      nav: "₹32.40",
-      amount: "₹3,240.00",
-      status: "Completed"
-    },
-    {
-      date: "2024-12-25",
-      type: "Switch In",
-      units: "150.235",
-      nav: "₹32.38",
-      amount: "₹4,864.61",
-      status: "Completed"
-    },
-    {
-      date: "2024-12-20",
-      type: "Purchase",
-      units: "310.125",
-      nav: "₹32.35",
-      amount: "₹10,032.54",
-      status: "Pending"
-    },
-    {
-      date: "2024-12-15",
-      type: "Switch Out",
-      units: "75.500",
-      nav: "₹32.30",
-      amount: "₹2,438.65",
-      status: "Completed"
-    },
-    {
-      date: "2024-12-10",
-      type: "Purchase",
-      units: "155.750",
-      nav: "₹32.25",
-      amount: "₹5,022.94",
-      status: "Failed"
-    },
-    {
-      date: "2024-12-05",
-      type: "Redemption",
-      units: "200.000",
-      nav: "₹32.20",
-      amount: "₹6,440.00",
-      status: "Completed"
-    },
-    {
-      date: "2024-12-01",
-      type: "Purchase",
-      units: "465.890",
-      nav: "₹32.15",
-      amount: "₹14,978.36",
-      status: "Completed"
-    },
-    {
-      date: "2024-11-28",
-      type: "Switch In",
-      units: "125.450",
-      nav: "₹32.10",
-      amount: "₹4,026.95",
-      status: "Pending"
-    },
-    {
-      date: "2024-11-25",
-      type: "Purchase",
-      units: "290.675",
-      nav: "₹32.05",
-      amount: "₹9,316.13",
-      status: "Completed"
-    }
-  ];
-
-
 
   // Simulate API call with static data
-  const fetchTransactions = async (pageNumber) => {
-    setLoading(true);
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const startIndex = (pageNumber - 1) * 5;
-    const endIndex = startIndex + 5;
-    const newTransactions = staticTransactions.slice(startIndex, endIndex);
-    
-    setTransactions(prev => [...prev, ...newTransactions]);
-    setHasMore(endIndex < staticTransactions.length);
-    setLoading(false);
-  };
+  const fetchTransactions = async (pageNo) => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("myData");
 
-  // Filter transactions based on search term and filters
-  // const filteredTransactions = transactions.filter(transaction => {
-  //   const matchesSearch = Object.values(transaction).some(value => 
-  //     value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-  //   );
-    
-  //   const matchesType = typeFilter === 'All Types' || transaction.type === typeFilter;
-    
-  //   // Simple date filter logic - could be enhanced based on needs
-  //   const transactionDate = new Date(transaction.date);
-  //   const today = new Date();
-  //   const daysDifference = (today - transactionDate) / (1000 * 60 * 60 * 24);
-    
-  //   let matchesDate = true;
-  //   if (dateFilter === 'Last 30 days') {
-  //     matchesDate = daysDifference <= 30;
-  //   } else if (dateFilter === 'Last 90 days') {
-  //     matchesDate = daysDifference <= 90;
-  //   } else if (dateFilter === 'Last year') {
-  //     matchesDate = daysDifference <= 365;
-  //   }
-    
-  //   return matchesSearch && matchesType && matchesDate;
-  // });
+      if (!token) {
+        setError("No authentication token found");
+        return;
+      }
+      
+      const parsedToken = JSON.parse(token);
+      const response = await axios.get(
+        `https://dev.netrumusa.com/starkcapital/api-backend/portfolio-transactions/${params?.slug}?page=${pageNo}&pageSize=${pageSize}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${parsedToken}`,
+          },
+        }
+      );
+
+      if (response.data?.status === "success") {
+        // Append new transactions to existing ones
+        setTransactions(prevTransactions => {
+          // Filter out transactions with zero units before adding
+          const newTransactions = response.data.data.filter(transaction => transaction.units !== 0);
+          return pageNo === 1 ? newTransactions : [...prevTransactions, ...newTransactions];
+        });
+        
+        // Check if we've reached the end of available data
+        setHasMore(response.data.data.length === pageSize);
+      } else {
+        throw new Error(response.data?.message || "Failed to fetch mutual fund data");
+      }
+    } catch (err) {
+      console.error("Error fetching mutual fund data:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const options = {
       root: null,
-      rootMargin: '20px',
-      threshold: 1.0
+      rootMargin: "20px",
+      threshold: 1.0,
     };
 
     const handleObserver = (entries) => {
       const target = entries[0];
       if (target.isIntersecting && hasMore && !loading) {
-        setPage(prev => prev + 1);
+        setPage(prevPage => prevPage + 1);
       }
     };
 
     observer.current = new IntersectionObserver(handleObserver, options);
 
-    if (lastTransactionRef.current) {
-      observer.current.observe(lastTransactionRef.current);
+    const currentLastTransaction = lastTransactionRef.current;
+    if (currentLastTransaction) {
+      observer.current.observe(currentLastTransaction);
     }
 
     return () => {
-      if (observer.current) {
+      if (observer.current && currentLastTransaction) {
         observer.current.disconnect();
       }
     };
@@ -384,11 +297,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
             <div className="w-full flex flex-wrap gap-4 p-4 rounded-lg border-[1.5px] border-[#D9D9D9] bg-white">
               {/* First Content: Bold Text */}
               <div className="w-full flex flex-wrap justify-between gap-4 h-auto">
-                <div className="flex flex-col items-start space-y-2">
-                  {/* <div className="font-medium text-lg sm:text-xl md:text-2xl text-[#3F4765] font-sans">
-            Chart Data
-          </div> */}
-                </div>
+                <div className="flex flex-col items-start space-y-2"></div>
 
                 {/* Second Content: Four Pressable Divs */}
                 <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
@@ -503,113 +412,124 @@ const CombinedDetailsMutualFund = ({ params }) => {
               ))}
             </div>
           </>
-        ) : <>
-        <div className="w-full">
-      {/* Transaction List Container */}
-      <div className="w-full space-y-4">
-        {/* Filters and Search */}
-        <div className="flex flex-wrap gap-4 mb-6">
-          <div className="flex-1">
-            <input
-              type="text"
-              placeholder="Search transactions..."
-              className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div className="flex gap-2">
-            <select className="px-4 py-2 rounded-lg border border-gray-200 bg-white">
-              <option>All Types</option>
-              <option>Purchase</option>
-              <option>Redemption</option>
-              <option>Switch</option>
-            </select>
-            <select className="px-4 py-2 rounded-lg border border-gray-200 bg-white">
-              <option>Last 30 days</option>
-              <option>Last 90 days</option>
-              <option>Last year</option>
-              <option>All List</option>
-            </select>
-          </div>
-        </div>
+        ) : (
+          <>
+            <div className="w-full">
+              {/* Transaction List Container */}
+              <div className="w-full space-y-4">
+                {/* Filters and Search */}
+                {/* <div className="flex flex-wrap gap-4 mb-6">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      placeholder="Search transactions..."
+                      className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <select className="px-4 py-2 rounded-lg border border-gray-200 bg-white">
+                      <option>All Types</option>
+                      <option>Purchase</option>
+                      <option>Redemption</option>
+                      <option>Switch</option>
+                    </select>
+                    <select className="px-4 py-2 rounded-lg border border-gray-200 bg-white">
+                      <option>Last 30 days</option>
+                      <option>Last 90 days</option>
+                      <option>Last year</option>
+                      <option>All List</option>
+                    </select>
+                  </div>
+                </div> */}
 
-        {/* Transactions Table */}
-        <div className="overflow-x-auto bg-white rounded-lg shadow">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Transaction Type
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Units
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  NAV
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Amount
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {transactions.map((transaction, index) => (
-                <tr
-                  key={index}
-                  ref={index === transactions.length - 1 ? lastTransactionRef : null}
-                  className="hover:bg-gray-50 transition-colors duration-200"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {transaction.date}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {transaction.type}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {transaction.units}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {transaction.nav}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {transaction.amount}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                      ${transaction.status === 'Completed' ? 'bg-green-100 text-green-800' : 
-                      transaction.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : 
-                      'bg-red-100 text-red-800'}`}>
-                      {transaction.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                {/* Transactions Table */}
+                <div className="overflow-x-auto bg-white rounded-lg shadow mt-5">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Date
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Transaction Type
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Units
+                        </th>
+                        {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Ammount
+                        </th> */}
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Amount (Rs)
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {transactions?.map((transaction, index) =>
+                        transaction?.units !== 0 ? (
+                          <>
+                            <tr
+                              key={index}
+                              ref={
+                                index === transactions.length - 1
+                                  ? lastTransactionRef
+                                  : null
+                              }
+                              className="hover:bg-gray-50 transition-colors duration-200"
+                            >
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {moment
+                                  .utc(transaction.transaction_date)
+                                  .format(("MMM Do, YYYY"))}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {transaction.transaction_type}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {transaction.units}
+                              </td>
+                              {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {transaction.nav}
+                          </td> */}
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {transaction.amount}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span
+                                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800
+                      `}
+                                >
+                                  PURCHASE
+                                </span>
+                              </td>
+                            </tr>
+                          </>
+                        ) : null
+                      )}
+                    </tbody>
+                  </table>
+                </div>
 
-        {/* Loading State */}
-        {loading && (
-          <div className="w-full text-center py-4">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
-          </div>
+                {/* Loading State */}
+                {loading && (
+                  <div className="w-full text-center py-4">
+                    <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+                  </div>
+                )}
+
+                {/* No More Data Message */}
+                {!hasMore && transactions.length > 0 && (
+                  <div className="text-center py-4 text-gray-500">
+                    No more transactions to load
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
         )}
-
-        {/* No More Data Message */}
-        {!hasMore && transactions.length > 0 && (
-          <div className="text-center py-4 text-gray-500">
-            No more transactions to load
-          </div>
-        )}
-      </div>
-    </div>
-        
-        </>}
       </div>
     </div>
   );
