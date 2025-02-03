@@ -187,19 +187,20 @@ export default function CombinedMutualFund() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          ₹{item?.close_calculated}
+                          ₹{item?.close_calculated?.toFixed(2)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {item?.["DP-Return1Yr"]}%
+                          {item?.currentXIRR?.toFixed(2)}%
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {`₹ ${formatCompact(
+                          {/* {`₹ ${formatCompact(
                             item?.["FNA-AsOfOriginalReported"]
-                          )}`}
+                          )}`} */}
+                          {item?.currentValue?.toFixed(2)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">

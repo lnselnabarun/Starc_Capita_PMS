@@ -1,7 +1,7 @@
 // Dashboard.js
 
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Logo from "../components/common/logo";
 import Link from "next/link";
@@ -15,6 +15,7 @@ import Compare_Mutual_Fund from "../Dashboard_Components/Compare_Mutual_Fund";
 import DebtMutualFund from "../Dashboard_Components/DebtMutualFund";
 import AMCGrid from "../Dashboard_Components/AMCGrid";
 import { Plus } from "lucide-react";
+
 
 export default function Dashboard() {
   const menuItems = [

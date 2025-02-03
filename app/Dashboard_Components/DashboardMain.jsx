@@ -1,6 +1,6 @@
 // Dashboard.js
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   LineChart,
@@ -13,6 +13,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function DashboardMain() {
   const router = useRouter();
@@ -115,11 +116,63 @@ export default function DashboardMain() {
     },
   ];
 
+  const [DashboardData, SetDashboardData] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [activeIndexTime, setActiveIndexTime] = useState(0);
 
   const handleClickTime = (index) => {
     setActiveIndexTime(index);
   };
+
+  useEffect(() => {
+    const initializeData = async () => {
+      try {
+        setIsLoading(true);
+        const token = localStorage.getItem("myData");
+
+        if (!token) {
+          setError("No authentication token found");
+          return;
+        }
+
+        await GetGetDashboardData(JSON.parse(token));
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeData();
+  }, []);
+
+  async function GetGetDashboardData(token) {
+    try {
+      const response = await axios({
+        method: "get",
+        url: "https://dev.netrumusa.com/starkcapital/api-backend/userportfoliodata",
+        headers: {
+          "Cache-Control": "no-cache",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        data: {},
+      });
+      console.log(response?.data?.data,"ffffff");
+      if (response.data?.status === "success") {
+        SetDashboardData(response.data?.data);
+      } else {
+        throw new Error(
+          response.data?.message || "Failed to fetch mutual fund data"
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching mutual fund data:", error);
+      throw error;
+    }
+  }
 
   return (
     <>
@@ -144,24 +197,24 @@ export default function DashboardMain() {
             {/* Row 2 */}
             <div className="mb-3">
               <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
-                ₹ 50,435.362
+                {`₹ ${DashboardData?.totalPositiveAmount}`}
               </p>
             </div>
 
             {/* Row 3 */}
             <div>
-              <p className="text-[10px] sm:text-xs md:text-sm font-medium text-[#24A959] ml-0 sm:ml-1">
+              {/* <p className="text-[10px] sm:text-xs md:text-sm font-medium text-[#24A959] ml-0 sm:ml-1">
                 ↑ 1.7%
-              </p>
+              </p> */}
             </div>
-            <Image
+            {/* <Image
               src={require("../assets/logo/Graph.png")} // Replace with the correct image path
               alt="Description"
               className="absolute bottom-2 right-2 z-50"
               width={90} // Set the width you want
               height={60} // Set the height you want
               layout="intrinsic"
-            />
+            /> */}
           </div>
 
           {/* Card 2 */}
@@ -182,7 +235,7 @@ export default function DashboardMain() {
             {/* Row 2 */}
             <div className="mb-3">
               <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
-                ₹ 50,435.362
+                {`₹ ${DashboardData?.totalNegativeAmount}`}
               </p>
             </div>
 
@@ -342,7 +395,10 @@ export default function DashboardMain() {
                 <option className="bg-white text-black">24 Hours</option>
               </select>
 
-              <div onClick={() => router.push('/RecentTransactions')} className="border bg-gray-100 text-gray-700 rounded-3xl text-xs sm:text-sm lg:text-base px-4 py-2 focus:outline-none focus:ring-2 focus:ring-fuchsia-700 hover:bg-gray-200 flex justify-center items-center cursor-pointer">
+              <div
+                onClick={() => router.push("/RecentTransactions")}
+                className="border bg-gray-100 text-gray-700 rounded-3xl text-xs sm:text-sm lg:text-base px-4 py-2 focus:outline-none focus:ring-2 focus:ring-fuchsia-700 hover:bg-gray-200 flex justify-center items-center cursor-pointer"
+              >
                 See All
               </div>
             </div>
@@ -436,7 +492,10 @@ export default function DashboardMain() {
                 <option className="bg-white text-black">24 Hours</option>
               </select>
 
-              <div  onClick={() => router.push('/SystematicTransactions')} className="border bg-gray-100 text-gray-700 rounded-3xl text-xs sm:text-sm lg:text-base px-4 py-2 focus:outline-none focus:ring-2 focus:ring-fuchsia-700 hover:bg-gray-200 flex justify-center items-center cursor-pointer">
+              <div
+                onClick={() => router.push("/SystematicTransactions")}
+                className="border bg-gray-100 text-gray-700 rounded-3xl text-xs sm:text-sm lg:text-base px-4 py-2 focus:outline-none focus:ring-2 focus:ring-fuchsia-700 hover:bg-gray-200 flex justify-center items-center cursor-pointer"
+              >
                 See All
               </div>
             </div>
@@ -532,9 +591,9 @@ export default function DashboardMain() {
             <div className="relative bg-[#60BC63] rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto">
               {/* <!-- First Two Text Elements in Column --> */}
               <div className="flex flex-col space-y-2">
-                <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                  {`Today's Gain`}
-                </div>
+                {/* <div className="text-white font-semibold text-base sm:text-sm md:text-base">
+                  {`Gain`}
+                </div> */}
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
                   Gain
                 </div>
@@ -546,7 +605,7 @@ export default function DashboardMain() {
               {/* <!-- Third Text and Image in Column --> */}
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                  ₹80,435.712
+                  {`₹ ${DashboardData?.differenceAmount}`}
                 </div>
                 <div className="w-6 h-6 sm:w-8 sm:h-8">
                   <Image
@@ -576,9 +635,9 @@ export default function DashboardMain() {
             <div className="relative bg-[#FFBA33] rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto">
               {/* <!-- First Two Text Elements in Column --> */}
               <div className="flex flex-col space-y-2">
-                <div className="text-white font-semibold text-base sm:text-sm md:text-base">
+                {/* <div className="text-white font-semibold text-base sm:text-sm md:text-base">
                   {`Today's`}
-                </div>
+                </div> */}
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
                   Expenses
                 </div>
@@ -590,7 +649,7 @@ export default function DashboardMain() {
               {/* <!-- Third Text and Image in Column --> */}
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                  ₹1.84333767
+                 {`₹ ${DashboardData?.totalNetExpenseRatio}`}
                 </div>
                 <div className="w-6 h-6 sm:w-8 sm:h-8">
                   <Image
@@ -708,7 +767,10 @@ export default function DashboardMain() {
             </div>
           </div>
 
-          <div  onClick={() =>router.push('/Newslist')} className="flex items-center space-x-4 justify-between mt-6 p-4 rounded-lg transition-all duration-300 ease-in-out hover:bg-gray-100 hover:shadow-md">
+          <div
+            onClick={() => router.push("/Newslist")}
+            className="flex items-center space-x-4 justify-between mt-6 p-4 rounded-lg transition-all duration-300 ease-in-out hover:bg-gray-100 hover:shadow-md"
+          >
             <div className="font-sans text-lg sm:text-base md:text-lg font-medium leading-5 text-left text-[#3F4765]">
               News
             </div>

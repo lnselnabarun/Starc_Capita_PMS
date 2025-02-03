@@ -168,10 +168,10 @@ const CombinedDetailsMutualFund = ({ params }) => {
         setError("No authentication token found");
         return;
       }
-      
+
       const parsedToken = JSON.parse(token);
       const response = await axios.get(
-        `https://dev.netrumusa.com/starkcapital/api-backend/portfolio-transactions/${params?.slug}?page=${pageNo}&pageSize=${pageSize}`,
+        `https://dev.netrumusa.com/starkcapital/api-backend/portfolio-transactions/${params?.slug}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -182,16 +182,22 @@ const CombinedDetailsMutualFund = ({ params }) => {
 
       if (response.data?.status === "success") {
         // Append new transactions to existing ones
-        setTransactions(prevTransactions => {
+        setTransactions((prevTransactions) => {
           // Filter out transactions with zero units before adding
-          const newTransactions = response.data.data.filter(transaction => transaction.units !== 0);
-          return pageNo === 1 ? newTransactions : [...prevTransactions, ...newTransactions];
+          const newTransactions = response.data.data.filter(
+            (transaction) => transaction.units !== 0
+          );
+          return pageNo === 1
+            ? newTransactions?.reverse()
+            : [...prevTransactions.reverse(), ...newTransactions.reverse()];
         });
-        
+
         // Check if we've reached the end of available data
         setHasMore(response.data.data.length === pageSize);
       } else {
-        throw new Error(response.data?.message || "Failed to fetch mutual fund data");
+        throw new Error(
+          response.data?.message || "Failed to fetch mutual fund data"
+        );
       }
     } catch (err) {
       console.error("Error fetching mutual fund data:", err);
@@ -211,7 +217,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
     const handleObserver = (entries) => {
       const target = entries[0];
       if (target.isIntersecting && hasMore && !loading) {
-        setPage(prevPage => prevPage + 1);
+        setPage((prevPage) => prevPage + 1);
       }
     };
 
@@ -417,32 +423,6 @@ const CombinedDetailsMutualFund = ({ params }) => {
             <div className="w-full">
               {/* Transaction List Container */}
               <div className="w-full space-y-4">
-                {/* Filters and Search */}
-                {/* <div className="flex flex-wrap gap-4 mb-6">
-                  <div className="flex-1">
-                    <input
-                      type="text"
-                      placeholder="Search transactions..."
-                      className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <select className="px-4 py-2 rounded-lg border border-gray-200 bg-white">
-                      <option>All Types</option>
-                      <option>Purchase</option>
-                      <option>Redemption</option>
-                      <option>Switch</option>
-                    </select>
-                    <select className="px-4 py-2 rounded-lg border border-gray-200 bg-white">
-                      <option>Last 30 days</option>
-                      <option>Last 90 days</option>
-                      <option>Last year</option>
-                      <option>All List</option>
-                    </select>
-                  </div>
-                </div> */}
-
-                {/* Transactions Table */}
                 <div className="overflow-x-auto bg-white rounded-lg shadow mt-5">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
@@ -468,47 +448,45 @@ const CombinedDetailsMutualFund = ({ params }) => {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {transactions?.map((transaction, index) =>
-                        transaction?.units !== 0 ? (
-                          <>
-                            <tr
-                              key={index}
-                              ref={
-                                index === transactions.length - 1
-                                  ? lastTransactionRef
-                                  : null
-                              }
-                              className="hover:bg-gray-50 transition-colors duration-200"
-                            >
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {moment
-                                  .utc(transaction.transaction_date)
-                                  .format(("MMM Do, YYYY"))}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {transaction.transaction_type}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {transaction.units}
-                              </td>
-                              {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {transactions?.map((transaction, index) => (
+                        <>
+                          <tr
+                            key={index}
+                            ref={
+                              index === transactions.length - 1
+                                ? lastTransactionRef
+                                : null
+                            }
+                            className="hover:bg-gray-50 transition-colors duration-200"
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {moment
+                                .utc(transaction.transaction_date)
+                                .format("MMM Do, YYYY")}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {transaction.transaction_type}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {transaction.units}
+                            </td>
+                            {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {transaction.nav}
                           </td> */}
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {transaction.amount}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <span
-                                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {transaction.amount}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span
+                                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800
                       `}
-                                >
-                                  PURCHASE
-                                </span>
-                              </td>
-                            </tr>
-                          </>
-                        ) : null
-                      )}
+                              >
+                                PURCHASE
+                              </span>
+                            </td>
+                          </tr>
+                        </>
+                      ))}
                     </tbody>
                   </table>
                 </div>
@@ -521,11 +499,11 @@ const CombinedDetailsMutualFund = ({ params }) => {
                 )}
 
                 {/* No More Data Message */}
-                {!hasMore && transactions.length > 0 && (
+                {/* {!hasMore && transactions.length > 0 && (
                   <div className="text-center py-4 text-gray-500">
                     No more transactions to load
                   </div>
-                )}
+                )} */}
               </div>
             </div>
           </>
