@@ -255,6 +255,13 @@ const CombinedDetailsMutualFund = ({ params }) => {
     );
   }
 
+  function formatMoney(amount) {
+    return new Intl.NumberFormat('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(amount) + "/-";
+}
+
   return (
     <div className="min-h-screen  bg-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="px-4 sm:px-8 md:px-16 lg:px-28">
@@ -453,7 +460,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
                           <tr
                             key={index}
                             ref={
-                              index === transactions.length - 1
+                              index === transactions?.length - 1
                                 ? lastTransactionRef
                                 : null
                             }
@@ -461,20 +468,20 @@ const CombinedDetailsMutualFund = ({ params }) => {
                           >
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                               {moment
-                                .utc(transaction.transaction_date)
+                                .utc(transaction?.transaction_date)
                                 .format("MMM Do, YYYY")}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {transaction.transaction_type}
+                              {transaction?.transaction_type}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {transaction.units}
+                              {transaction?.units}
                             </td>
                             {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {transaction.nav}
                           </td> */}
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {transaction.amount}
+                              {formatMoney(transaction?.amount)}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span

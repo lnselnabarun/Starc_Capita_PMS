@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Minus, Plus } from 'lucide-react';
+import { Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
 
 const FilterModal = ({ isOpen, onClose }) => {
@@ -68,7 +68,7 @@ const FilterModal = ({ isOpen, onClose }) => {
           <div className="flex justify-between items-center mb-2">
             <h3 className="text-lg font-medium">Cost</h3>
             <button onClick={() => toggleSection('cost')}>
-              {expandedSections.cost ? <Minus size={20} /> : <Plus size={20} />}
+              {expandedSections?.cost ? <Minus size={20} /> : <Plus size={20} />}
             </button>
           </div>
           {expandedSections.cost && (
@@ -94,10 +94,10 @@ const FilterModal = ({ isOpen, onClose }) => {
           <div className="flex justify-between items-center mb-2">
             <h3 className="text-lg font-medium">Risk Ratios</h3>
             <button onClick={() => toggleSection('riskRatios')}>
-              {expandedSections.riskRatios ? <Minus size={20} /> : <Plus size={20} />}
+              {expandedSections?.riskRatios ? <Minus size={20} /> : <Plus size={20} />}
             </button>
           </div>
-          {expandedSections.riskRatios && (
+          {expandedSections?.riskRatios && (
             <div className="space-y-2">
               {riskRatios.map((ratio) => (
                 <div key={ratio} className="flex items-center">
@@ -110,7 +110,7 @@ const FilterModal = ({ isOpen, onClose }) => {
         </div>
 
         {/* Additional Sections */}
-        {['Net Rolling Returns', 'Filter Menu Name', 'Filter Menu Name'].map((section, index) => (
+        {['Net Rolling Returns', 'Filter MF Name'].map((section, index) => (
           <div key={section} className="mb-6">
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-medium">{section}</h3>

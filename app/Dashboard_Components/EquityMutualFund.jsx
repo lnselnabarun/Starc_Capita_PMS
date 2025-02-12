@@ -225,7 +225,7 @@ export default function EquityMutualFund() {
             </div>
 
             {/* Pagination */}
-            <div className="bg-white px-4 py-3 flex items-center justify-center border-t border-gray-200 sm:px-6">
+            {/* <div className="bg-white px-4 py-3 flex items-center justify-center border-t border-gray-200 sm:px-6">
               <nav
                 className="flex items-center space-x-2"
                 aria-label="Pagination"
@@ -252,7 +252,7 @@ export default function EquityMutualFund() {
                   Next
                 </button>
               </nav>
-            </div>
+            </div> */}
           </div>
         ) : null}
       </div>

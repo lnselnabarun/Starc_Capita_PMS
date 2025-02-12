@@ -94,14 +94,14 @@ export default function CombinedMutualFund() {
       </div>
     );
   }
-  const formatCompact = (number) => {
-    const formatter = new Intl.NumberFormat("en-IN", {
-      notation: "compact",
-      compactDisplay: "short",
-      maximumFractionDigits: 2,
-    });
-    return formatter.format(number);
-  };
+  function formatMoney(amount) {
+    return (
+      new Intl.NumberFormat("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(amount) + "/-"
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -187,7 +187,8 @@ export default function CombinedMutualFund() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          ₹{item?.close_calculated?.toFixed(2)}
+                          {/* ₹{item?.close_calculated?.toFixed(2)} */}
+                          {formatMoney(item?.close_calculated?.toFixed(2))}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -200,7 +201,7 @@ export default function CombinedMutualFund() {
                           {/* {`₹ ${formatCompact(
                             item?.["FNA-AsOfOriginalReported"]
                           )}`} */}
-                          {item?.currentValue?.toFixed(2)}
+                          {formatMoney(item?.currentValue?.toFixed(2))}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -225,7 +226,7 @@ export default function CombinedMutualFund() {
             </div>
 
             {/* Pagination */}
-            <div className="bg-white px-4 py-3 flex items-center justify-center border-t border-gray-200 sm:px-6">
+            {/* <div className="bg-white px-4 py-3 flex items-center justify-center border-t border-gray-200 sm:px-6">
               <nav
                 className="flex items-center space-x-2"
                 aria-label="Pagination"
@@ -252,7 +253,7 @@ export default function CombinedMutualFund() {
                   Next
                 </button>
               </nav>
-            </div>
+            </div> */}
           </div>
         ) : null}
       </div>
