@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import FilterModal from "../components/common/FilterModal";
 import axios from "axios";
 
-export default function EquityMutualFund() {
+export default function HybridMutualFund() {
   const router = useRouter();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [familyData, setFamilyData] = useState([]);
@@ -17,7 +17,7 @@ export default function EquityMutualFund() {
     "Category",
     "Current Cost",
     "Current XIRR",
-    "AUM (in Rs.)",
+    "Current VALUE",
     "Expense Ratio",
     "Action",
   ];
@@ -45,7 +45,7 @@ export default function EquityMutualFund() {
   }, []);
 
   async function GetCombindMutualFund(token) {
-    console.log(token, "tokentokentokentokentoken");
+    console.log(token, "tokentoken");
     try {
       const response = await axios({
         method: "post",
@@ -57,10 +57,7 @@ export default function EquityMutualFund() {
         },
         data: {},
       });
-      console.log(
-        response?.data,
-        " GetCombindMutualFundGetCombindMutualFundGetCombindMutualFundGetCombindMutualFund "
-      );
+      console.log(response?.data);
       if (response.data?.status === "success") {
         const uniqueData = (response?.data?.data || []).filter(
           (item, index, self) =>
@@ -97,6 +94,14 @@ export default function EquityMutualFund() {
       </div>
     );
   }
+  const formatCompact = (number) => {
+    const formatter = new Intl.NumberFormat("en-IN", {
+      notation: "compact",
+      compactDisplay: "short",
+      maximumFractionDigits: 2,
+    });
+    return formatter.format(number);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -106,9 +111,7 @@ export default function EquityMutualFund() {
           <div className="space-y-6">
             {/* Title and Filter Row */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-              <h1 className="text-2xl font-bold text-gray-900">
-              Fund List
-              </h1>
+              <h1 className="text-2xl font-bold text-gray-900">Fund List</h1>
               <div className="flex items-center space-x-4">
                 <button
                   onClick={() => setIsFilterOpen(true)}
@@ -184,17 +187,20 @@ export default function EquityMutualFund() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          ₹{item?.close_calculated}
+                          ₹{item?.close_calculated?.toFixed(2)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {item?.["DP-Return1Yr"]}%
+                          {item?.currentXIRR?.toFixed(2)}%
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          ₹{item?.["FNA-AsOfOriginalReported"]}
+                          {/* {`₹ ${formatCompact(
+                            item?.["FNA-AsOfOriginalReported"]
+                          )}`} */}
+                          {item?.currentValue?.toFixed(2)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">

@@ -1,228 +1,266 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import FilterModal from "../components/common/FilterModal";
+import axios from "axios";
 
 export default function DebtMutualFund() {
-  const route = useRouter();
+  const router = useRouter();
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [familyData, setFamilyData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const headers = [
     "Name",
     "Category",
-    "Date of Investment",
     "Current Cost",
     "Current XIRR",
     "Current VALUE",
     "Expense Ratio",
-    "Statistic",
     "Action",
   ];
-  const dummyData = [
-    {
-      name: "Canara Robeco ",
-      category: "Equity - Large Cap",
-      dateOfInvestment: "2023-01-15",
-      currentCost: "5,000.00",
-      currentXIRR: "12.5%",
-      aum: "5,080.88",
-      expenseRatio: "1.5%",
-      statistic: require("../assets/logo/Graph.png"),
-    },
-    {
-      name: "Canara Robeco ",
-      category: "Equity - Large Cap",
-      dateOfInvestment: "2023-01-15",
-      currentCost: "5,000.00",
-      currentXIRR: "12.5%",
-      aum: "5,080.88",
-      expenseRatio: "1.5%",
-      statistic: require("../assets/logo/Graph.png"),
-    },
-    {
-      name: "Canara Robeco ",
-      category: "Equity - Large Cap",
-      dateOfInvestment: "2023-01-15",
-      currentCost: "5,000.00",
-      currentXIRR: "12.5%",
-      aum: "5,080.88",
-      expenseRatio: "1.5%",
-      statistic: require("../assets/logo/Graph.png"),
-    },
-    {
-      name: "Canara Robeco ",
-      category: "Equity - Large Cap",
-      dateOfInvestment: "2023-01-15",
-      currentCost: "5,000.00",
-      currentXIRR: "12.5%",
-      aum: "5,080.88",
-      expenseRatio: "1.5%",
-      statistic: require("../assets/logo/Graph.png"),
-    },
-    {
-      name: "Canara Robeco ",
-      category: "Equity - Large Cap",
-      dateOfInvestment: "2023-01-15",
-      currentCost: "5,000.00",
-      currentXIRR: "12.5%",
-      aum: "5,080.88",
-      expenseRatio: "1.5%",
-      statistic: require("../assets/logo/Graph.png"),
-    },
-    {
-      name: "Canara Robeco ",
-      category: "Equity - Large Cap",
-      dateOfInvestment: "2023-01-15",
-      currentCost: "5,000.00",
-      currentXIRR: "12.5%",
-      aum: "5,080.88",
-      expenseRatio: "1.5%",
-      statistic: require("../assets/logo/Graph.png"),
-    },
-    {
-      name: "Canara Robeco ",
-      category: "Equity - Large Cap",
-      dateOfInvestment: "2023-01-15",
-      currentCost: "5,000.00",
-      currentXIRR: "12.5%",
-      aum: "5,080.88",
-      expenseRatio: "1.5%",
-      statistic: require("../assets/logo/Graph.png"),
-    },
-    {
-      name: "Canara Robeco ",
-      category: "Equity - Large Cap",
-      dateOfInvestment: "2023-01-15",
-      currentCost: "5,000.00",
-      currentXIRR: "12.5%",
-      aum: "5,080.88",
-      expenseRatio: "1.5%",
-      statistic: require("../assets/logo/Graph.png"),
-    },
-    // Add more dummy data as needed
-  ];
+
+  useEffect(() => {
+    const initializeData = async () => {
+      try {
+        setIsLoading(true);
+        const token = localStorage.getItem("myData");
+
+        if (!token) {
+          setError("No authentication token found");
+          return;
+        }
+
+        await GetCombindMutualFund(JSON.parse(token));
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeData();
+  }, []);
+
+  async function GetCombindMutualFund(token) {
+    console.log(token, "tokentoken");
+    try {
+      const response = await axios({
+        method: "post",
+        url: "https://dev.netrumusa.com/starkcapital/api-backend/get-usermf-data",
+        headers: {
+          "Cache-Control": "no-cache",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        data: {},
+      });
+      console.log(response?.data);
+      if (response.data?.status === "success") {
+        const uniqueData = (response?.data?.data || []).filter(
+          (item, index, self) =>
+            index === self.findIndex((t) => t.id === item.id)
+        );
+
+        // Save the filtered data
+        setFamilyData(uniqueData);
+      } else {
+        throw new Error(
+          response.data?.message || "Failed to fetch mutual fund data"
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching mutual fund data:", error);
+      throw error;
+    }
+  }
+
+  // Fallback data in case API fails or during development
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-red-600">Error: {error}</div>
+      </div>
+    );
+  }
+  const formatCompact = (number) => {
+    const formatter = new Intl.NumberFormat("en-IN", {
+      notation: "compact",
+      compactDisplay: "short",
+      maximumFractionDigits: 2,
+    });
+    return formatter.format(number);
+  };
+
   return (
-    <>
-      <>
-        <div className="px-4 sm:px-8 md:px-16 lg:px-28 ">
-          <header className="mb-5">
-            <div className=" container mx-auto">
-              <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-                <h1 className="text-xl sm:text-xl lg:text-xl font-bold mb-4 md:mb-0 text-[#3F4765]">
-                  Fund List
-                </h1>
-                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 ">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center sm-space-x-2 space-y-2 sm:space-y-0">
-                    <span className="font-semibold text-xs sm:text-xs lg:text-xs text-[#3F4765] text-left ">
-                      Rolling Returns:
-                    </span>
-                    <select className=" border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700 ml-2">
-                      <option className="bg-white text-black ">1 Year</option>
-                      <option className="bg-white text-black">2 Year</option>
-                      <option className="bg-white text-black">3 Year</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </header>
-
-          <div className="w-full overflow-x-auto">
-            <div className="min-w-max mt-4">
-              <div className="flex bg-[#F5F5F5] font-normal text-sm text-[#848CA9] border rounded-md ">
-                {headers.map((header, index) => {
-                  return (
-                    <div
-                      key={index}
-                      className={`p-2 w-36 text-left ${
-                        index === 0 ? "sticky left-0 bg-[#F5F5F5] z-10" : ""
-                      } ${
-                        index === 1
-                          ? "sticky left-36 bg-[#F5F5F5] z-10 font-semibold"
-                          : "font-semibold"
-                      }`}
-                    >
-                      {`${header}`}
-                    </div>
-                  );
-                })}
-              </div>
-              {dummyData.map((row, rowIndex) => (
-                <div
-                  key={rowIndex}
-                  className="flex border-b items-center justify-between bg-[#DBDDF659] p-1"
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header Section */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <div className="space-y-6">
+            {/* Title and Filter Row */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+              <h1 className="text-2xl font-bold text-gray-900">Fund List</h1>
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => setIsFilterOpen(true)}
+                  className="p-2 rounded-md hover:bg-gray-100"
                 >
-                  <div className="p-3 w-36 line-clamp-2 overflow-hidden text-ellipsis break-all text-[13px] font-medium text-[#3F4765] sticky left-0 bg-white z-10">
-                    {row.name}
-                  </div>
-                  <div className="p-3 w-36 text-[13px] font-medium text-[#3F4765] sticky left-36 bg-white z-10">
-                    {row.category}
-                  </div>
-                  <div className="w-36 text-[13px] font-medium text-[#3F4765] pl-2">
-                    {row.dateOfInvestment}
-                  </div>
-                  <div className="w-36 text-[13px] font-medium text-[#3F4765]">
-                    {row.currentCost}
-                  </div>
-                  <div className="w-36 text-[13px] font-medium text-[#3F4765]">
-                    {row.currentXIRR}
-                  </div>
-                  <div className="w-36 text-[13px] font-medium text-[#3F4765]">
-                    {row.aum}
-                  </div>
-                  <div className="w-36 text-[13px] font-medium text-[#3F4765]">
-                    {row.expenseRatio}
-                  </div>
-                  <div className="w-36 items-center">
-                    <Image
-                      src={row.statistic}
-                      alt="Statistic"
-                      width={60}
-                      height={20}
-                      className="h-auto w-auto max-w-full"
-                    />
-                  </div>
-                  <div className="w-36">
-                    <button
-                      onClick={() =>
-                        route.push("/DebtDetailsMutualFund/12345")
-                      }
-                      className="md:block text-[#35B26B] border border-[#35B26B] rounded-md px-2 hover:bg-[#e8f5eb] text-sm"
-                    >
-                      Detail
-                    </button>
-                  </div>
-                </div>
-              ))}
+                  <Image
+                    src={require("../assets/logo/FilterModal.png")}
+                    alt="Filter"
+                    width={24}
+                    height={24}
+                    className="w-6 h-6"
+                  />
+                </button>
+              </div>
             </div>
-          </div>
 
-          <div className=" flex items-center justify-center space-x-2 my-10">
-            <button
-              className="w-10 h-10 flex items-center justify-center bg-gray-400 text-white rounded-lg"
-              disabled
-            >
-              &lt;
-            </button>
-            <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 text-gray-700 rounded-lg ">
-              1
-            </button>
-            <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 text-gray-700 rounded-lg ">
-              2
-            </button>
-            <div className="w-10 h-10 flex items-center justify-center text-gray-700">
-              ...
+            {/* Filter Controls */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+              <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4 sm:items-center">
+                <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                  Market Cap:
+                </span>
+                <select className="mt-1 block w-full sm:w-auto pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md">
+                  <option>LargeCap</option>
+                  <option>MidCap</option>
+                  <option>SmallCap</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4 sm:items-center">
+                <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                  Rolling Returns:
+                </span>
+                <select className="mt-1 block w-full sm:w-auto pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md">
+                  <option>1 Year</option>
+                  <option>2 Years</option>
+                  <option>3 Years</option>
+                </select>
+              </div>
             </div>
-            <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 text-gray-700 rounded-lg ">
-              9
-            </button>
-            <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 text-gray-700 rounded-lg ">
-              10
-            </button>
-            <button className="w-10 h-10 flex items-center justify-center bg-gray-400 text-white rounded-lg" > 
-                &gt;
-            </button>
           </div>
         </div>
-      </>
-    </>
+
+        {/* Table Section */}
+        {familyData?.length !== 0 ? (
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    {headers.map((header, index) => (
+                      <th
+                        key={index}
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
+                      >
+                        {header}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {familyData?.map((item) => (
+                    <tr key={item.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-normal">
+                        <div className="text-sm font-medium text-gray-900 max-w-xs line-clamp-2">
+                          {item?.["FSCBI-FundLegalName"]}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-normal">
+                        <div className="text-sm text-gray-900">
+                          {item?.["AT-FundLevelCategoryName"]}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          ₹{item?.close_calculated?.toFixed(2)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {item?.currentXIRR?.toFixed(2)}%
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {/* {`₹ ${formatCompact(
+                            item?.["FNA-AsOfOriginalReported"]
+                          )}`} */}
+                          {item?.currentValue?.toFixed(2)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {item?.["ARF-InterimNetExpenseRatio"]}%
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button
+                          onClick={() =>
+                            router.push(`/CombinedDetailsMutualFund/${item.id}`)
+                          }
+                          className="text-green-600 hover:text-green-900 px-3 py-1 border border-green-600 rounded-md hover:bg-green-50"
+                        >
+                          Detail
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            <div className="bg-white px-4 py-3 flex items-center justify-center border-t border-gray-200 sm:px-6">
+              <nav
+                className="flex items-center space-x-2"
+                aria-label="Pagination"
+              >
+                <button className="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                  Previous
+                </button>
+                <button className="relative inline-flex items-center px-3 py-2 rounded-md border border-purple-500 bg-purple-50 text-sm font-medium text-purple-600">
+                  1
+                </button>
+                <button className="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                  2
+                </button>
+                <span className="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700">
+                  ...
+                </span>
+                <button className="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                  9
+                </button>
+                <button className="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                  10
+                </button>
+                <button className="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                  Next
+                </button>
+              </nav>
+            </div>
+          </div>
+        ) : null}
+      </div>
+
+      <FilterModal
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+      />
+    </div>
   );
 }
