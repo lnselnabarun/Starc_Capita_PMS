@@ -94,14 +94,14 @@ export default function DebtMutualFund() {
       </div>
     );
   }
-  const formatCompact = (number) => {
-    const formatter = new Intl.NumberFormat("en-IN", {
-      notation: "compact",
-      compactDisplay: "short",
-      maximumFractionDigits: 2,
-    });
-    return formatter.format(number);
-  };
+  // const formatCompact = (number) => {
+  //   const formatter = new Intl.NumberFormat("en-IN", {
+  //     notation: "compact",
+  //     compactDisplay: "short",
+  //     maximumFractionDigits: 2,
+  //   });
+  //   return formatter.format(number);
+  // };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -213,8 +213,7 @@ export default function DebtMutualFund() {
                           onClick={() =>
                             router.push(`/CombinedDetailsMutualFund/${item.id}`)
                           }
-                          className="text-green-600 hover:text-green-900 px-3 py-1 border border-green-600 rounded-md hover:bg-green-50"
-                        >
+                          className="text-green-600 hover:text-green-900 px-3 py-1 border border-green-600 rounded-md hover:bg-green-50">
                           Detail
                         </button>
                       </td>

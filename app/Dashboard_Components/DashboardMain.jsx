@@ -173,7 +173,14 @@ export default function DashboardMain() {
       throw error;
     }
   }
-
+  function formatMoney(amount) {
+    return (
+      new Intl.NumberFormat("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(amount)
+    );
+  }
   return (
     <>
       <div className="flex flex-col md:flex-row w-full justify-between px-4 sm:px-6 lg:px-28">
@@ -197,7 +204,7 @@ export default function DashboardMain() {
             {/* Row 2 */}
             <div className="mb-3">
               <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
-                {`₹ ${DashboardData?.totalPositiveAmount}`}
+                {`₹ ${formatMoney(DashboardData?.totalPositiveAmount)}`}
               </p>
             </div>
 
@@ -235,7 +242,7 @@ export default function DashboardMain() {
             {/* Row 2 */}
             <div className="mb-3">
               <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
-                {`₹ ${DashboardData?.totalNegativeAmount}`}
+                {`₹ ${formatMoney(DashboardData?.totalNegativeAmount)}`}
               </p>
             </div>
 

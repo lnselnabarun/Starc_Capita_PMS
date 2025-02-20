@@ -219,7 +219,7 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
         }));
       } else {
         setError(
-          response.data?.message || "Registration failed. Please try again."
+          response?.data?.message || "Registration failed. Please try again."
         );
       }
     } catch (error) {

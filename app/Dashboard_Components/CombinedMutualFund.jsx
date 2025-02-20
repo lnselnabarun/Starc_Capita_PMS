@@ -12,15 +12,7 @@ export default function CombinedMutualFund() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const headers = [
-    "Name",
-    "Category",
-    "Current Cost",
-    "Current XIRR",
-    "Current VALUE",
-    "Expense Ratio",
-    "Action",
-  ];
+  const headers = [ "Name", "Category", "Current Cost", "Current XIRR", "Current VALUE", "Expense Ratio", "Action"];
 
   useEffect(() => {
     const initializeData = async () => {
@@ -99,10 +91,10 @@ export default function CombinedMutualFund() {
       new Intl.NumberFormat("en-IN", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      }).format(amount) + "/-"
+      }).format(amount) 
     );
   }
-
+  // + "/-"
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -114,7 +106,7 @@ export default function CombinedMutualFund() {
               <h1 className="text-2xl font-bold text-gray-900">Fund List</h1>
               <div className="flex items-center space-x-4">
                 <button
-                  onClick={() => setIsFilterOpen(true)}
+                  onClick={() => setIsFilterOpen(!isFilterOpen)}
                   className="p-2 rounded-md hover:bg-gray-100"
                 >
                   <Image
