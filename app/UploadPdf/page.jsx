@@ -70,7 +70,7 @@ const PDFUploadPage = () => {
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-xl mx-auto">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-fuchsia-900">Upload CAMS PDF</h2>
+          <h2 className="text-3xl font-bold text-fuchsia-900">UPLOAD CAMS PDF</h2>
           <p className="mt-2 text-gray-600">With your PDF password</p>
         </div>
 

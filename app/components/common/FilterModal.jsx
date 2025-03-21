@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Minus, Plus } from "lucide-react";
 import Image from "next/image";
 
-const FilterModal = ({ isOpen, onClose }) => {
+const FilterModal = ({ isOpen, onClose, type }) => {
   const [costRange, setCostRange] = useState([0, 100000]);
   const [rollingReturns, setRollingReturns] = useState([0, 100]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -207,7 +207,7 @@ const FilterModal = ({ isOpen, onClose }) => {
         <div className="p-4 border-t">
           <button
             onClick={onClose}
-            className="w-full bg-fuchsia-950 text-white py-2 px-4 rounded-md hover:bg-fuchsia-800 transition duration-300"
+            className="w-full bg-fuchsia-950 text-white py-2 px-4 rounded-md hover:bg-fuchsia-800 transition duration-200"
           >
             Apply Filters
           </button>

@@ -259,7 +259,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
     return new Intl.NumberFormat('en-IN', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
-    }).format(amount) + "/-";
+    }).format(amount);
 }
 
   return (
@@ -481,7 +481,8 @@ const CombinedDetailsMutualFund = ({ params }) => {
                             {transaction.nav}
                           </td> */}
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {formatMoney(transaction?.amount)}
+                              {/* {formatMoney()} */}
+                              {`₹${formatMoney(transaction?.amount)}`}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span

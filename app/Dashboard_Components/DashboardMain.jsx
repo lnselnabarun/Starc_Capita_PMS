@@ -10,8 +10,8 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer,
-} from "recharts";
+  ResponsiveContainer
+} from 'recharts';
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
@@ -19,75 +19,53 @@ export default function DashboardMain() {
   const router = useRouter();
   const data = [
     {
-      name: "JAN",
-      uv: 4000,
-      pv: 2400,
-      tv: 3200,
-      wv: 1500,
-      xv: 2800,
-      yv: 3300,
-      zv: 4100,
+      date: '03/07/2024',
+      totalCost: 442238.49,
+      currentValue: 1039048.16,
+      sensex: 799868.00,
+      xirr: 20.05,
+      MFxirr: 25.05,
     },
     {
-      name: "FEB",
-      uv: 3000,
-      pv: 1398,
-      tv: 2100,
-      wv: 2300,
-      xv: 2100,
-      yv: 2500,
-      zv: 3700,
+      date: '04/08/2024',
+      totalCost: 550000.00,
+      currentValue: 1050000.00,
+      sensex: 805000.00,
+      xirr: 19.87,
+      MFxirr: 22.05,
     },
     {
-      name: "MAR",
-      uv: 2000,
-      pv: 9800,
-      tv: 2900,
-      wv: 2400,
-      xv: 3200,
-      yv: 4000,
-      zv: 4500,
+      date: '01/09/2024',
+      totalCost: 650000.00,
+      currentValue: 1120000.00,
+      sensex: 820000.00,
+      xirr: 19.95,
+      MFxirr: 20.05,
     },
     {
-      name: "APR",
-      uv: 2780,
-      pv: 3908,
-      tv: 3500,
-      wv: 2600,
-      xv: 3000,
-      yv: 2900,
-      zv: 3800,
+      date: '01/10/2024',
+      totalCost: 650000.00,
+      currentValue: 1150000.00,
+      sensex: 830000.00,
+      xirr: 20.10,
+      MFxirr: 24.05,
     },
     {
-      name: "MAY",
-      uv: 7090,
-      pv: 4800,
-      tv: 4700,
-      wv: 3100,
-      xv: 4100,
-      yv: 5000,
-      zv: 5300,
+      date: '10/11/2024',
+      totalCost: 650000.00,
+      currentValue: 1130000.00,
+      sensex: 825000.00,
+      xirr: 19.90,
+      MFxirr: 15.05,
     },
     {
-      name: "JUN",
-      uv: 2390,
-      pv: 3800,
-      tv: 3600,
-      wv: 2200,
-      xv: 2700,
-      yv: 3400,
-      zv: 4100,
-    },
-    {
-      name: "JUL",
-      uv: 3490,
-      pv: 4300,
-      tv: 3900,
-      wv: 2500,
-      xv: 3000,
-      yv: 3700,
-      zv: 4200,
-    },
+      date: '19/03/2025',
+      totalCost: 650000.00,
+      currentValue: 1100000.00,
+      sensex: 810000.00,
+      xirr: 19.75,
+      MFxirr: 22.05,
+    }
   ];
   const tableData = [
     {
@@ -181,6 +159,28 @@ export default function DashboardMain() {
       }).format(amount)
     );
   }
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-4 border border-gray-200 rounded shadow-md">
+          <p className="font-bold">{label}</p>
+          <p className="text-blue-600">Total Cost: ₹{payload[0].value.toLocaleString('en-IN')}</p>
+          <p className="text-red-600">Current Value: ₹{payload[1].value.toLocaleString('en-IN')}</p>
+          <p className="text-yellow-600">Sensex: {payload[2].value.toLocaleString('en-IN')}</p>
+          <p className="text-green-600">XIRR: {payload[3]?.value.toFixed(2)}%</p>
+          <p className="text-[#aa4bf2]">MFXIRR: {payload[3]?.value.toFixed(2)}%</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const formatYAxis = (value) => {
+    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+    if (value >= 1000) return `${(value / 1000).toFixed(0)}K`;
+    return value;
+  };
   return (
     <>
       <div className="flex flex-col md:flex-row w-full justify-between px-4 sm:px-6 lg:px-28">
@@ -303,15 +303,15 @@ export default function DashboardMain() {
           <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg border-[1.5px] border-[#D9D9D9] ">
             {/* First Content: Bold Text */}
             <div className="justify-between w-full flex flex-wrap gap-4 h-auto">
-              <div className="flex flex-col items-start space-y-2">
+              {/* <div className="flex flex-col items-start space-y-2">
                 <div className="font-medium text-lg sm:text-xl md:text-2xl text-[#3F4765] font-sans">
                   Total Investment Graph
                 </div>
-              </div>
+              </div> */}
 
               {/* Second Content: Four Pressable Divs */}
               <div className="flex gap-4">
-                {["24H", "7D", "1M", "1Y"].map((option, idx) => (
+                {/* {["24H", "7D", "1M", "1Y"].map((option, idx) => (
                   <div
                     key={idx}
                     onClick={() => handleClickTime(idx)}
@@ -326,59 +326,98 @@ export default function DashboardMain() {
                   >
                     {option}
                   </div>
-                ))}
+                ))} */}
               </div>
             </div>
-            <div className="w-full h-48 sm:h-64 md:h-80 lg:h-96">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={data}
-                  margin={{
-                    top: 5,
-                    right: 10,
-                    left: 5,
-                    bottom: 10,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-
-                  <Line
-                    type="monotone"
-                    dataKey="tv"
-                    stroke="#FF5733"
-                    activeDot={{ r: 8 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="wv"
-                    stroke="#33FF57"
-                    activeDot={{ r: 8 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="xv"
-                    stroke="#3357FF"
-                    activeDot={{ r: 8 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="yv"
-                    stroke="#FF33C1"
-                    activeDot={{ r: 8 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="zv"
-                    stroke="#FFC733"
-                    activeDot={{ r: 8 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+            {/* <div className="w-full bg-white p-6 rounded-lg shadow"> */}
+      <h2 className="text-2xl text-center font-semibold text-gray-700 mb-6">Investment Summary</h2>
+      
+      <div className="w-full h-96">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={data}
+            margin={{
+              top: 10,
+              right: 30,
+              left: 20,
+              bottom: 30,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis 
+              dataKey="date" 
+              angle={-45} 
+              textAnchor="end" 
+              height={70} 
+            />
+            <YAxis 
+              yAxisId="left" 
+              orientation="left" 
+              tickFormatter={formatYAxis} 
+              domain={['auto', 'auto']} 
+            />
+            <YAxis 
+              yAxisId="right" 
+              orientation="right" 
+              tickFormatter={(value) => `${value}%`} 
+              domain={[0, 30]} 
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+            <Line
+              yAxisId="left"
+              type="monotone"
+              dataKey="totalCost"
+              name="Total Cost"
+              stroke="#1e40af"
+              strokeWidth={2}
+              dot={{ r: 4 }}
+              activeDot={{ r: 8 }}
+            />
+            <Line
+              yAxisId="left"
+              type="monotone"
+              dataKey="currentValue"
+              name="Current Value"
+              stroke="#dc2626"
+              strokeWidth={2}
+              dot={{ r: 4 }}
+              activeDot={{ r: 8 }}
+            />
+            <Line
+              yAxisId="left"
+              type="monotone"
+              dataKey="sensex"
+              name="Sensex"
+              stroke="#f59e0b"
+              strokeWidth={2}
+              dot={{ r: 4 }}
+              activeDot={{ r: 8 }}
+            />
+            <Line
+              yAxisId="right"
+              type="monotone"
+              dataKey="xirr"
+              name="XIRR %"
+              stroke="#10b981"
+              strokeWidth={2}
+              dot={{ r: 4 }}
+              activeDot={{ r: 8 }}
+            />
+            <Line
+              yAxisId="right"
+              type="monotone"
+              dataKey="MFxirr"
+              name="MFXIRR %"
+              stroke="#aa4bf2"
+              strokeWidth={2}
+              dot={{ r: 4 }}
+              activeDot={{ r: 8 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    {/* </div> */}
           </div>
 
           <div className="justify-between w-full flex flex-wrap gap-4 h-auto mb-2">

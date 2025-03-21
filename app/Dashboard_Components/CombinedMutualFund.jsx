@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import FilterModal from "../components/common/FilterModal";
 import axios from "axios";
+import { Filter } from "lucide-react";
 
 export default function CombinedMutualFund() {
   const router = useRouter();
@@ -12,7 +12,15 @@ export default function CombinedMutualFund() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const headers = [ "Name", "Category", "Current Cost", "Current XIRR", "Current VALUE", "Expense Ratio", "Action"];
+  const headers = [
+    "Name",
+    "Category",
+    "Current Cost",
+    "Current XIRR",
+    "Current VALUE",
+    "Expense Ratio",
+    "Action",
+  ];
 
   useEffect(() => {
     const initializeData = async () => {
@@ -87,12 +95,10 @@ export default function CombinedMutualFund() {
     );
   }
   function formatMoney(amount) {
-    return (
-      new Intl.NumberFormat("en-IN", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(amount) 
-    );
+    return new Intl.NumberFormat("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
   }
   // + "/-"
   return (
@@ -109,13 +115,7 @@ export default function CombinedMutualFund() {
                   onClick={() => setIsFilterOpen(!isFilterOpen)}
                   className="p-2 rounded-md hover:bg-gray-100"
                 >
-                  <Image
-                    src={require("../assets/logo/FilterModal.png")}
-                    alt="Filter"
-                    width={24}
-                    height={24}
-                    className="w-6 h-6"
-                  />
+                  <Filter className="w-6 h-6" />
                 </button>
               </div>
             </div>
@@ -180,7 +180,9 @@ export default function CombinedMutualFund() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
                           {/* ₹{item?.close_calculated?.toFixed(2)} */}
-                          {formatMoney(item?.close_calculated?.toFixed(2))}
+                          {`₹${formatMoney(
+                            item?.close_calculated?.toFixed(2)
+                          )}`}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -193,7 +195,7 @@ export default function CombinedMutualFund() {
                           {/* {`₹ ${formatCompact(
                             item?.["FNA-AsOfOriginalReported"]
                           )}`} */}
-                          {formatMoney(item?.currentValue?.toFixed(2))}
+                          {`₹${formatMoney(item?.currentValue?.toFixed(2))}`}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -253,6 +255,7 @@ export default function CombinedMutualFund() {
       <FilterModal
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
+        type="CombinedMutualFund"
       />
     </div>
   );

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import FilterModal from "../components/common/FilterModal";
 import axios from "axios";
+import { Filter } from 'lucide-react';
 
 export default function DebtMutualFund() {
   const router = useRouter();
@@ -94,15 +95,13 @@ export default function DebtMutualFund() {
       </div>
     );
   }
-  // const formatCompact = (number) => {
-  //   const formatter = new Intl.NumberFormat("en-IN", {
-  //     notation: "compact",
-  //     compactDisplay: "short",
-  //     maximumFractionDigits: 2,
-  //   });
-  //   return formatter.format(number);
-  // };
-
+  function formatMoney(amount) {
+    return new Intl.NumberFormat("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  }
+  // + "/-"
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -114,16 +113,10 @@ export default function DebtMutualFund() {
               <h1 className="text-2xl font-bold text-gray-900">Fund List</h1>
               <div className="flex items-center space-x-4">
                 <button
-                  onClick={() => setIsFilterOpen(true)}
+                  onClick={() => setIsFilterOpen(!isFilterOpen)}
                   className="p-2 rounded-md hover:bg-gray-100"
                 >
-                  <Image
-                    src={require("../assets/logo/FilterModal.png")}
-                    alt="Filter"
-                    width={24}
-                    height={24}
-                    className="w-6 h-6"
-                  />
+                  <Filter className="w-6 h-6" />
                 </button>
               </div>
             </div>
@@ -187,7 +180,10 @@ export default function DebtMutualFund() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          ₹{item?.close_calculated?.toFixed(2)}
+                          {/* ₹{item?.close_calculated?.toFixed(2)} */}
+                          {`₹${formatMoney(
+                            item?.close_calculated?.toFixed(2)
+                          )}`}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -200,7 +196,7 @@ export default function DebtMutualFund() {
                           {/* {`₹ ${formatCompact(
                             item?.["FNA-AsOfOriginalReported"]
                           )}`} */}
-                          {item?.currentValue?.toFixed(2)}
+                          {`₹${formatMoney(item?.currentValue?.toFixed(2))}`}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -213,7 +209,8 @@ export default function DebtMutualFund() {
                           onClick={() =>
                             router.push(`/CombinedDetailsMutualFund/${item.id}`)
                           }
-                          className="text-green-600 hover:text-green-900 px-3 py-1 border border-green-600 rounded-md hover:bg-green-50">
+                          className="text-green-600 hover:text-green-900 px-3 py-1 border border-green-600 rounded-md hover:bg-green-50"
+                        >
                           Detail
                         </button>
                       </td>
@@ -259,6 +256,7 @@ export default function DebtMutualFund() {
       <FilterModal
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
+        type="DebtMutualFund"
       />
     </div>
   );
