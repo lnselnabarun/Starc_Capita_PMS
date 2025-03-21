@@ -353,7 +353,6 @@ export default function AnalysisMain() {
             {/* Card 2 */}
             <div className="relative flex-1 w-1/2 bg-white border border-[#D9D9D9] rounded-xl p-4 z-10">
               {/* Header Section */}
-              
 
               {/* Image Section */}
               <div className="pt-4">
@@ -369,123 +368,123 @@ export default function AnalysisMain() {
 
             {/* {chart section} */}
             {/* <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg border-[1.5px] border-[#D9D9D9] "> */}
-              {/* First Content: Bold Text */}
+            {/* First Content: Bold Text */}
 
-              <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg border-[1.5px] border-[#D9D9D9] bg-white">
-                {/* Header section with title and toggle buttons */}
-                <div className="justify-between w-full flex flex-wrap gap-4 h-auto">
-                  <div className="flex flex-col items-start space-y-2">
-                    <div className="font-medium text-lg sm:text-xl md:text-2xl text-[#3F4765] font-sans">
-                      {getChartTitle()}
-                    </div>
-                  </div>
-
-                  {/* Toggle buttons */}
-                  <div className="flex space-x-4">
-                    <button
-                      onClick={() => setActiveButton("risk")}
-                      className={`text-[#9FA8C7] px-4 py-2 rounded-2xl border text-sm ${
-                        activeButton === "risk"
-                          ? "bg-[#ECEFF9] border-[#E5EBEF] text-[#3F4765] font-medium"
-                          : "border-[#E5EBEF]"
-                      }`}
-                    >
-                      Risk Ratio
-                    </button>
-
-                    <button
-                      onClick={() => setActiveButton("capture")}
-                      className={`text-[#9FA8C7] px-4 py-2 rounded-2xl border text-sm ${
-                        activeButton === "capture"
-                          ? "bg-[#ECEFF9] border-[#E5EBEF] text-[#3F4765] font-medium"
-                          : "border-[#E5EBEF]"
-                      }`}
-                    >
-                      Capture Ratio
-                    </button>
+            <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg border-[1.5px] border-[#D9D9D9] bg-white">
+              {/* Header section with title and toggle buttons */}
+              <div className="justify-between w-full flex flex-wrap gap-4 h-auto">
+                <div className="flex flex-col items-start space-y-2">
+                  <div className="font-medium text-lg sm:text-xl md:text-2xl text-[#3F4765] font-sans">
+                    {getChartTitle()}
                   </div>
                 </div>
 
-                {/* Chart container */}
-                <div className="w-full h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
-                      data={getActiveData()}
-                      margin={{
-                        top: 20,
-                        right: 30,
-                        left: 10,
-                        bottom: 20,
-                      }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
+                {/* Toggle buttons */}
+                <div className="flex space-x-4">
+                  <button
+                    onClick={() => setActiveButton("risk")}
+                    className={`text-[#9FA8C7] px-4 py-2 rounded-2xl border text-sm ${
+                      activeButton === "risk"
+                        ? "bg-[#ECEFF9] border-[#E5EBEF] text-[#3F4765] font-medium"
+                        : "border-[#E5EBEF]"
+                    }`}
+                  >
+                    Risk Ratio
+                  </button>
 
-                      {activeButton === "risk" ? (
-                        // Lines for Risk Ratio chart
-                        <>
-                          <Line
-                            type="monotone"
-                            dataKey="Expense Ratio"
-                            stroke="#4285F4"
-                            activeDot={{ r: 8 }}
-                            strokeWidth={2}
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="Std. Dev."
-                            stroke="#EA4335"
-                            activeDot={{ r: 8 }}
-                            strokeWidth={2}
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="Sharpe"
-                            stroke="#FBBC05"
-                            activeDot={{ r: 8 }}
-                            strokeWidth={2}
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="Beta"
-                            stroke="#34A853"
-                            activeDot={{ r: 8 }}
-                            strokeWidth={2}
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="Alpha"
-                            stroke="#FF6D01"
-                            activeDot={{ r: 8 }}
-                            strokeWidth={2}
-                          />
-                        </>
-                      ) : (
-                        // Lines for Capture Ratio chart
-                        <>
-                          <Line
-                            type="monotone"
-                            dataKey="Up"
-                            stroke="#4285F4"
-                            activeDot={{ r: 8 }}
-                            strokeWidth={2}
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="Down"
-                            stroke="#EA4335"
-                            activeDot={{ r: 8 }}
-                            strokeWidth={2}
-                          />
-                        </>
-                      )}
-                    </LineChart>
-                  </ResponsiveContainer>
+                  <button
+                    onClick={() => setActiveButton("capture")}
+                    className={`text-[#9FA8C7] px-4 py-2 rounded-2xl border text-sm ${
+                      activeButton === "capture"
+                        ? "bg-[#ECEFF9] border-[#E5EBEF] text-[#3F4765] font-medium"
+                        : "border-[#E5EBEF]"
+                    }`}
+                  >
+                    Capture Ratio
+                  </button>
                 </div>
               </div>
+
+              {/* Chart container */}
+              <div className="w-full h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={getActiveData()}
+                    margin={{
+                      top: 20,
+                      right: 30,
+                      left: 10,
+                      bottom: 20,
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+
+                    {activeButton === "risk" ? (
+                      // Lines for Risk Ratio chart
+                      <>
+                        <Line
+                          type="monotone"
+                          dataKey="Expense Ratio"
+                          stroke="#4285F4"
+                          activeDot={{ r: 8 }}
+                          strokeWidth={2}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="Std. Dev."
+                          stroke="#EA4335"
+                          activeDot={{ r: 8 }}
+                          strokeWidth={2}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="Sharpe"
+                          stroke="#FBBC05"
+                          activeDot={{ r: 8 }}
+                          strokeWidth={2}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="Beta"
+                          stroke="#34A853"
+                          activeDot={{ r: 8 }}
+                          strokeWidth={2}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="Alpha"
+                          stroke="#FF6D01"
+                          activeDot={{ r: 8 }}
+                          strokeWidth={2}
+                        />
+                      </>
+                    ) : (
+                      // Lines for Capture Ratio chart
+                      <>
+                        <Line
+                          type="monotone"
+                          dataKey="Up"
+                          stroke="#4285F4"
+                          activeDot={{ r: 8 }}
+                          strokeWidth={2}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="Down"
+                          stroke="#EA4335"
+                          activeDot={{ r: 8 }}
+                          strokeWidth={2}
+                        />
+                      </>
+                    )}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
             {/* </div> */}
           </div>
 
@@ -493,7 +492,7 @@ export default function AnalysisMain() {
             {/* Card 1 */}
             <div className="relative flex-1 w-1/2 bg-white border border-[#D9D9D9] rounded-xl p-4 z-10">
               {/* Header Section */}
-              
+
               <div className="pt-4">
                 <Chart
                   chartType="PieChart"
@@ -507,7 +506,6 @@ export default function AnalysisMain() {
 
             {/* Card 2 */}
             <div className="relative flex-1 w-1/2 bg-white border border-[#D9D9D9] rounded-xl p-4 z-10">
-             
               {/* Image Section */}
               <div className="pt-4">
                 <Chart
