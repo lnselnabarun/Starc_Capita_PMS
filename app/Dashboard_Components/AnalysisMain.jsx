@@ -337,7 +337,6 @@ export default function AnalysisMain() {
           <div className="w-full md:w-[100%] flex flex-wrap gap-4 justify-between">
             {/* Card 1 */}
             <div className="relative flex-1 w-1/2 bg-white border border-[#D9D9D9] rounded-xl p-4 z-10">
-              {/* Header Section */}
 
               <div className="pt-4">
                 <Chart
@@ -352,9 +351,6 @@ export default function AnalysisMain() {
 
             {/* Card 2 */}
             <div className="relative flex-1 w-1/2 bg-white border border-[#D9D9D9] rounded-xl p-4 z-10">
-              {/* Header Section */}
-
-              {/* Image Section */}
               <div className="pt-4">
                 <Chart
                   chartType="PieChart"
@@ -365,10 +361,6 @@ export default function AnalysisMain() {
                 />
               </div>
             </div>
-
-            {/* {chart section} */}
-            {/* <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg border-[1.5px] border-[#D9D9D9] "> */}
-            {/* First Content: Bold Text */}
 
             <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg border-[1.5px] border-[#D9D9D9] bg-white">
               {/* Header section with title and toggle buttons */}
@@ -424,7 +416,6 @@ export default function AnalysisMain() {
                     <Legend />
 
                     {activeButton === "risk" ? (
-                      // Lines for Risk Ratio chart
                       <>
                         <Line
                           type="monotone"
@@ -463,7 +454,6 @@ export default function AnalysisMain() {
                         />
                       </>
                     ) : (
-                      // Lines for Capture Ratio chart
                       <>
                         <Line
                           type="monotone"
@@ -485,13 +475,11 @@ export default function AnalysisMain() {
                 </ResponsiveContainer>
               </div>
             </div>
-            {/* </div> */}
           </div>
 
           <div className="w-full md:w-[100%] flex flex-wrap gap-4 justify-between mb-5">
             {/* Card 1 */}
             <div className="relative flex-1 w-1/2 bg-white border border-[#D9D9D9] rounded-xl p-4 z-10">
-              {/* Header Section */}
 
               <div className="pt-4">
                 <Chart
