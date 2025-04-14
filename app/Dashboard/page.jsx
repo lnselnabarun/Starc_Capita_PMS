@@ -39,13 +39,41 @@ export default function Dashboard() {
     "AMC",
   ];
 
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [activeIndexSecond, setActiveIndexSecond] = useState(0);
+  // Initialize state from localStorage or default to 0
+  const [activeIndex, setActiveIndex] = useState(() => {
+    // This runs only on client-side during initial render
+    if (typeof window === 'undefined') return 0;
+    
+    const savedIndex = localStorage.getItem('dashboardActiveIndex');
+    return savedIndex !== null ? parseInt(savedIndex, 10) : 0;
+  });
+
+  const [activeIndexSecond, setActiveIndexSecond] = useState(() => {
+    // This runs only on client-side during initial render
+    if (typeof window === 'undefined') return 0;
+    
+    const savedIndex = localStorage.getItem('dashboardActiveIndexSecond');
+    return savedIndex !== null ? parseInt(savedIndex, 10) : 0;
+  });
+
+  // Update localStorage whenever state changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('dashboardActiveIndex', activeIndex.toString());
+    }
+  }, [activeIndex]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('dashboardActiveIndexSecond', activeIndexSecond.toString());
+    }
+  }, [activeIndexSecond]);
 
   const handleClick = (index) => {
     setActiveIndex(index);
-    setActiveIndexSecond(0);
+    setActiveIndexSecond(0); // Reset secondary menu when primary menu changes
   };
+
   const handleClickSecond = (index) => {
     setActiveIndexSecond(index);
   };
@@ -60,13 +88,6 @@ export default function Dashboard() {
         onClick={() => handleFileUpload()}
         className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-8 md:right-12 lg:bottom-12 lg:right-24 z-50 flex flex-col items-center"
       >
-        {/* <input 
-        type="file" 
-        id="cams-upload"
-        accept=".pdf"
-        onChange={handleFileUpload}
-        className="hidden"
-      /> */}
         <label
           htmlFor="cams-upload"
           className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-[#5E2751] hover:bg-[#4a1f40] text-white rounded-full shadow-lg cursor-pointer transition-all duration-200 hover:shadow-xl"
@@ -207,11 +228,6 @@ export default function Dashboard() {
           </span>
         ) : null}
 
-        {/* {activeIndex === 1 && activeIndexSecond === 4 ? (
-          <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
-            Compare Mutual Funds
-          </span>
-        ) : null} */}
         {activeIndex === 1 && activeIndexSecond === 5 ? (
           <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
             Asset Management Company (AMC)
@@ -252,7 +268,6 @@ export default function Dashboard() {
       </div>
 
       <div className="bg-primary w-full overflow-hidden bg-white min-h-screen ">
-        {/* ... existing code ... */}
         <UploadButton />
       </div>
     </>

@@ -26,24 +26,6 @@ const UserProfile = () => {
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  // useEffect(() => {
-  //   fetchUserData();
-  // }, []);
-
-  // const fetchUserData = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       "https://dev.netrumusa.com/starkcapital/api-backend/users/4"
-  //     )
-  //     setUserData(response.data.data);
-  //     setFetchLoading(false);
-  //   } catch (error) {
-  //     console.error("Error fetching user data:", error);
-  //     setError("Failed to load user data");
-  //     setFetchLoading(false);
-  //   }
-  // };
-
 
   useEffect(() => {
     const initializeData = async () => {
@@ -68,7 +50,6 @@ const UserProfile = () => {
   }, []);
 
   async function GetUserDetails(token) {
-    console.log(token,"TokenGetUserDetails")
     try {
       const response = await axios({
         method: "GET",
@@ -79,7 +60,6 @@ const UserProfile = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response?.data,"GetUserDetailsGetUserDetails")
       if (response.data?.status === "success") {
         setUserData(response.data.data);
         // const uniqueData = (response?.data?.data || []).filter(
@@ -93,7 +73,6 @@ const UserProfile = () => {
         throw new Error(response.data?.message || "Failed to fetch mutual fund data");
       }
     } catch (error) {
-      console.error("Error fetching mutual fund data:", error);
       throw error;
     }
   }
@@ -105,26 +84,6 @@ const UserProfile = () => {
       [name]: value,
     }));
   };
-
-  // const handleSave = async (e) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   setError(null);
-  //   try {
-  //     // Update API endpoint and method as needed
-  //     await axios.put(
-  //       `https://dev.netrumusa.com/starkcapital/api-backend/users/${userData.user_reg_id}`,
-  //       userData
-  //     );
-  //     setIsEditing(false);
-  //     localStorage.setItem("userData", JSON.stringify(userData));
-  //   } catch (error) {
-  //     console.error("Error updating user:", error);
-  //     setError("Failed to update profile");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const handleBack = () => router.back();
 

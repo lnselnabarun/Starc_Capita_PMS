@@ -45,7 +45,6 @@ const CreateFamilyForm = () => {
         "https://dev.netrumusa.com/starkcapital/api-backend/family_create",
         formData
       );
-      console.log("API response:", response.data);
       setSuccess(true);
       setAlert({
         show: true,
@@ -56,7 +55,6 @@ const CreateFamilyForm = () => {
       route.back();
 
     } catch (error) {
-      console.error("Error submitting form:", error);
       setError("Failed to submit the form. Please try again later.");
       setAlert({
         show: true,

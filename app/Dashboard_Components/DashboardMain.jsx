@@ -138,7 +138,6 @@ export default function DashboardMain() {
         },
         data: {},
       });
-      console.log(response?.data?.data,"ffffff");
       if (response.data?.status === "success") {
         SetDashboardData(response.data?.data);
       } else {
@@ -147,7 +146,6 @@ export default function DashboardMain() {
         );
       }
     } catch (error) {
-      console.error("Error fetching mutual fund data:", error);
       throw error;
     }
   }

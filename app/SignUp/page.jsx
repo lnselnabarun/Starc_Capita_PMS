@@ -83,7 +83,6 @@ const SignUp = () => {
     setShowOTPModal(true);
   };
   const handleOTPVerify = (otp) => {
-    console.log(`Verifying ${otpType} OTP:`, otp);
     setOtp("");
     // Here you would typically send the OTP to your backend for verification
     // For now, we'll just close the modal
@@ -117,13 +116,10 @@ const SignUp = () => {
         },
         data: {}, // empty object as body
       });
-
-      console.log("Test Response:", response.data);
       if (response.data?.status === "success") {
         setFamilyData(response.data?.data);
       }
     } catch (error) {
-      console.error("Test Error:", error?.response?.data || error.message);
     }
   }
 
@@ -135,7 +131,6 @@ const SignUp = () => {
     e.preventDefault();
     if (!validateForm()) {
       setError("Please fill in all required fields correctly.");
-      console.log(formData, "formDataformDataformDataformData");
       return;
     }
 
@@ -152,7 +147,6 @@ const SignUp = () => {
       family: formData.family,
       family_id: formData?.familId,
     };
-    console.log(requestBody, "requestBodyrequestBody");
     try {
       const response = await axios.post(
         "https://dev.netrumusa.com/starkcapital/api-backend/registration",
@@ -163,7 +157,6 @@ const SignUp = () => {
           },
         }
       );
-      console.log(response?.data, "Registrationnnnnnn");
 
       if (response.data?.status === "success") {
         setSuccess(true);
@@ -175,7 +168,6 @@ const SignUp = () => {
         );
       }
     } catch (error) {
-      console.log(error, "error");
       setError(
         error.response?.data?.message ||
           "Registration failed. Please try again later."
@@ -224,7 +216,6 @@ const SignUp = () => {
     );
   };
 
-  // console.log(FamilyData, "FamilyDataFamilyData");
 
   return (
     <div className="bg-white min-h-screen w-full overflow-hidden">
@@ -475,5 +466,3 @@ const InputField = React.memo(
 InputField.displayName = "InputField";
 
 export default SignUp;
-
-

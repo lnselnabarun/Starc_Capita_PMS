@@ -100,6 +100,10 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
           "email",
           JSON.stringify(response.data?.data?.email)
         );
+        localStorage.setItem(
+          "UserId",
+          JSON.stringify(response.data?.data?.id)
+        );
         router.push("/Dashboard");
       } else {
         setError(

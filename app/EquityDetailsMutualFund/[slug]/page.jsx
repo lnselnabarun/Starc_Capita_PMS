@@ -15,7 +15,6 @@ import { useRouter } from "next/navigation";
 
 const EquityDetailsMutualFund = ({ params }) => {
   const [activeButton, setActiveButton] = useState("capture");
-  console.log(params?.slug, "bbbbbb");
   const route = useRouter();
   const data = [
     {
@@ -190,7 +189,6 @@ const EquityDetailsMutualFund = ({ params }) => {
   const handleBack = () => {
     // Implement your back navigation logic here
     route.back();
-    console.log("Navigating back");
   };
   return (
     <div className="min-h-screen  bg-white py-12 px-4 sm:px-6 lg:px-8">

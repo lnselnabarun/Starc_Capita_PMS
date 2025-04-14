@@ -190,7 +190,6 @@ const DebtDetailsMutualFund = ({ params }) => {
   const handleBack = () => {
     // Implement your back navigation logic here
     route.back();
-    console.log("Navigating back");
   };
   return (
     <div className="min-h-screen  bg-white py-12 px-4 sm:px-6 lg:px-8">

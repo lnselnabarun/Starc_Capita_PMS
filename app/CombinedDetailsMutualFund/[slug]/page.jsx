@@ -146,7 +146,6 @@ const CombinedDetailsMutualFund = ({ params }) => {
           );
         }
       } catch (err) {
-        console.error("Error fetching mutual fund data:", err);
         setError(err.message);
       } finally {
         setIsLoading(false);
@@ -200,7 +199,6 @@ const CombinedDetailsMutualFund = ({ params }) => {
         );
       }
     } catch (err) {
-      console.error("Error fetching mutual fund data:", err);
       setError(err.message);
     } finally {
       setLoading(false);

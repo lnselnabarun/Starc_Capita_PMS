@@ -1,12 +1,16 @@
 "use client";
-import { useState } from 'react';
-import { Lock, Upload, FileText, X } from 'lucide-react';
+import { useState } from "react";
+import { Lock, Upload, FileText, X } from "lucide-react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const PDFUploadPage = () => {
+  const router = useRouter();
   const [file, setFile] = useState(null);
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState("");
   const [isDragging, setIsDragging] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -31,46 +35,94 @@ const PDFUploadPage = () => {
   };
 
   const validateAndSetFile = (selectedFile) => {
-    setError('');
+    setError("");
     if (!selectedFile) return;
-    
-    if (selectedFile?.type !== 'application/pdf') {
-      setError('Please upload a PDF file only');
+
+    if (selectedFile?.type !== "application/pdf") {
+      setError("Please upload a PDF file only");
       return;
     }
-    
+
     if (selectedFile?.size > 10 * 1024 * 1024) {
-      setError('File size should be less than 10MB');
+      setError("File size should be less than 10MB");
       return;
     }
-    
+
     setFile(selectedFile);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Reset previous errors
+    setError("");
+
+    // Validate file and password
     if (!file) {
-      setError('Please select a PDF file');
+      setError("Please select a PDF file");
       return;
     }
     if (!password) {
-      setError('Please enter a password');
+      setError("Please enter a password");
       return;
     }
-    // Handle the upload logic here
-    console.log('File:', file, 'Password:', password);
+
+    // Get user ID from local storage
+    const userId = localStorage.getItem("UserId");
+    if (!userId) {
+      setError("User ID not found. Please log in again.");
+      return;
+    }
+    // Create FormData to send file
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("password", password);
+    formData.append("user_id", userId);
+
+    try {
+      setIsLoading(true);
+
+      // Make API call
+      const response = await axios.post(
+        "https://dev.netrumusa.com/starkcapital/api/upload-cams-file",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.data?.status === "success") {
+        setFile(null);
+        setPassword("");
+        router.back();
+      } else {
+        throw new Error(response.data?.message || "Failed to fetch PDF list");
+      }
+      // Optional: Reset form after successful upload
+    } catch (err) {
+      // Handle error
+      const errorMessage =
+        err.response?.data?.message || "An error occurred during upload";
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const removeFile = () => {
     setFile(null);
-    setError('');
+    setError("");
   };
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-xl mx-auto">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-fuchsia-900">UPLOAD CAMS PDF</h2>
+          <h2 className="text-3xl font-bold text-fuchsia-900">
+            UPLOAD CAMS PDF
+          </h2>
           <p className="mt-2 text-gray-600">With your PDF password</p>
         </div>
 
@@ -81,8 +133,12 @@ const PDFUploadPage = () => {
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
               className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors
-                ${isDragging ? 'border-fuchsia-500 bg-fuchsia-50' : 'border-gray-300 hover:border-fuchsia-500'}
-                ${file ? 'bg-gray-50' : 'bg-white'}`}
+                ${
+                  isDragging
+                    ? "border-fuchsia-500 bg-fuchsia-50"
+                    : "border-gray-300 hover:border-fuchsia-500"
+                }
+                ${file ? "bg-gray-50" : "bg-white"}`}
             >
               {!file ? (
                 <div className="space-y-4">
@@ -90,7 +146,10 @@ const PDFUploadPage = () => {
                     <Upload className="h-12 w-12 text-fuchsia-900" />
                   </div>
                   <div className="flex text-sm text-gray-600">
-                    <label htmlFor="file-upload" className="relative cursor-pointer rounded-md font-medium text-fuchsia-900 hover:text-fuchsia-700">
+                    <label
+                      htmlFor="file-upload"
+                      className="relative cursor-pointer rounded-md font-medium text-fuchsia-900 hover:text-fuchsia-700"
+                    >
                       <span>Upload a file</span>
                       <input
                         id="file-upload"
@@ -125,7 +184,10 @@ const PDFUploadPage = () => {
             </div>
 
             <div className="mt-4">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 PDF Password
               </label>
               <div className="mt-1 relative">
@@ -144,15 +206,20 @@ const PDFUploadPage = () => {
             </div>
           </div>
 
-          {error && (
-            <div className="text-red-500 text-sm mt-2">{error}</div>
-          )}
+          {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
 
           <button
             type="submit"
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-fuchsia-900 hover:bg-fuchsia-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fuchsia-500 transition-colors"
+            disabled={isLoading}
+            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white 
+              ${
+                isLoading
+                  ? "bg-fuchsia-700 cursor-not-allowed"
+                  : "bg-fuchsia-900 hover:bg-fuchsia-800"
+              } 
+              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fuchsia-500 transition-colors`}
           >
-            Upload PDF
+            {isLoading ? "Uploading..." : "Upload PDF"}
           </button>
         </form>
       </div>
