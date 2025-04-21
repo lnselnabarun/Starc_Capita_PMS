@@ -35,22 +35,31 @@ export default function HybridMutualFund() {
   };
 
   const categories = [
-    "Large & Mid Cap",
-    "Multi Asset Allocation",
-    "Long Duration",
-    "Index Funds",
-    "Equity - Other",
-    "Dynamic Asset Allocation",
-    "Arbitrage Fund",
     "Large-Cap",
     "Mid-Cap",
-    "Flexi Cap", 
+    "Equity - Other",
+    "Flexi Cap",
     "Focused Fund",
+    "Long Duration",
     "Fund of Funds",
     "Equity - Infrastructure",
     "Large & Mid-Cap",
     "Equity Savings",
-    "Contra"
+    "Contra",
+    "Arbitrage Fund",
+    "Dynamic Asset Allocation",
+    "Value",
+    "Money Market",
+    "Dynamic Bond",
+    "Floating Rate",
+    "Sector - Precious Metals",
+    "Conservative Allocation",
+    "Aggressive Allocation",
+    "Liquid",
+    "Low Duration",
+    "Index Funds",
+    "Small-Cap",
+    "Multi Asset Allocation"
   ];
 
   // const riskRatios = ["LargeCap", "MidCap", "SmallCap", "SemiCap"];
@@ -77,7 +86,7 @@ export default function HybridMutualFund() {
           setError("No authentication token found");
           return;
         }
-
+        console.log(token, "tokentoken");
         await GetCombindMutualFund(JSON.parse(token));
       } catch (err) {
         setError(err.message);
@@ -91,53 +100,54 @@ export default function HybridMutualFund() {
 
   // Apply filters whenever filter states change
   useEffect(() => {
-    if (familyData.length > 0) {
+    if (familyData?.length > 0) {
       applyFilters();
     }
   }, [
-    familyData, 
-    searchTerm, 
-    costRange, 
-    selectedCategories, 
-    selectedMarketCaps, 
+    familyData,
+    searchTerm,
+    costRange,
+    selectedCategories,
+    selectedMarketCaps,
     rollingReturns,
     selectedReturnPeriods,
     selectedMarketCap,
-    selectedRollingReturn
+    selectedRollingReturn,
   ]);
 
   const applyFilters = () => {
     let filtered = [...familyData];
-  
+
     // Enhanced search filter
     if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
-      filtered = filtered.filter(item => {
+      const searchLower = searchTerm?.toLowerCase();
+      filtered = filtered?.filter((item) => {
         // Search in fund name
         const fundName = item["FSCBI-FundLegalName"]?.toLowerCase() || "";
         // Also search in category
         const category = item["AT-FundLevelCategoryName"]?.toLowerCase() || "";
-        
-        return fundName.includes(searchLower) || category.includes(searchLower);
+
+        return fundName?.includes(searchLower) || category?.includes(searchLower);
       });
     }
-  
+
     // Rest of the filter logic remains the same
     // Filter by cost range
-    filtered = filtered.filter(item => 
-      item.close_calculated >= costRange[0] && 
-      item.close_calculated <= costRange[1]
+    filtered = filtered?.filter(
+      (item) =>
+        item.close_calculated >= costRange[0] &&
+        item.close_calculated <= costRange[1]
     );
-  
+
     // Filter by selected categories
     if (selectedCategories.length > 0) {
-      filtered = filtered.filter(item => 
+      filtered = filtered.filter((item) =>
         selectedCategories.includes(item["AT-FundLevelCategoryName"])
       );
     }
-  
+
     // The rest of your filtering code...
-  
+
     setFilteredData(filtered);
   };
 
@@ -153,11 +163,11 @@ export default function HybridMutualFund() {
         },
         data: {},
       });
-      
-      if (response.data?.status === "success") {
+
+      if (response?.data?.status === "success") {
         const uniqueData = (response?.data?.data || []).filter(
           (item, index, self) =>
-            index === self.findIndex((t) => t.id === item.id)
+            index === self?.findIndex((t) => t?.id === item?.id)
         );
 
         // Save the filtered data
@@ -165,7 +175,7 @@ export default function HybridMutualFund() {
         setFilteredData(uniqueData); // Initialize filtered data with all data
       } else {
         throw new Error(
-          response.data?.message || "Failed to fetch mutual fund data"
+          response?.data?.message || "Failed to fetch mutual fund data"
         );
       }
     } catch (error) {
@@ -174,9 +184,9 @@ export default function HybridMutualFund() {
   }
 
   const handleCategoryChange = (category) => {
-    setSelectedCategories(prev => {
-      if (prev.includes(category)) {
-        return prev.filter(c => c !== category);
+    setSelectedCategories((prev) => {
+      if (prev?.includes(category)) {
+        return prev?.filter((c) => c !== category);
       } else {
         return [...prev, category];
       }
@@ -184,9 +194,9 @@ export default function HybridMutualFund() {
   };
 
   const handleMarketCapChange = (marketCap) => {
-    setSelectedMarketCaps(prev => {
-      if (prev.includes(marketCap)) {
-        return prev.filter(m => m !== marketCap);
+    setSelectedMarketCaps((prev) => {
+      if (prev?.includes(marketCap)) {
+        return prev?.filter((m) => m !== marketCap);
       } else {
         return [...prev, marketCap];
       }
@@ -194,9 +204,9 @@ export default function HybridMutualFund() {
   };
 
   const handleReturnPeriodChange = (period) => {
-    setSelectedReturnPeriods(prev => {
-      if (prev.includes(period)) {
-        return prev.filter(p => p !== period);
+    setSelectedReturnPeriods((prev) => {
+      if (prev?.includes(period)) {
+        return prev?.filter((p) => p !== period);
       } else {
         return [...prev, period];
       }
@@ -269,7 +279,7 @@ export default function HybridMutualFund() {
                 <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
                   Market Cap:
                 </span>
-                <select 
+                <select
                   className="mt-1 block w-full sm:w-auto pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md"
                   value={selectedMarketCap}
                   onChange={(e) => setSelectedMarketCap(e.target.value)}
@@ -285,10 +295,10 @@ export default function HybridMutualFund() {
                 <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
                   Rolling Returns:
                 </span>
-                <select 
+                <select
                   className="mt-1 block w-full sm:w-auto pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md"
                   value={selectedRollingReturn}
-                  onChange={(e) => setSelectedRollingReturn(e.target.value)}
+                  onChange={(e) => setSelectedRollingReturn(e?.target?.value)}
                 >
                   <option value="1 Year">1 Year</option>
                   <option value="2 Years">2 Years</option>
@@ -369,8 +379,10 @@ export default function HybridMutualFund() {
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow p-8 text-center">
-            <p className="text-gray-600">No mutual funds match your filters. Try adjusting your criteria.</p>
-            <button 
+            <p className="text-gray-600">
+              No mutual funds match your filters. Try adjusting your criteria.
+            </p>
+            <button
               onClick={resetFilters}
               className="mt-4 px-4 py-2 bg-fuchsia-950 text-white rounded-md hover:bg-fuchsia-800"
             >

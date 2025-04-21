@@ -35,23 +35,32 @@ export default function CombinedMutualFund() {
   };
 
   const categories = [
-    "Large & Mid Cap",
-    "Multi Asset Allocation",
-    "Long Duration",
-    "Index Funds",
-    "Equity - Other",
-    "Dynamic Asset Allocation",
-    "Arbitrage Fund",
     "Large-Cap",
     "Mid-Cap",
-    "Flexi Cap", 
+    "Equity - Other",
+    "Flexi Cap",
     "Focused Fund",
+    "Long Duration",
     "Fund of Funds",
     "Equity - Infrastructure",
     "Large & Mid-Cap",
     "Equity Savings",
-    "Contra"
-  ];
+    "Contra",
+    "Arbitrage Fund",
+    "Dynamic Asset Allocation",
+    "Value",
+    "Money Market",
+    "Dynamic Bond",
+    "Floating Rate",
+    "Sector - Precious Metals",
+    "Conservative Allocation",
+    "Aggressive Allocation",
+    "Liquid",
+    "Low Duration",
+    "Index Funds",
+    "Small-Cap",
+    "Multi Asset Allocation"
+   ];
 
   // const riskRatios = ["LargeCap", "MidCap", "SmallCap", "SemiCap"];
 
@@ -132,7 +141,7 @@ export default function CombinedMutualFund() {
     // Filter by selected categories
     if (selectedCategories.length > 0) {
       filtered = filtered?.filter(item => 
-        selectedCategories.includes(item["AT-FundLevelCategoryName"])
+        selectedCategories?.includes(item["AT-FundLevelCategoryName"])
       );
     }
   
@@ -183,25 +192,25 @@ export default function CombinedMutualFund() {
     });
   };
 
-  const handleMarketCapChange = (marketCap) => {
-    setSelectedMarketCaps(prev => {
-      if (prev.includes(marketCap)) {
-        return prev.filter(m => m !== marketCap);
-      } else {
-        return [...prev, marketCap];
-      }
-    });
-  };
+  // const handleMarketCapChange = (marketCap) => {
+  //   setSelectedMarketCaps(prev => {
+  //     if (prev.includes(marketCap)) {
+  //       return prev.filter(m => m !== marketCap);
+  //     } else {
+  //       return [...prev, marketCap];
+  //     }
+  //   });
+  // };
 
-  const handleReturnPeriodChange = (period) => {
-    setSelectedReturnPeriods(prev => {
-      if (prev.includes(period)) {
-        return prev.filter(p => p !== period);
-      } else {
-        return [...prev, period];
-      }
-    });
-  };
+  // const handleReturnPeriodChange = (period) => {
+  //   setSelectedReturnPeriods(prev => {
+  //     if (prev.includes(period)) {
+  //       return prev.filter(p => p !== period);
+  //     } else {
+  //       return [...prev, period];
+  //     }
+  //   });
+  // };
 
   const handleApplyFilters = () => {
     applyFilters();
@@ -306,7 +315,7 @@ export default function CombinedMutualFund() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    {headers.map((header, index) => (
+                    {headers?.map((header, index) => (
                       <th
                         key={index}
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
@@ -414,7 +423,7 @@ export default function CombinedMutualFund() {
                   )}
                 </button> */}
               </div>
-              {expandedSections.filterMFName && (
+              {expandedSections?.filterMFName && (
                 <div className="space-y-2">
                   <input
                     type="text"
@@ -432,16 +441,16 @@ export default function CombinedMutualFund() {
               <div className="flex justify-between items-center mb-2">
                 <h3 className="text-lg font-medium">Category</h3>
                 <button onClick={() => toggleSection("category")}>
-                  {expandedSections.category ? (
+                  {expandedSections?.category ? (
                     <Minus size={20} />
                   ) : (
                     <Plus size={20} />
                   )}
                 </button>
               </div>
-              {expandedSections.category && (
+              {expandedSections?.category && (
                 <div className="space-y-2">
-                  {categories.map((category) => (
+                  {categories?.map((category) => (
                     <div key={category} className="flex items-center">
                       <input
                         type="checkbox"
@@ -471,7 +480,7 @@ export default function CombinedMutualFund() {
                   )}
                 </button>
               </div>
-              {expandedSections.cost && (
+              {expandedSections?.cost && (
                 <div>
                   <input
                     type="range"
@@ -479,7 +488,7 @@ export default function CombinedMutualFund() {
                     max="100000"
                     value={costRange[1]}
                     onChange={(e) =>
-                      setCostRange([costRange[0], parseInt(e.target.value)])
+                      setCostRange([costRange[0], parseInt(e?.target?.value)])
                     }
                     className="w-full"
                   />

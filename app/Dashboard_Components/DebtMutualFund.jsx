@@ -35,22 +35,31 @@ export default function DebtMutualFund() {
   };
 
   const categories = [
-    "Large & Mid Cap",
-    "Multi Asset Allocation",
-    "Long Duration",
-    "Index Funds",
-    "Equity - Other",
-    "Dynamic Asset Allocation",
-    "Arbitrage Fund",
     "Large-Cap",
     "Mid-Cap",
-    "Flexi Cap", 
+    "Equity - Other",
+    "Flexi Cap",
     "Focused Fund",
+    "Long Duration",
     "Fund of Funds",
     "Equity - Infrastructure",
     "Large & Mid-Cap",
     "Equity Savings",
-    "Contra"
+    "Contra",
+    "Arbitrage Fund",
+    "Dynamic Asset Allocation",
+    "Value",
+    "Money Market",
+    "Dynamic Bond",
+    "Floating Rate",
+    "Sector - Precious Metals",
+    "Conservative Allocation",
+    "Aggressive Allocation",
+    "Liquid",
+    "Low Duration",
+    "Index Funds",
+    "Small-Cap",
+    "Multi Asset Allocation"
   ];
 
   // const riskRatios = ["LargeCap", "MidCap", "SmallCap", "SemiCap"];
