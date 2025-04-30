@@ -325,10 +325,8 @@ const SignUp = () => {
                 Select Family
               </label>
               <div className="flex space-x-2">
-                {" "}
                 {/* Added flex container with spacing */}
                 <div className="relative rounded-md shadow-sm flex-grow">
-                  {" "}
                   {/* Added flex-grow to make input take available space */}
                   <input
                     id="family"
@@ -387,8 +385,8 @@ const SignUp = () => {
                 onChange={(e) => setAcceptTerms(e.target.checked)}
               />
               <label htmlFor="terms" className="ml-2 text-sm text-gray-700">
-                I Accept{" "}
-                <span className="font-semibold uppercase">Stark Capital</span>{" "}
+                I Accept
+                <span className="font-semibold uppercase">Stark Capital</span>
                 <span className="underline">
                   Terms of Use and Privacy Policy
                 </span>

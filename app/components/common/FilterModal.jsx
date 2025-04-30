@@ -47,7 +47,7 @@ const FilterModal = ({ isOpen, onClose, type }) => {
           </div>
         </div>
         {/* Filter MF Name Section */}
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
             <h3 className="text-lg font-medium">Filter MF Name</h3>
             <button onClick={() => toggleSection("filterMFName")}>
@@ -69,7 +69,7 @@ const FilterModal = ({ isOpen, onClose, type }) => {
               />
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* Category Section */}
         <div className="mb-6">

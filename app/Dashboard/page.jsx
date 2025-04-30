@@ -228,11 +228,11 @@ export default function Dashboard() {
           </span>
         ) : null}
 
-        {activeIndex === 1 && activeIndexSecond === 5 ? (
+        {/* {activeIndex === 1 && activeIndexSecond === 5 ? (
           <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
             Asset Management Company (AMC)
           </span>
-        ) : null}
+        ) : null} */}
 
         {activeIndex === 2 ? (
           <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">

@@ -331,7 +331,7 @@ export default function HybridMutualFund() {
                     <tr key={item.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-normal">
                         <div className="text-sm font-medium text-gray-900 max-w-xs line-clamp-2">
-                          {item?.["FSCBI-FundLegalName"]}
+                        {item?.scheme}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-normal">
@@ -415,16 +415,16 @@ export default function HybridMutualFund() {
               </div>
             </div>
             {/* Filter MF Name Section */}
-            <div className="mb-6">
+            {/* <div className="mb-6">
               <div className="flex justify-between items-center mb-2">
                 <h3 className="text-lg font-medium">Filter MF Name</h3>
-                {/* <button onClick={() => toggleSection("filterMFName")}>
+                <button onClick={() => toggleSection("filterMFName")}>
                   {expandedSections.filterMFName ? (
                     <Minus size={20} />
                   ) : (
                     <Plus size={20} />
                   )}
-                </button> */}
+                </button>
               </div>
               {expandedSections.filterMFName && (
                 <div className="space-y-2">
@@ -437,7 +437,7 @@ export default function HybridMutualFund() {
                   />
                 </div>
               )}
-            </div>
+            </div> */}
 
             {/* Category Section */}
             <div className="mb-6">

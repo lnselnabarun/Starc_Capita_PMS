@@ -1,216 +1,130 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft } from "lucide-react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import axios from "axios";
 
 const AMCDetails = ({ params }) => {
-  const [activeButton, setActiveButton] = useState("capture");
   const route = useRouter();
-  const data = [
-    {
-      name: "JAN",
-      uv: 4000,
-      pv: 2400,
-      tv: 3200,
-      wv: 1500,
-      xv: 2800,
-      yv: 3300,
-      zv: 4100,
-    },
-    {
-      name: "FEB",
-      uv: 3000,
-      pv: 1398,
-      tv: 2100,
-      wv: 2300,
-      xv: 2100,
-      yv: 2500,
-      zv: 3700,
-    },
-    {
-      name: "MAR",
-      uv: 2000,
-      pv: 9800,
-      tv: 2900,
-      wv: 2400,
-      xv: 3200,
-      yv: 4000,
-      zv: 4500,
-    },
-    {
-      name: "APR",
-      uv: 2780,
-      pv: 3908,
-      tv: 3500,
-      wv: 2600,
-      xv: 3000,
-      yv: 2900,
-      zv: 3800,
-    },
-    {
-      name: "MAY",
-      uv: 7090,
-      pv: 4800,
-      tv: 4700,
-      wv: 3100,
-      xv: 4100,
-      yv: 5000,
-      zv: 5300,
-    },
-    {
-      name: "JUN",
-      uv: 2390,
-      pv: 3800,
-      tv: 3600,
-      wv: 2200,
-      xv: 2700,
-      yv: 3400,
-      zv: 4100,
-    },
-    {
-      name: "JUL",
-      uv: 3490,
-      pv: 4300,
-      tv: 3900,
-      wv: 2500,
-      xv: 3000,
-      yv: 3700,
-      zv: 4200,
-    },
-  ];
+  const [error, setError] = useState(null);
+  const [DetailsData, setDetailsData] = useState([]);
+  // const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const lastTransactionRef = useRef();
+  const observer = useRef();
+  // const params = useParams();
+  const searchParams = useSearchParams();
 
-  const allDetails = [
-    {
-      name: "Name",
-      details: "Canara Robeco Bluechip Equity Fund",
-    },
-    {
-      name: "Category",
-      details: "Unit Value",
-    },
-    {
-      name: "Date of Investment",
-      details: "QTY Value",
-    },
-    {
-      name: "Current Cost",
-      details: "Rate Value",
-    },
-    {
-      name: "Current XIRR",
-      details: "GST Value",
-    },
-    {
-      name: "AUM (in Rs.)",
-      details: "SGST Value",
-    },
-    {
-      name: "Expense Ratio",
-      details: "SGST Value",
-    },
-    {
-      name: "Taxation",
-      details: "IGST Value",
-    },
-    {
-      name: "Exit Load",
-      details: "Taxable Amount value",
-    },
-    {
-      name: "Sharpe",
-      details: "SGST Value",
-    },
-    {
-      name: "Up",
-      details: "IGST Value",
-    },
-    {
-      name: "Down",
-      details: "Taxable Amount value",
-    },
-    {
-      name: "LargeCap %",
-      details: "Name Of The Item",
-    },
-    {
-      name: "LargeCap AUM",
-      details: "Unit Value",
-    },
-    {
-      name: "MidCap %",
-      details: "QTY Value",
-    },
-    {
-      name: "MidCap AUM",
-      details: "Rate Value",
-    },
-    {
-      name: "SmallCap %",
-      details: "GST Value",
-    },
-    {
-      name: "SmallCap AUM",
-      details: "SGST Value",
-    },
-    {
-      name: "Others %",
-      details: "SGST Value",
-    },
-    {
-      name: "Others AUM",
-      details: "IGST Value",
-    },
-    {
-      name: "Std. Dev.",
-      details: "Taxable Amount value",
-    },
-    {
-      name: "Beta",
-      details: "SGST Value",
-    },
-    {
-      name: "Alpha",
-      details: "IGST Value",
-    },
-    {
-      name: "Avg",
-      details: "Taxable Amount value",
-    },
-  ];
+  // const id = params.id;
+  const userId = searchParams.get("userid");
+
   const handleBack = () => {
-    // Implement your back navigation logic here
     route.back();
   };
+
+  useEffect(() => {
+    const options = {
+      root: null,
+      rootMargin: "20px",
+      threshold: 1.0,
+    };
+
+    const handleObserver = (entries) => {
+      const target = entries[0];
+      if (target.isIntersecting  && !loading) {
+        // setPage((prevPage) => prevPage + 1);
+      }
+    };
+
+    observer.current = new IntersectionObserver(handleObserver, options);
+
+    const currentLastTransaction = lastTransactionRef.current;
+    if (currentLastTransaction) {
+      observer.current.observe(currentLastTransaction);
+    }
+
+    return () => {
+      if (observer.current && currentLastTransaction) {
+        observer.current.disconnect();
+      }
+    };
+  }, [ loading]);
+
+  useEffect(() => {
+    const fetchMutualFundDetails = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("myData");
+
+        if (!token) {
+          setError("No authentication token found");
+          return;
+        }
+        const parsedToken = JSON.parse(token);
+        const response = await axios.get(
+          `https://dev.netrumusa.com/starkcapital/api-backend/portfolio-detailswithuserid?id=${params?.slug}&usr_reg_id=${userId}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${parsedToken}`,
+            },
+          }
+        );
+        if (response.data?.status === "success") {
+          setDetailsData(response?.data?.data?.details || []);
+        } else {
+          throw new Error(
+            response.data?.message || "Failed to fetch mutual fund data"
+          );
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMutualFundDetails();
+  }, [params?.slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-xl text-white ">
+        Loading...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-red-600 text-xl">
+        Error: {error}
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen  bg-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="px-4 sm:px-8 md:px-16 lg:px-28">
+        {/* Fund Title */}
         <div className="flex items-center font-medium text-lg sm:text-xl md:text-2xl text-[#25282C] font-sans pb-10">
           <button
-            aria-label="Go-back"
             onClick={handleBack}
-            className=" mr-5 bg-white text-gray-800 p-2 rounded-full shadow-md flex items-center z-10 hover:bg-white transition duration-300 "
+            className=" mr-5 bg-white text-gray-800 p-2 rounded-full shadow-md flex items-center z-10 hover:bg-white transition duration-300"
+            aria-label="Go back"
           >
             <ArrowLeft size={24} />
           </button>
-          <div className="text-lg sm:text-xl md:text-2xl font-bold text-center text-gray-600">
-           {params?.slug}
+          <div className="text-black">
+            {"AMC Details"}
           </div>
         </div>
-        
-        
-        <div className="flex flex-wrap justify-between">
-          {allDetails.map((detail, index) => {
-            return (
+
+        <div className="w-full">
+          {/* Transaction List Container */}
+
+          <div className="flex flex-wrap justify-between">
+            {DetailsData?.map((detail, index) => (
               <div
                 key={index}
                 className="w-full md:w-[48%] mb-4 p-4 rounded-lg bg-[#F5F5F5] shadow-lg transition-all duration-300 ease-in-out hover:transform hover:scale-105 hover:shadow-xl"
@@ -219,13 +133,13 @@ const AMCDetails = ({ params }) => {
                   <div className="text-[12px] font-semibold text-left text-black">
                     {detail.name}
                   </div>
-                  <div className="text-[12px] font-medium text-left text-gray-600">
+                  <div className="text-[12px] font-medium text-left text-gray-600 ml-2">
                     {detail.details}
                   </div>
                 </div>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
       </div>
     </div>

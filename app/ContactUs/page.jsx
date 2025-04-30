@@ -34,7 +34,6 @@ export default function Features() {
           {/* Right Image Icon */}
           {typeof savedData === "string" ? (
             <>
-              {" "}
               <Link href="/Profile" passHref>
                 <div className="flex items-center justify-between rounded-lg hover:bg-gray-100 p-2 cursor-pointer transition-colors duration-200">
                   <div className="mx-2">

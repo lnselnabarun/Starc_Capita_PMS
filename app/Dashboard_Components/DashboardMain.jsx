@@ -10,8 +10,8 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer
-} from 'recharts';
+  ResponsiveContainer,
+} from "recharts";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
@@ -24,49 +24,41 @@ export default function DashboardMain() {
       currentValue: 1039048.16,
       sensex: 799868.00,
       xirr: 20.05,
-      MFxirr: 25.05,
+      MFxirr: 120.05,
     },
     {
       date: '04/08/2024',
-      totalCost: 550000.00,
-      currentValue: 1050000.00,
-      sensex: 805000.00,
-      xirr: 19.87,
-      MFxirr: 22.05,
+      totalCost: 586877.92,
+      currentValue: 1068879.16,
+      sensex: 787594.00,
+      xirr: 20.06,
+      MFxirr: 120.06,
     },
     {
       date: '01/09/2024',
-      totalCost: 650000.00,
-      currentValue: 1120000.00,
-      sensex: 820000.00,
-      xirr: 19.95,
-      MFxirr: 20.05,
+      totalCost: 700507.92,
+      currentValue: 1080429.39,
+      sensex: 823917.20,
+      xirr: 23.78,
+      MFxirr: 123.78,
     },
     {
       date: '01/10/2024',
-      totalCost: 650000.00,
-      currentValue: 1150000.00,
-      sensex: 830000.00,
-      xirr: 20.10,
-      MFxirr: 24.05,
+      totalCost: 704507.92,
+      currentValue: 1116340.54,
+      sensex: 842662.90,
+      xirr: 24.71,
+      MFxirr: 124.71,
     },
     {
       date: '10/11/2024',
-      totalCost: 650000.00,
-      currentValue: 1130000.00,
-      sensex: 825000.00,
-      xirr: 19.90,
-      MFxirr: 15.05,
-    },
-    {
-      date: '19/03/2025',
-      totalCost: 650000.00,
-      currentValue: 1100000.00,
-      sensex: 810000.00,
-      xirr: 19.75,
-      MFxirr: 22.05,
+      totalCost: 708507.92,
+      currentValue: 1071568.32,
+      sensex: 797956.10,
+      xirr: 9.50,
+      MFxirr: 19.50,
     }
-  ];
+];
   const tableData = [
     {
       currency: "Bitcoin / BTC",
@@ -98,11 +90,8 @@ export default function DashboardMain() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [activeIndexTime, setActiveIndexTime] = useState(0);
 
-  const handleClickTime = (index) => {
-    setActiveIndexTime(index);
-  };
+
 
   useEffect(() => {
     const initializeData = async () => {
@@ -150,12 +139,10 @@ export default function DashboardMain() {
     }
   }
   function formatMoney(amount) {
-    return (
-      new Intl.NumberFormat("en-IN", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(amount)
-    );
+    return new Intl.NumberFormat("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
   }
 
   const CustomTooltip = ({ active, payload, label }) => {
@@ -163,11 +150,21 @@ export default function DashboardMain() {
       return (
         <div className="bg-white p-4 border border-gray-200 rounded shadow-md">
           <p className="font-bold">{label}</p>
-          <p className="text-blue-600">Total Cost: ₹{payload[0].value.toLocaleString('en-IN')}</p>
-          <p className="text-red-600">Current Value: ₹{payload[1].value.toLocaleString('en-IN')}</p>
-          <p className="text-yellow-600">Sensex: {payload[2].value.toLocaleString('en-IN')}</p>
-          <p className="text-green-600">XIRR: {payload[3]?.value.toFixed(2)}%</p>
-          <p className="text-[#aa4bf2]">MFXIRR: {payload[3]?.value.toFixed(2)}%</p>
+          <p className="text-blue-600">
+            Total Cost: ₹{payload[0].value.toLocaleString("en-IN")}
+          </p>
+          <p className="text-red-600">
+            Current Value: ₹{payload[1].value.toLocaleString("en-IN")}
+          </p>
+          <p className="text-yellow-600">
+            Sensex: {payload[2].value.toLocaleString("en-IN")}
+          </p>
+          <p className="text-green-600">
+            XIRR: {payload[3]?.value.toFixed(2)}%
+          </p>
+          <p className="text-[#aa4bf2]">
+            MFXIRR: {payload[3]?.value.toFixed(2)}%
+          </p>
         </div>
       );
     }
@@ -328,94 +325,98 @@ export default function DashboardMain() {
               </div>
             </div>
             {/* <div className="w-full bg-white p-6 rounded-lg shadow"> */}
-      <h2 className="text-2xl text-center font-semibold text-gray-700 mb-6">Investment Summary</h2>
-      
-      <div className="w-full h-96">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={data}
-            margin={{
-              top: 10,
-              right: 30,
-              left: 20,
-              bottom: 30,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis 
-              dataKey="date" 
-              angle={-45} 
-              textAnchor="end" 
-              height={70} 
-            />
-            <YAxis 
-              yAxisId="left" 
-              orientation="left" 
-              tickFormatter={formatYAxis} 
-              domain={['auto', 'auto']} 
-            />
-            <YAxis 
-              yAxisId="right" 
-              orientation="right" 
-              tickFormatter={(value) => `${value}%`} 
-              domain={[0, 30]} 
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend />
-            <Line
-              yAxisId="left"
-              type="monotone"
-              dataKey="totalCost"
-              name="Total Cost"
-              stroke="#1e40af"
-              strokeWidth={2}
-              dot={{ r: 4 }}
-              activeDot={{ r: 8 }}
-            />
-            <Line
-              yAxisId="left"
-              type="monotone"
-              dataKey="currentValue"
-              name="Current Value"
-              stroke="#dc2626"
-              strokeWidth={2}
-              dot={{ r: 4 }}
-              activeDot={{ r: 8 }}
-            />
-            <Line
-              yAxisId="left"
-              type="monotone"
-              dataKey="sensex"
-              name="Sensex"
-              stroke="#f59e0b"
-              strokeWidth={2}
-              dot={{ r: 4 }}
-              activeDot={{ r: 8 }}
-            />
-            <Line
-              yAxisId="right"
-              type="monotone"
-              dataKey="xirr"
-              name="XIRR %"
-              stroke="#10b981"
-              strokeWidth={2}
-              dot={{ r: 4 }}
-              activeDot={{ r: 8 }}
-            />
-            <Line
-              yAxisId="right"
-              type="monotone"
-              dataKey="MFxirr"
-              name="MFXIRR %"
-              stroke="#aa4bf2"
-              strokeWidth={2}
-              dot={{ r: 4 }}
-              activeDot={{ r: 8 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    {/* </div> */}
+            <h2 className="text-2xl text-center font-semibold text-gray-700 mb-6">
+              Investment Summary
+            </h2>
+
+            <div className="w-full h-96">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={data}
+                  margin={{
+                    top: 10,
+                    right: 30,
+                    left: 20,
+                    bottom: 30,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="date"
+                    angle={-45}
+                    textAnchor="end"
+                    height={70}
+                    interval={0}
+                    tick={{ fontSize: 11 }}
+                  />
+                  <YAxis
+                    yAxisId="left"
+                    orientation="left"
+                    tickFormatter={formatYAxis}
+                    domain={["dataMin - 50000", "dataMax + 50000"]}
+                  />
+                  <YAxis
+                    yAxisId="right"
+                    orientation="right"
+                    tickFormatter={(value) => `${value}%`}
+                    domain={[0, 30]}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  <Line
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="totalCost"
+                    name="Total Cost"
+                    stroke="#1e40af"
+                    strokeWidth={2}
+                    dot={{ r: 3 }}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="currentValue"
+                    name="Current Value"
+                    stroke="#dc2626"
+                    strokeWidth={2}
+                    dot={{ r: 3 }}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="sensex"
+                    name="Sensex"
+                    stroke="#f59e0b"
+                    strokeWidth={2}
+                    dot={{ r: 3 }}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="xirr"
+                    name="XIRR %"
+                    stroke="#10b981"
+                    strokeWidth={2}
+                    dot={{ r: 3 }}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="MFxirr"
+                    name="MFXIRR %"
+                    stroke="#aa4bf2"
+                    strokeWidth={2}
+                    dot={{ r: 3 }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+            {/* </div> */}
           </div>
 
           <div className="justify-between w-full flex flex-wrap gap-4 h-auto mb-2">
@@ -456,7 +457,6 @@ export default function DashboardMain() {
                 CURRENCY NAME
               </div>
               <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9] ml-4">
-                {" "}
                 {/* Added padding-right */}
                 PRICE
               </div>
@@ -478,7 +478,6 @@ export default function DashboardMain() {
                 className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 bg-[#F5F5F5] text-left p-2 my-2 justify-center items-center rounded-lg"
               >
                 <div className="flex items-center space-x-4">
-                  {" "}
                   {/* Increased space between image and currency */}
                   <Image
                     src={row?.coin}
@@ -492,7 +491,6 @@ export default function DashboardMain() {
                   </div>
                 </div>
                 <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765] pl-4">
-                  {" "}
                   {/* Added padding to price column */}
                   {row.price}
                 </div>
@@ -553,7 +551,6 @@ export default function DashboardMain() {
                 CURRENCY NAME
               </div>
               <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9] ml-4">
-                {" "}
                 {/* Added padding-right */}
                 PRICE
               </div>
@@ -575,7 +572,6 @@ export default function DashboardMain() {
                 className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 bg-[#F5F5F5] text-left p-2 my-2 justify-center items-center rounded-lg"
               >
                 <div className="flex items-center space-x-4">
-                  {" "}
                   {/* Increased space between image and currency */}
                   <Image
                     src={row?.coin}
@@ -589,7 +585,6 @@ export default function DashboardMain() {
                   </div>
                 </div>
                 <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765] pl-4">
-                  {" "}
                   {/* Added padding to price column */}
                   {row.price}
                 </div>
@@ -693,7 +688,7 @@ export default function DashboardMain() {
               {/* <!-- Third Text and Image in Column --> */}
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                 {`₹ ${DashboardData?.totalNetExpenseRatio}`}
+                  {`₹ ${DashboardData?.totalNetExpenseRatio}`}
                 </div>
                 <div className="w-6 h-6 sm:w-8 sm:h-8">
                   <Image
@@ -739,7 +734,7 @@ export default function DashboardMain() {
               />
               <div className="flex flex-col space-y-2">
                 <p className="text-xs font-semibold text-[#3F4765] ">
-                  Activities Name{" "}
+                  Activities Name
                 </p>
                 <p className="text-sm font-normal text-[#3F4765]">Sell </p>
               </div>
@@ -748,7 +743,7 @@ export default function DashboardMain() {
             {/* Second Section: Two text elements column-wise */}
             <div className="flex flex-col space-y-2">
               <p className="text-sm font-semibold text-[#F85842] text-end">
-                ₹2,435.80{" "}
+                ₹2,435.80
               </p>
               <p className="text-xs font-normal text-[#3F4765] text-end">
                 Today | 16.40
@@ -767,7 +762,7 @@ export default function DashboardMain() {
               />
               <div className="flex flex-col space-y-2">
                 <p className="text-xs font-semibold text-[#3F4765] ">
-                  Activities Name{" "}
+                  Activities Name
                 </p>
                 <p className="text-sm font-normal text-[#3F4765]">Buy </p>
               </div>
@@ -794,7 +789,7 @@ export default function DashboardMain() {
               />
               <div className="flex flex-col space-y-2">
                 <p className="text-xs font-semibold text-[#3F4765] ">
-                  Activities Name{" "}
+                  Activities Name
                 </p>
                 <p className="text-sm font-normal text-[#3F4765]">Buy</p>
               </div>

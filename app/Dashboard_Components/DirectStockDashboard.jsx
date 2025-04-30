@@ -126,7 +126,6 @@ export default function DirectStockDashboard() {
                     CURRENCY NAME
                   </div>
                   <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9] ml-4">
-                    {" "}
                     {/* Added padding-right */}
                     PRICE
                   </div>
@@ -148,8 +147,6 @@ export default function DirectStockDashboard() {
                     className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 bg-[#F5F5F5] text-left p-2 my-2 justify-center items-center rounded-lg mt-4"
                   >
                     <div className="flex items-center space-x-4">
-                      {" "}
-                      {/* Increased space between image and currency */}
                       <Image
                         src={row?.coin}
                         alt="Currency Image"
@@ -162,7 +159,6 @@ export default function DirectStockDashboard() {
                       </div>
                     </div>
                     <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765] pl-4">
-                      {" "}
                       {/* Added padding to price column */}
                       {row.price}
                     </div>
@@ -312,7 +308,7 @@ export default function DirectStockDashboard() {
               />
               <div className="flex flex-col space-y-2">
                 <p className="text-xs font-semibold text-[#3F4765] ">
-                  Activities Name{" "}
+                  Activities Name
                 </p>
                 <p className="text-sm font-normal text-[#3F4765]">Sell </p>
               </div>
@@ -321,7 +317,7 @@ export default function DirectStockDashboard() {
             {/* Second Section: Two text elements column-wise */}
             <div className="flex flex-col space-y-2">
               <p className="text-sm font-semibold text-[#F85842] text-end">
-                ₹2,435.80{" "}
+                ₹2,435.80
               </p>
               <p className="text-xs font-normal text-[#3F4765] text-end">
                 Today | 16.40
@@ -340,7 +336,7 @@ export default function DirectStockDashboard() {
               />
               <div className="flex flex-col space-y-2">
                 <p className="text-xs font-semibold text-[#3F4765] ">
-                  Activities Name{" "}
+                  Activities Name
                 </p>
                 <p className="text-sm font-normal text-[#3F4765]">Buy </p>
               </div>
@@ -367,7 +363,7 @@ export default function DirectStockDashboard() {
               />
               <div className="flex flex-col space-y-2">
                 <p className="text-xs font-semibold text-[#3F4765] ">
-                  Activities Name{" "}
+                  Activities Name
                 </p>
                 <p className="text-sm font-normal text-[#3F4765]">Buy</p>
               </div>

@@ -655,7 +655,7 @@ export default function AnalysisMain() {
               />
               <div className="flex flex-col space-y-2">
                 <p className="text-xs font-semibold text-[#3F4765] ">
-                  Bitcoin{" "}
+                  Bitcoin
                 </p>
                 <p className="text-sm font-normal text-[#3F4765]">Sell </p>
               </div>
@@ -664,7 +664,7 @@ export default function AnalysisMain() {
             {/* Second Section: Two text elements column-wise */}
             <div className="flex flex-col space-y-2">
               <p className="text-sm font-semibold text-[#F85842] text-end">
-                ₹2,435.80{" "}
+                ₹2,435.80
               </p>
               <p className="text-xs font-normal text-[#3F4765] text-end">
                 Today | 16.40
@@ -683,7 +683,7 @@ export default function AnalysisMain() {
               />
               <div className="flex flex-col space-y-2">
                 <p className="text-xs font-semibold text-[#3F4765] ">
-                  Ethereum{" "}
+                  Ethereum
                 </p>
                 <p className="text-sm font-normal text-[#3F4765]">Buy </p>
               </div>
@@ -710,7 +710,7 @@ export default function AnalysisMain() {
               />
               <div className="flex flex-col space-y-2">
                 <p className="text-xs font-semibold text-[#3F4765] ">
-                  Algorand{" "}
+                  Algorand
                 </p>
                 <p className="text-sm font-normal text-[#3F4765]">Buy</p>
               </div>
