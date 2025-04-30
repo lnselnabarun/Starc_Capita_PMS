@@ -69,9 +69,9 @@ export default function CombinedMutualFund() {
   const headers = [
     "Name",
     "Category",
-    "Current Cost",
+    "Current Cost (₹)",
     "Current XIRR",
-    "Current VALUE",
+    "Current VALUE (₹)",
     "Expense Ratio",
     "Action",
   ];
@@ -347,12 +347,12 @@ export default function CombinedMutualFund() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {item?.currentXIRR?.toFixed(2)}%
+                          {item?.currentXIRR}%
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {`₹${formatMoney(item?.currentValue?.toFixed(2))}`}
+                          {`${formatMoney(item?.currentValue?.toFixed(2))}`}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
