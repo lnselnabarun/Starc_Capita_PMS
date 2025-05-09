@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import Image from "next/image";
 
 export default function DirectStockDashboard() {
-  
   const tableData = [
     {
       currency: "Bitcoin / BTC",
@@ -31,7 +30,6 @@ export default function DirectStockDashboard() {
       coin: require("../assets/logo/Icon2.png"),
     },
   ];
-  
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const items = [
@@ -57,8 +55,6 @@ export default function DirectStockDashboard() {
     },
   ];
 
-  
-
   const GridItem = ({ imageSrc, text, isSelected, onClick }) => (
     <div
       className={`w-full sm:w-[48%] md:w-[23%] h-[160px] flex flex-col items-center justify-center cursor-pointer transition-colors duration-300 border rounded-xl px-3  ${
@@ -78,112 +74,112 @@ export default function DirectStockDashboard() {
   );
   return (
     <>
-     <div className="flex flex-col md:flex-row w-full justify-between px-4 sm:px-6 lg:px-28">
-            {/* First div with 70% width on medium and larger screens */}
-            <div className="w-full md:w-[70%] flex flex-wrap justify-between h-auto md:h-52">
-              {items.map((item, index) => (
-                <GridItem
-                  key={index}
-                  imageSrc={
-                    selectedIndex === index ? item?.imageSrc2 : item?.imageSrc1
-                  }
-                  text={item?.text}
-                  isSelected={selectedIndex === index}
-                  onClick={() => setSelectedIndex(index)}
-                />
-              ))}
+      <div className="flex flex-col md:flex-row w-full justify-between px-4 sm:px-6 lg:px-28">
+        {/* First div with 70% width on medium and larger screens */}
+        <div className="w-full md:w-[70%] flex flex-wrap justify-between h-auto md:h-52">
+          {items.map((item, index) => (
+            <GridItem
+              key={index}
+              imageSrc={
+                selectedIndex === index ? item?.imageSrc2 : item?.imageSrc1
+              }
+              text={item?.text}
+              isSelected={selectedIndex === index}
+              onClick={() => setSelectedIndex(index)}
+            />
+          ))}
 
-              <div className="container mx-auto px-4 mt-4">
-                <div className="justify-between w-full flex items-center h-10 mb-2">
-                  {/* First Content */}
-                  <div className="font-medium text-lg sm:text-xl md:text-2xl text-[#3F4765] font-sans">
-                    Recent Transactions
-                  </div>
+          <div className="container mx-auto px-4 mt-4">
+            <div className="justify-between w-full flex items-center h-10 mb-2">
+              {/* First Content */}
+              <div className="font-medium text-lg sm:text-xl md:text-2xl text-[#3F4765] font-sans">
+                Recent Transactions
+              </div>
 
-                  {/* Second Content */}
-                  <div className="flex gap-4">
-                    <select className="border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700">
-                      <option className="bg-white text-black">USD</option>
-                      <option className="bg-white text-black">USD</option>
-                      <option className="bg-white text-black">USD</option>
-                    </select>
+              {/* Second Content */}
+              <div className="flex gap-4">
+                <select className="border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700">
+                  <option className="bg-white text-black">USD</option>
+                  <option className="bg-white text-black">USD</option>
+                  <option className="bg-white text-black">USD</option>
+                </select>
 
-                    <select className="border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700">
-                      <option className="bg-white text-black">24 Hours</option>
-                      <option className="bg-white text-black">24 Hours</option>
-                      <option className="bg-white text-black">24 Hours</option>
-                    </select>
+                <select className="border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700">
+                  <option className="bg-white text-black">24 Hours</option>
+                  <option className="bg-white text-black">24 Hours</option>
+                  <option className="bg-white text-black">24 Hours</option>
+                </select>
 
-                    <div className="border bg-gray-100 text-gray-700 rounded-3xl text-xs sm:text-sm lg:text-base px-4 py-2 focus:outline-none focus:ring-2 focus:ring-fuchsia-700 hover:bg-gray-200 flex justify-center items-center cursor-pointer">
-                      See All
-                    </div>
-                  </div>
+                <div className="border bg-gray-100 text-gray-700 rounded-3xl text-xs sm:text-sm lg:text-base px-4 py-2 focus:outline-none focus:ring-2 focus:ring-fuchsia-700 hover:bg-gray-200 flex justify-center items-center cursor-pointer">
+                  See All
                 </div>
-                {/* Table Header */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 text-left p-3 bg-[#F5F5F5] rounded-lg">
-                  <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9] ">
-                    {/* Added padding-right */}
-                    CURRENCY NAME
-                  </div>
-                  <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9] ml-4">
-                    {/* Added padding-right */}
-                    PRICE
-                  </div>
-                  <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9]">
-                    CAGR/MONTH
-                  </div>
-                  <div className="hidden md:block text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9]">
-                    STATISTIC
-                  </div>
-                  <div className="hidden md:block text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9]">
-                    EXCHANGE
-                  </div>
-                </div>
-
-                {/* Table Body */}
-                {tableData.map((row, index) => (
-                  <div
-                    key={index}
-                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 bg-[#F5F5F5] text-left p-2 my-2 justify-center items-center rounded-lg mt-4"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <Image
-                        src={row?.coin}
-                        alt="Currency Image"
-                        width={32}
-                        height={32}
-                        className="h-8 w-8"
-                      />
-                      <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765]">
-                        {row.currency}
-                      </div>
-                    </div>
-                    <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765] pl-4">
-                      {/* Added padding to price column */}
-                      {row.price}
-                    </div>
-                    <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765]">
-                      {row.cagr}
-                    </div>
-                    <div className="hidden md:flex items-center">
-                      <Image
-                        src={row.statistic}
-                        alt="Statistic"
-                        width={60}
-                        height={20}
-                        className="h-auto w-auto max-w-full"
-                      />
-                    </div>
-                    <button className="hidden md:block text-[#35B26B] border border-[#35B26B] rounded-md px-3 py-1 hover:bg-[#e8f5eb] text-sm">
-                      Transfer now
-                    </button>
-                  </div>
-                ))}
+              </div>
+            </div>
+            {/* Table Header */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 text-left p-3 bg-[#F5F5F5] rounded-lg">
+              <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9] ">
+                {/* Added padding-right */}
+                CURRENCY NAME
+              </div>
+              <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9] ml-4">
+                {/* Added padding-right */}
+                PRICE
+              </div>
+              <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9]">
+                CAGR/MONTH
+              </div>
+              <div className="hidden md:block text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9]">
+                STATISTIC
+              </div>
+              <div className="hidden md:block text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9]">
+                EXCHANGE
               </div>
             </div>
 
-            {/* Second div with 20% width on medium and larger screens */}
-            <div className="w-full md:w-[27%] bg-[#f5F5F5F5] p-1 sm:p-2">
+            {/* Table Body */}
+            {tableData.map((row, index) => (
+              <div
+                key={index}
+                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 bg-[#F5F5F5] text-left p-2 my-2 justify-center items-center rounded-lg mt-4"
+              >
+                <div className="flex items-center space-x-4">
+                  <Image
+                    src={row?.coin}
+                    alt="Currency Image"
+                    width={32}
+                    height={32}
+                    className="h-8 w-8"
+                  />
+                  <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765]">
+                    {row.currency}
+                  </div>
+                </div>
+                <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765] pl-4">
+                  {/* Added padding to price column */}
+                  {row.price}
+                </div>
+                <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765]">
+                  {row.cagr}
+                </div>
+                <div className="hidden md:flex items-center">
+                  <Image
+                    src={row.statistic}
+                    alt="Statistic"
+                    width={60}
+                    height={20}
+                    className="h-auto w-auto max-w-full"
+                  />
+                </div>
+                <button className="hidden md:block text-[#35B26B] border border-[#35B26B] rounded-md px-3 py-1 hover:bg-[#e8f5eb] text-sm">
+                  Transfer now
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Second div with 20% width on medium and larger screens */}
+        <div className="w-full md:w-[27%] bg-[#f5F5F5F5] p-1 sm:p-2">
           <div className="flex items-center space-x-4 justify-between">
             <div className="font-sans text-lg sm:text-base md:text-lg font-medium leading-5 text-left text-[#3F4765]">
               My Balance
@@ -412,7 +408,7 @@ export default function DirectStockDashboard() {
             );
           })}
         </div>
-          </div>
+      </div>
     </>
   );
 }

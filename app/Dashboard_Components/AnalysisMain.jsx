@@ -13,16 +13,20 @@ import {
 import Image from "next/image";
 import { Chart } from "react-google-charts";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function AnalysisMain() {
   const [activeButton, setActiveButton] = useState("risk");
+  const [PortFolioAssetAllocation, setPortFolioAssetAllocation] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const router = useRouter();
 
   const portfolio_allocation_data = [
     ["Task", "Hours per Day"],
-    ["Equity", 13],
-    ["Debt", 5],
-    ["Others", 2],
+    ["Equity", 65],
+    ["Debt", 25],
+    ["Others", 10],
   ];
 
   const portfolio_MarketCap_data = [
@@ -329,6 +333,62 @@ export default function AnalysisMain() {
     },
   ];
 
+
+  const fetchPortFolioAssetAllocation = async (fundId) => {
+    // Note: We no longer set isLoading here since it's handled in handleAddFund
+    try {
+      const response = await fetch(
+        "https://dev.netrumusa.com/starkcapital/api-backend/portfolio-asset-allocation-graph",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ user_id: fundId.toString() }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data?.status === "success") {
+        // Add a check to ensure details property exists
+        setPortFolioAssetAllocation(data?.data);
+      } else {
+        console.error("Failed to fetch fund details", data);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching fund details:", error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const initializeData = async () => {
+      try {
+        setIsLoading(true);
+        const token = localStorage.getItem("myData");
+        const userId = localStorage.getItem("UserId");
+        if (!token) {
+          setError("No authentication token found");
+          return;
+        }
+
+        await fetchPortFolioAssetAllocation(JSON.parse(userId));
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeData();
+  }, []);
+
   return (
     <>
       <div className="flex flex-col md:flex-row w-full justify-between px-4 sm:px-6 lg:px-28">
@@ -337,11 +397,10 @@ export default function AnalysisMain() {
           <div className="w-full md:w-[100%] flex flex-wrap gap-4 justify-between">
             {/* Card 1 */}
             <div className="relative flex-1 w-1/2 bg-white border border-[#D9D9D9] rounded-xl p-4 z-10">
-
               <div className="pt-4">
                 <Chart
                   chartType="PieChart"
-                  data={portfolio_allocation_data}
+                  data={PortFolioAssetAllocation}
                   options={portfolio_allocation_options}
                   width={"100%"}
                   height={"220px"}
@@ -480,7 +539,6 @@ export default function AnalysisMain() {
           <div className="w-full md:w-[100%] flex flex-wrap gap-4 justify-between mb-5">
             {/* Card 1 */}
             <div className="relative flex-1 w-1/2 bg-white border border-[#D9D9D9] rounded-xl p-4 z-10">
-
               <div className="pt-4">
                 <Chart
                   chartType="PieChart"
@@ -654,9 +712,7 @@ export default function AnalysisMain() {
                 height={46}
               />
               <div className="flex flex-col space-y-2">
-                <p className="text-xs font-semibold text-[#3F4765] ">
-                  Bitcoin
-                </p>
+                <p className="text-xs font-semibold text-[#3F4765] ">Bitcoin</p>
                 <p className="text-sm font-normal text-[#3F4765]">Sell </p>
               </div>
             </div>

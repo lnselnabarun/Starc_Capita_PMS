@@ -15,50 +15,6 @@ const MutualFundComparison = () => {
     fundDetails: true,
   });
 
-  // Example fund data structure based on the provided API response
-  const dummyFundData = {
-    id: 6,
-    amc: "HDFC Mutual Fund",
-    scheme: "HDFC Long Duration Debt Fund Direct Growth",
-    details: [
-      { name: "Asset Alloc Bond Net", details: "96.35659" },
-      { name: "Asset Alloc Cash Net", details: "3.50146" },
-      { name: "Asset Alloc Equity Net", details: "0" },
-      { name: "Expense Ratio", details: "0.30000" },
-      { name: "Category", details: "Long Duration" },
-      { name: "NAV Value", details: "11.89080" },
-      { name: "Trailing Return 1 Month", details: "0.48337" },
-      { name: "Trailing Return 1 Year", details: "11.37358" },
-      { name: "Return Since Inception", details: "9.36746" },
-      { name: "AUM (in Rs.)", details: "54830678000" },
-      { name: "Exit Load", details: "Nil" },
-      { name: "Sharpe Ratio 1 Year", details: "1.416" },
-      { name: "Standard Deviation 1 Year", details: "4.005" },
-    ],
-  };
-
-  // Dummy search results based on the data structure
-  const dummySearchResults = [
-    {
-      id: 1,
-      amc: "HDFC Mutual Fund",
-      scheme: "HDFC Long Duration Debt Fund Direct Growth",
-      category: "Long Duration",
-    },
-    {
-      id: 2,
-      amc: "SBI Mutual Fund",
-      scheme: "SBI Long Duration Debt Fund Direct Growth",
-      category: "Long Duration",
-    },
-    {
-      id: 3,
-      amc: "Axis Mutual Fund",
-      scheme: "Axis Long Duration Debt Fund Direct Growth",
-      category: "Long Duration",
-    },
-  ];
-
   const handleSearch = (e) => {
     const query = e?.target?.value;
     setSearchQuery(query);
@@ -66,7 +22,6 @@ const MutualFundComparison = () => {
   };
 
   const handleAddFund = async (fund) => {
-    console.log(fund, "handleAddFund");
     // Check if the fund is already selected by comparing IDs
     const isAlreadySelected = selectedFunds?.some(
       (selectedFund) => selectedFund?.id === fund?.id
@@ -74,24 +29,35 @@ const MutualFundComparison = () => {
 
     // Only add if not already selected and we have fewer than 4 funds
     if (!isAlreadySelected && selectedFunds?.length < 4) {
-      // Fetch detailed fund data
-      const fundDetails = await fetchFundDetails(fund.id);
+      // Set loading state
+      setIsLoading(true);
 
-      if (fundDetails) {
-        // Add full fund details to selected funds
-        setSelectedFunds([
-          ...selectedFunds,
-          {
-            ...fund,
-            details: fundDetails.details,
-            folio: fundDetails.folio,
-            currentValue: fundDetails.currentValue,
-            currentXIRR: fundDetails.currentXIRR,
-            // Include any other top-level fields you need
-          },
-        ]);
+      try {
+        // Fetch detailed fund data
+        const fundDetails = await fetchFundDetails(fund.id);
+
+        if (fundDetails) {
+          // Add full fund details to selected funds
+          setSelectedFunds((prevFunds) => [
+            ...prevFunds,
+            {
+              ...fund,
+              details: fundDetails.details || [], // Ensure details exists
+              folio: fundDetails.folio,
+              currentValue: fundDetails.currentValue,
+              currentXIRR: fundDetails.currentXIRR,
+            },
+          ]);
+        } else {
+          console.error("Failed to fetch fund details for:", fund.scheme);
+          // Could add user notification here
+        }
+      } catch (error) {
+        console.error("Error in handleAddFund:", error);
+      } finally {
         setSearchQuery("");
         setShowSearchResults(false);
+        setIsLoading(false);
       }
     } else if (isAlreadySelected) {
       console.log("Fund already selected");
@@ -99,17 +65,18 @@ const MutualFundComparison = () => {
   };
 
   const findDetailValue = (fund, keyName) => {
-    if (!fund || !fund.details) return "N/A";
+    if (!fund || !Array.isArray(fund.details)) return "N/A";
 
     const detail = fund.details.find((item) => item.name === keyName);
     return detail ? detail.details : "N/A";
   };
+
   const handleRemoveFund = (fundId) => {
     setSelectedFunds(selectedFunds?.filter((fund) => fund?.id !== fundId));
   };
 
   const fetchFundDetails = async (fundId) => {
-    setIsLoading(true);
+    // Note: We no longer set isLoading here since it's handled in handleAddFund
     try {
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/portfolio-detailswithid",
@@ -122,28 +89,34 @@ const MutualFundComparison = () => {
         }
       );
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
 
       if (data?.status === "success" && data?.data) {
+        // Add a check to ensure details property exists
+        if (!data.data.details) {
+          console.warn("Fund details missing in API response");
+          data.data.details = []; // Initialize with empty array to prevent errors
+        }
         return data.data;
       } else {
-        console.error("Failed to fetch fund details");
+        console.error("Failed to fetch fund details", data);
         return null;
       }
     } catch (error) {
       console.error("Error fetching fund details:", error);
       return null;
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const fetchSearchResults = async (query) => {
-    console.log(query, "queryquery");
-    // if (!query || query.length < 2) {
-    //   setSearchResults([]);
-    //   return;
-    // }
+    if (!query || query.length < 2) {
+      setSearchResults([]);
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -158,26 +131,30 @@ const MutualFundComparison = () => {
         }
       );
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
 
-      if (data?.status === "success" && data?.data) {
+      if (data?.status === "success" && Array.isArray(data?.data)) {
         // Transform API response to match our application's expected format
-        const formattedResults = data?.data?.map((fund, index) => ({
+        const formattedResults = data.data.map((fund) => ({
           id: fund["portfolio_summary"],
-          amc: fund["FSCBI-FundLegalName"].split(" ")[0], // Extract first word as AMC
-          scheme: fund["FSCBI-FundLegalName"],
-          category: fund["AT-FundLevelCategoryName"],
+          amc: fund["FSCBI-FundLegalName"]?.split(" ")[0] || "Unknown", // Extract first word as AMC with fallback
+          scheme: fund["FSCBI-FundLegalName"] || "Unknown Fund",
+          category: fund["AT-FundLevelCategoryName"] || "Uncategorized",
           nav: fund["DP-DayEndNAV"],
           amfiCode: fund["FSCBI-AMFICode"],
           isin: fund["FSCBI-ISIN"],
           expenseRatio: fund["ARF-InterimNetExpenseRatio"],
           currency: fund["DP-Currency"],
           aum: fund["FNA-AsOfOriginalReported"],
-          // Add any other fields you need
         }));
 
         setSearchResults(formattedResults);
       } else {
+        console.warn("Search API returned unexpected format:", data);
         setSearchResults([]);
       }
     } catch (error) {
@@ -192,6 +169,8 @@ const MutualFundComparison = () => {
     const debounceTimer = setTimeout(() => {
       if (searchQuery) {
         fetchSearchResults(searchQuery);
+      } else {
+        setSearchResults([]);
       }
     }, 300); // 300ms debounce time
 
@@ -235,11 +214,9 @@ const MutualFundComparison = () => {
           key: "Rolling Return Min 0.08333333333333333YR",
           label: "1 Year Min Rolling",
         },
-
         { key: "Rolling Return Avg 0.25YR", label: "3 Year Avg Rolling" },
         { key: "Rolling Return Max 0.25YR", label: "3 Year Max Rolling" },
         { key: "Rolling Return Min 0.25YR", label: "3 Year Min Rolling" },
-
         {
           key: "Rolling Return Avg 0.4166666666666667YR",
           label: "5 Year Avg Rolling",
@@ -281,6 +258,34 @@ const MutualFundComparison = () => {
     },
   };
 
+  const formatValue = (value, fieldKey) => {
+    if (value === "N/A" || value === undefined || value === null) return "N/A";
+
+    try {
+      const numValue = parseFloat(value);
+
+      if (isNaN(numValue)) return value;
+
+      if (
+        fieldKey.includes("Return") ||
+        fieldKey.includes("XIRR") ||
+        fieldKey === "Expense Ratio"
+      ) {
+        return `${numValue.toFixed(2)}%`;
+      } else if (fieldKey === "AUM (in Rs.)") {
+        return `₹${(numValue / 10000000).toFixed(2)} Cr`;
+      }
+
+      return value;
+    } catch (error) {
+      console.warn(
+        `Error formatting value ${value} for field ${fieldKey}:`,
+        error
+      );
+      return value;
+    }
+  };
+
   const renderTable = (section) => (
     <table className="w-full border-collapse">
       <thead>
@@ -293,7 +298,7 @@ const MutualFundComparison = () => {
               key={fund.id}
               className="px-4 py-3 bg-gray-50 text-left text-sm font-semibold text-gray-700 border-b border-gray-200"
             >
-              {fund?.scheme}
+              {fund?.scheme || "Unknown Fund"}
             </th>
           ))}
         </tr>
@@ -309,19 +314,7 @@ const MutualFundComparison = () => {
             </td>
             {selectedFunds.map((fund) => {
               const value = findDetailValue(fund, field?.key);
-              let displayValue = value;
-
-              // Format values for better readability
-              if (field.key.includes("Return") || field.key.includes("XIRR")) {
-                displayValue = `${parseFloat(value).toFixed(2)}%`;
-              } else if (field.key === "AUM (in Rs.)") {
-                // Convert large numbers to Crore format
-                displayValue = `₹${(parseFloat(value) / 10000000).toFixed(
-                  2
-                )} Cr`;
-              } else if (field.key === "Expense Ratio") {
-                displayValue = `${parseFloat(value).toFixed(2)}%`;
-              }
+              const displayValue = formatValue(value, field?.key);
 
               return (
                 <td
@@ -337,6 +330,7 @@ const MutualFundComparison = () => {
       </tbody>
     </table>
   );
+
   return (
     <div className="container mx-auto px-4 md:px-8 py-6 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -362,18 +356,24 @@ const MutualFundComparison = () => {
                   </div>
                 ) : searchResults.length > 0 ? (
                   searchResults.map((fund) => (
-                    <div
-                      key={fund.id}
-                      className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
-                      onClick={() => handleAddFund(fund)}
-                    >
-                      <div className="font-medium text-gray-800">
-                        {fund.scheme}
-                      </div>
-                      <div className="text-sm text-gray-500 mt-1">
-                        {fund.amc} • {fund.category}
-                      </div>
-                    </div>
+                    <>
+                      {fund?.id !== null ? (
+                        <div
+                          key={fund.id}
+                          className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
+                          onClick={() => {
+                            console.log(fund), handleAddFund(fund);
+                          }}
+                        >
+                          <div className="font-medium text-gray-800">
+                            {fund.scheme}
+                          </div>
+                          <div className="text-sm text-gray-500 mt-1">
+                            {fund.amc} • {fund.category}
+                          </div>
+                        </div>
+                      ) : null}
+                    </>
                   ))
                 ) : searchQuery.length > 0 ? (
                   <div className="p-4 text-center text-gray-500">
@@ -385,7 +385,7 @@ const MutualFundComparison = () => {
           </div>
         </div>
 
-        {selectedFunds.length > 0 && (
+        {selectedFunds.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {selectedFunds?.map((fund) => (
               <div
@@ -413,9 +413,7 @@ const MutualFundComparison = () => {
               </div>
             ))}
           </div>
-        )}
-
-        {selectedFunds.length === 0 && (
+        ) : (
           <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
             <div className="text-gray-500 mb-2">
               No funds selected for comparison

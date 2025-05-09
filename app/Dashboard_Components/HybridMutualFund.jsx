@@ -274,7 +274,7 @@ export default function HybridMutualFund() {
             </div>
 
             {/* Filter Controls */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
               <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4 sm:items-center">
                 <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
                   Market Cap:
@@ -305,7 +305,7 @@ export default function HybridMutualFund() {
                   <option value="3 Years">3 Years</option>
                 </select>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -348,7 +348,7 @@ export default function HybridMutualFund() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {item?.currentXIRR?.toFixed(2)}%
+                          {item?.currentXIRR}%
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">

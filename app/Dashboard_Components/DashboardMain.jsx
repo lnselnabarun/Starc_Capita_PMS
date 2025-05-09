@@ -1,4 +1,3 @@
-// Dashboard.js
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
@@ -17,48 +16,6 @@ import axios from "axios";
 
 export default function DashboardMain() {
   const router = useRouter();
-  const data = [
-    {
-      date: '03/07/2024',
-      totalCost: 442238.49,
-      currentValue: 1039048.16,
-      sensex: 799868.00,
-      xirr: 20.05,
-      MFxirr: 120.05,
-    },
-    {
-      date: '04/08/2024',
-      totalCost: 586877.92,
-      currentValue: 1068879.16,
-      sensex: 787594.00,
-      xirr: 20.06,
-      MFxirr: 120.06,
-    },
-    {
-      date: '01/09/2024',
-      totalCost: 700507.92,
-      currentValue: 1080429.39,
-      sensex: 823917.20,
-      xirr: 23.78,
-      MFxirr: 123.78,
-    },
-    {
-      date: '01/10/2024',
-      totalCost: 704507.92,
-      currentValue: 1116340.54,
-      sensex: 842662.90,
-      xirr: 24.71,
-      MFxirr: 124.71,
-    },
-    {
-      date: '10/11/2024',
-      totalCost: 708507.92,
-      currentValue: 1071568.32,
-      sensex: 797956.10,
-      xirr: 9.50,
-      MFxirr: 19.50,
-    }
-];
   const tableData = [
     {
       currency: "Bitcoin / BTC",
@@ -89,22 +46,22 @@ export default function DashboardMain() {
   const [DashboardData, SetDashboardData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
-
-
+  const [PortfolioData, setPortfolioData] = useState([]);
 
   useEffect(() => {
     const initializeData = async () => {
       try {
         setIsLoading(true);
         const token = localStorage.getItem("myData");
-
+        const userId = localStorage.getItem("UserId");
         if (!token) {
           setError("No authentication token found");
           return;
         }
 
-        await GetGetDashboardData(JSON.parse(token));
+        await GetDashboardData(JSON.parse(token)).then(() => {
+          fetchFundDetails(JSON.parse(userId));
+        });
       } catch (err) {
         setError(err.message);
       } finally {
@@ -115,7 +72,7 @@ export default function DashboardMain() {
     initializeData();
   }, []);
 
-  async function GetGetDashboardData(token) {
+  async function GetDashboardData(token) {
     try {
       const response = await axios({
         method: "get",
@@ -138,7 +95,50 @@ export default function DashboardMain() {
       throw error;
     }
   }
+
+  const fetchFundDetails = async (fundId) => {
+    try {
+      const response = await fetch(
+        "https://dev.netrumusa.com/starkcapital/api-backend/portfolio-XIRR-graph",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ user_id: fundId.toString() }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data?.status === "success") {
+        // Process data for chart readability
+        const processedData = data?.summaries.map((item) => ({
+          date: item?.date,
+          totalCost: parseFloat(item?.totalCost),
+          currentValue: parseFloat(item?.currentValue), // Fallback value for visualization
+          sensex: parseInt(item?.sensex),
+          xirr: parseFloat(item?.xirr),
+        }));
+
+        // Sort by date for proper timeline display
+        processedData.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        setPortfolioData(processedData?.reverse());
+      } else {
+        console.error("Failed to fetch fund details", data);
+      }
+    } catch (error) {
+      console.error("Error fetching fund details:", error);
+    }
+  };
+
   function formatMoney(amount) {
+    if (!amount) return "0.00";
     return new Intl.NumberFormat("en-IN", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -149,22 +149,25 @@ export default function DashboardMain() {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-4 border border-gray-200 rounded shadow-md">
-          <p className="font-bold">{label}</p>
+          <p className="font-bold">
+            {new Date(label).toLocaleDateString("en-IN", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })}
+          </p>
           <p className="text-blue-600">
-            Total Cost: ₹{payload[0].value.toLocaleString("en-IN")}
+            Current Cost: ₹
+            {Number(payload[0]?.value || 0).toLocaleString("en-IN")}
           </p>
           <p className="text-red-600">
-            Current Value: ₹{payload[1].value.toLocaleString("en-IN")}
+            Current Value: ₹
+            {Number(payload[1]?.value || 0).toLocaleString("en-IN")}
           </p>
           <p className="text-yellow-600">
-            Sensex: {payload[2].value.toLocaleString("en-IN")}
+            Sensex: {Number(payload[2]?.value || 0).toLocaleString("en-IN")}
           </p>
-          <p className="text-green-600">
-            XIRR: {payload[3]?.value.toFixed(2)}%
-          </p>
-          <p className="text-[#aa4bf2]">
-            MFXIRR: {payload[3]?.value.toFixed(2)}%
-          </p>
+          <p className="text-green-600">XIRR: {payload[3]?.value || 0}%</p>
         </div>
       );
     }
@@ -175,6 +178,16 @@ export default function DashboardMain() {
     if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
     if (value >= 1000) return `${(value / 1000).toFixed(0)}K`;
     return value;
+  };
+
+  // Format date for x-axis
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-IN", {
+      month: "short",
+      day: "numeric",
+    });
   };
   return (
     <>
@@ -192,14 +205,14 @@ export default function DashboardMain() {
                 height={20} // Icon height
               />
               <p className="text-xs sm:text-sm font-medium text-[#6E7499] ml-1">
-                Current Portfolio
+                Current Value
               </p>
             </div>
 
             {/* Row 2 */}
             <div className="mb-3">
               <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
-                {`₹ ${formatMoney(DashboardData?.totalPositiveAmount)}`}
+                {`₹ ${formatMoney(PortfolioData[0]?.currentValue)}`}
               </p>
             </div>
 
@@ -237,12 +250,12 @@ export default function DashboardMain() {
             {/* Row 2 */}
             <div className="mb-3">
               <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
-                {`₹ ${formatMoney(DashboardData?.totalNegativeAmount)}`}
+                {`₹ ${formatMoney(PortfolioData[0]?.totalCost)}`}
               </p>
             </div>
 
             {/* Row 3 */}
-            <div>
+            {/* <div>
               <p className="text-[10px] sm:text-xs md:text-sm font-medium text-[#24A959] ml-0 sm:ml-1">
                 ↑ 1.7%
               </p>
@@ -254,7 +267,7 @@ export default function DashboardMain() {
               width={90} // Set the width you want
               height={60} // Set the height you want
               layout="intrinsic"
-            />
+            /> */}
           </div>
 
           {/* Card 3 */}
@@ -268,19 +281,19 @@ export default function DashboardMain() {
                 height={20} // Icon height
               />
               <p className="text-xs sm:text-sm font-medium text-[#6E7499] ml-1">
-                XIRR
+                Current XIRR
               </p>
             </div>
 
             {/* Row 2 */}
             <div className="mb-3">
               <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
-                ₹ 50,435.362
+                {`₹ ${formatMoney(PortfolioData[0]?.xirr)}%`}
               </p>
             </div>
 
             {/* Row 3 */}
-            <div>
+            {/* <div>
               <p className="text-[10px] sm:text-xs md:text-sm font-medium text-[#24A959] ml-0 sm:ml-1">
                 ↑ 1.7%
               </p>
@@ -292,7 +305,7 @@ export default function DashboardMain() {
               width={90} // Set the width you want
               height={60} // Set the height you want
               layout="intrinsic"
-            />
+            /> */}
           </div>
           {/* {chart section} */}
           <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg border-[1.5px] border-[#D9D9D9] ">
@@ -325,98 +338,106 @@ export default function DashboardMain() {
               </div>
             </div>
             {/* <div className="w-full bg-white p-6 rounded-lg shadow"> */}
-            <h2 className="text-2xl text-center font-semibold text-gray-700 mb-6">
-              Investment Summary
-            </h2>
+            <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg">
+              <div className="justify-between w-full flex flex-wrap gap-4 h-auto">
+                <h2 className="text-xl font-semibold text-gray-700 w-full text-center mb-4">
+                  Investment Summary
+                </h2>
+              </div>
 
-            <div className="w-full h-96">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={data}
-                  margin={{
-                    top: 10,
-                    right: 30,
-                    left: 20,
-                    bottom: 30,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="date"
-                    angle={-45}
-                    textAnchor="end"
-                    height={70}
-                    interval={0}
-                    tick={{ fontSize: 11 }}
-                  />
-                  <YAxis
-                    yAxisId="left"
-                    orientation="left"
-                    tickFormatter={formatYAxis}
-                    domain={["dataMin - 50000", "dataMax + 50000"]}
-                  />
-                  <YAxis
-                    yAxisId="right"
-                    orientation="right"
-                    tickFormatter={(value) => `${value}%`}
-                    domain={[0, 30]}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                  <Line
-                    yAxisId="left"
-                    type="monotone"
-                    dataKey="totalCost"
-                    name="Total Cost"
-                    stroke="#1e40af"
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                    activeDot={{ r: 6 }}
-                  />
-                  <Line
-                    yAxisId="left"
-                    type="monotone"
-                    dataKey="currentValue"
-                    name="Current Value"
-                    stroke="#dc2626"
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                    activeDot={{ r: 6 }}
-                  />
-                  <Line
-                    yAxisId="left"
-                    type="monotone"
-                    dataKey="sensex"
-                    name="Sensex"
-                    stroke="#f59e0b"
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                    activeDot={{ r: 6 }}
-                  />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="xirr"
-                    name="XIRR %"
-                    stroke="#10b981"
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                    activeDot={{ r: 6 }}
-                  />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="MFxirr"
-                    name="MFXIRR %"
-                    stroke="#aa4bf2"
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                    activeDot={{ r: 6 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              <div className="w-full h-96">
+                {isLoading ? (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <p>Loading chart data...</p>
+                  </div>
+                ) : error ? (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <p>Error loading chart: {error}</p>
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={PortfolioData}
+                      margin={{
+                        top: 10,
+                        right: 30,
+                        left: 20,
+                        bottom: 30,
+                      }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                      <XAxis
+                        dataKey="date"
+                        angle={-45}
+                        textAnchor="end"
+                        height={70}
+                        interval={0}
+                        tick={{ fontSize: 11 }}
+                        tickFormatter={formatDate}
+                      />
+                      <YAxis
+                        yAxisId="left"
+                        orientation="left"
+                        tickFormatter={formatYAxis}
+                        domain={["dataMin - 50000", "dataMax + 50000"]}
+                      />
+                      <YAxis
+                        yAxisId="right"
+                        orientation="right"
+                        tickFormatter={(value) => `${value}%`}
+                        domain={[0, 30]}
+                      />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend />
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="totalCost"
+                        name="Current Cost"
+                        stroke="#1e40af"
+                        strokeWidth={2}
+                        dot={{ r: 3 }}
+                        activeDot={{ r: 6 }}
+                        connectNulls={true}
+                      />
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="currentValue"
+                        name="Current Value"
+                        stroke="#dc2626"
+                        strokeWidth={2}
+                        dot={{ r: 3 }}
+                        activeDot={{ r: 6 }}
+                        connectNulls={true}
+                      />
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="sensex"
+                        name="Sensex"
+                        stroke="#f59e0b"
+                        strokeWidth={2}
+                        dot={{ r: 3 }}
+                        activeDot={{ r: 6 }}
+                        connectNulls={true}
+                      />
+                      <Line
+                        yAxisId="right"
+                        type="monotone"
+                        dataKey="xirr"
+                        name="XIRR%"
+                        stroke="#10b981"
+                        strokeWidth={2}
+                        dot={{ r: 3 }}
+                        activeDot={{ r: 6 }}
+                        connectNulls={true}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
             </div>
-            {/* </div> */}
           </div>
 
           <div className="justify-between w-full flex flex-wrap gap-4 h-auto mb-2">
