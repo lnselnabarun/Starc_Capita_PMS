@@ -42,7 +42,7 @@ export default function DashboardMain() {
       coin: require("../assets/logo/Icon2.png"),
     },
   ];
-
+  const [chartView, setChartView] = useState("investment"); // "investment" or "xirr"
   const [DashboardData, SetDashboardData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -128,7 +128,7 @@ export default function DashboardMain() {
         // Sort by date for proper timeline display
         processedData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-        setPortfolioData(processedData?.reverse());
+        setPortfolioData(processedData);
       } else {
         console.error("Failed to fetch fund details", data);
       }
@@ -136,6 +136,8 @@ export default function DashboardMain() {
       console.error("Error fetching fund details:", error);
     }
   };
+
+  console.log(PortfolioData, "PortfolioDataPortfolioData");
 
   function formatMoney(amount) {
     if (!amount) return "0.00";
@@ -156,18 +158,26 @@ export default function DashboardMain() {
               day: "numeric",
             })}
           </p>
-          <p className="text-blue-600">
-            Current Cost: ₹
-            {Number(payload[0]?.value || 0).toLocaleString("en-IN")}
-          </p>
-          <p className="text-red-600">
-            Current Value: ₹
-            {Number(payload[1]?.value || 0).toLocaleString("en-IN")}
-          </p>
-          <p className="text-yellow-600">
-            Sensex: {Number(payload[2]?.value || 0).toLocaleString("en-IN")}
-          </p>
-          <p className="text-green-600">XIRR: {payload[3]?.value || 0}%</p>
+
+          {chartView === "xirr" ? (
+            // Only show XIRR for the XIRR view
+            <p className="text-green-600">XIRR: {payload[0]?.value || 0}%</p>
+          ) : (
+            // Show all other values for the investment view
+            <>
+              <p className="text-blue-600">
+                Current Cost: ₹
+                {Number(payload[0]?.value || 0).toLocaleString("en-IN")}
+              </p>
+              <p className="text-red-600">
+                Current Value: ₹
+                {Number(payload[1]?.value || 0).toLocaleString("en-IN")}
+              </p>
+              <p className="text-yellow-600">
+                Sensex: {Number(payload[2]?.value || 0).toLocaleString("en-IN")}
+              </p>
+            </>
+          )}
         </div>
       );
     }
@@ -212,7 +222,9 @@ export default function DashboardMain() {
             {/* Row 2 */}
             <div className="mb-3">
               <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
-                {`₹ ${formatMoney(PortfolioData[0]?.currentValue)}`}
+                {`₹ ${formatMoney(
+                  PortfolioData[PortfolioData.length - 1]?.currentValue
+                )}`}
               </p>
             </div>
 
@@ -249,25 +261,18 @@ export default function DashboardMain() {
 
             {/* Row 2 */}
             <div className="mb-3">
-              <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
+              {/* <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
                 {`₹ ${formatMoney(PortfolioData[0]?.totalCost)}`}
+              </p> */}
+
+              <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
+                {`₹ ${formatMoney(
+                  PortfolioData[PortfolioData.length - 1]?.totalCost
+                )}`}
               </p>
             </div>
 
-            {/* Row 3 */}
-            {/* <div>
-              <p className="text-[10px] sm:text-xs md:text-sm font-medium text-[#24A959] ml-0 sm:ml-1">
-                ↑ 1.7%
-              </p>
-            </div>
-            <Image
-              src={require("../assets/logo/Graph1.png")} // Replace with the correct image path
-              alt="Description"
-              className="absolute bottom-2 right-2 z-50"
-              width={90} // Set the width you want
-              height={60} // Set the height you want
-              layout="intrinsic"
-            /> */}
+           
           </div>
 
           {/* Card 3 */}
@@ -287,63 +292,56 @@ export default function DashboardMain() {
 
             {/* Row 2 */}
             <div className="mb-3">
-              <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
+              {/* <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
                 {`₹ ${formatMoney(PortfolioData[0]?.xirr)}%`}
+              </p> */}
+              <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
+                {`₹ ${formatMoney(
+                  PortfolioData[PortfolioData.length - 1]?.xirr
+                )}`}
               </p>
             </div>
 
-            {/* Row 3 */}
-            {/* <div>
-              <p className="text-[10px] sm:text-xs md:text-sm font-medium text-[#24A959] ml-0 sm:ml-1">
-                ↑ 1.7%
-              </p>
-            </div>
-            <Image
-              src={require("../assets/logo/Graph2.png")} // Replace with the correct image path
-              alt="Description"
-              className="absolute bottom-2 right-2 z-50"
-              width={90} // Set the width you want
-              height={60} // Set the height you want
-              layout="intrinsic"
-            /> */}
+            
           </div>
           {/* {chart section} */}
           <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg border-[1.5px] border-[#D9D9D9] ">
             {/* First Content: Bold Text */}
             <div className="justify-between w-full flex flex-wrap gap-4 h-auto">
-              {/* <div className="flex flex-col items-start space-y-2">
+              <div className="flex flex-col items-start space-y-2">
                 <div className="font-medium text-lg sm:text-xl md:text-2xl text-[#3F4765] font-sans">
-                  Total Investment Graph
+                  Investment Graph
                 </div>
-              </div> */}
+              </div>
 
-              {/* Second Content: Four Pressable Divs */}
-              <div className="flex gap-4">
-                {/* {["24H", "7D", "1M", "1Y"].map((option, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => handleClickTime(idx)}
-                    className={`h-[32px] w-[52px] px-4 py-1 cursor-pointer rounded-lg border-[1.5px] text-transparent bg-clip-text text-lg font-medium
-                    flex justify-center items-center
-                    ${
-                      activeIndexTime !== idx
-                        ? "border-[#D9D9D9] text-[#9FA8C7] bg-slate-950"
-                        : "border-[#F5F5F5] bg-gradient-to-r from-[#1CAC70] to-[#EDDC46]"
-                    }
-                    hover:bg-gray-200 bg-[#949595]`}
-                  >
-                    {option}
-                  </div>
-                ))} */}
+              {/* Toggle buttons */}
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => setChartView("investment")}
+                  className={`text-[#9FA8C7] px-4 py-2 rounded-2xl border text-sm ${
+                    chartView === "investment"
+                      ? "bg-[#ECEFF9] border-[#E5EBEF] text-[#3F4765] font-medium"
+                      : "border-[#E5EBEF]"
+                  }`}
+                >
+                 Investment
+                </button>
+
+                <button
+                  onClick={() => setChartView("xirr")}
+                  className={`text-[#9FA8C7] px-4 py-2 rounded-2xl border text-sm ${
+                    chartView === "xirr"
+                      ? "bg-[#ECEFF9] border-[#E5EBEF] text-[#3F4765] font-medium"
+                      : "border-[#E5EBEF]"
+                  }`}
+                >
+                  XIRR
+                </button>
               </div>
             </div>
             {/* <div className="w-full bg-white p-6 rounded-lg shadow"> */}
             <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg">
-              <div className="justify-between w-full flex flex-wrap gap-4 h-auto">
-                <h2 className="text-xl font-semibold text-gray-700 w-full text-center mb-4">
-                  Investment Summary
-                </h2>
-              </div>
+             
 
               <div className="w-full h-96">
                 {isLoading ? (
@@ -355,6 +353,7 @@ export default function DashboardMain() {
                     <p>Error loading chart: {error}</p>
                   </div>
                 ) : (
+                  // Complete LineChart component with proper tooltip display for each view
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart
                       data={PortfolioData}
@@ -375,64 +374,136 @@ export default function DashboardMain() {
                         tick={{ fontSize: 11 }}
                         tickFormatter={formatDate}
                       />
-                      <YAxis
-                        yAxisId="left"
-                        orientation="left"
-                        tickFormatter={formatYAxis}
-                        domain={["dataMin - 50000", "dataMax + 50000"]}
-                      />
-                      <YAxis
-                        yAxisId="right"
-                        orientation="right"
-                        tickFormatter={(value) => `${value}%`}
-                        domain={[0, 30]}
-                      />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Legend />
-                      <Line
-                        yAxisId="left"
-                        type="monotone"
-                        dataKey="totalCost"
-                        name="Current Cost"
-                        stroke="#1e40af"
-                        strokeWidth={2}
-                        dot={{ r: 3 }}
-                        activeDot={{ r: 6 }}
-                        connectNulls={true}
-                      />
-                      <Line
-                        yAxisId="left"
-                        type="monotone"
-                        dataKey="currentValue"
-                        name="Current Value"
-                        stroke="#dc2626"
-                        strokeWidth={2}
-                        dot={{ r: 3 }}
-                        activeDot={{ r: 6 }}
-                        connectNulls={true}
-                      />
-                      <Line
-                        yAxisId="left"
-                        type="monotone"
-                        dataKey="sensex"
-                        name="Sensex"
-                        stroke="#f59e0b"
-                        strokeWidth={2}
-                        dot={{ r: 3 }}
-                        activeDot={{ r: 6 }}
-                        connectNulls={true}
-                      />
-                      <Line
-                        yAxisId="right"
-                        type="monotone"
-                        dataKey="xirr"
-                        name="XIRR%"
-                        stroke="#10b981"
-                        strokeWidth={2}
-                        dot={{ r: 3 }}
-                        activeDot={{ r: 6 }}
-                        connectNulls={true}
-                      />
+                      {chartView === "xirr" ? (
+                        // Only XIRR view axes and lines
+                        <>
+                          <YAxis
+                            yAxisId="right"
+                            orientation="right"
+                            tickFormatter={(value) => `${value}%`}
+                            domain={[0, 30]}
+                          />
+                          <Tooltip
+                            content={({ active, payload, label }) => {
+                              if (active && payload && payload.length) {
+                                return (
+                                  <div className="bg-white p-4 border border-gray-200 rounded shadow-md">
+                                    <p className="font-bold">
+                                      {new Date(label).toLocaleDateString(
+                                        "en-IN",
+                                        {
+                                          year: "numeric",
+                                          month: "short",
+                                          day: "numeric",
+                                        }
+                                      )}
+                                    </p>
+                                    <p className="text-green-600">
+                                      XIRR: {payload[0]?.value || 0}%
+                                    </p>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            }}
+                          />
+                          <Legend />
+                          <Line
+                            yAxisId="right"
+                            type="monotone"
+                            dataKey="xirr"
+                            name="XIRR%"
+                            stroke="#10b981"
+                            strokeWidth={2}
+                            dot={{ r: 3 }}
+                            activeDot={{ r: 6 }}
+                            connectNulls={true}
+                          />
+                        </>
+                      ) : (
+                        // Investment view axes and lines
+                        <>
+                          <YAxis
+                            yAxisId="left"
+                            orientation="left"
+                            tickFormatter={formatYAxis}
+                            domain={["dataMin - 50000", "dataMax + 50000"]}
+                          />
+                          <Tooltip
+                            content={({ active, payload, label }) => {
+                              if (active && payload && payload.length) {
+                                return (
+                                  <div className="bg-white p-4 border border-gray-200 rounded shadow-md">
+                                    <p className="font-bold">
+                                      {new Date(label).toLocaleDateString(
+                                        "en-IN",
+                                        {
+                                          year: "numeric",
+                                          month: "short",
+                                          day: "numeric",
+                                        }
+                                      )}
+                                    </p>
+                                    <p className="text-blue-600">
+                                      Current Cost: ₹
+                                      {Number(
+                                        payload[0]?.value || 0
+                                      ).toLocaleString("en-IN")}
+                                    </p>
+                                    <p className="text-red-600">
+                                      Current Value: ₹
+                                      {Number(
+                                        payload[1]?.value || 0
+                                      ).toLocaleString("en-IN")}
+                                    </p>
+                                    <p className="text-yellow-600">
+                                      Sensex:{" "}
+                                      {Number(
+                                        payload[2]?.value || 0
+                                      ).toLocaleString("en-IN")}
+                                    </p>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            }}
+                          />
+                          <Legend />
+                          <Line
+                            yAxisId="left"
+                            type="monotone"
+                            dataKey="totalCost"
+                            name="Current Cost"
+                            stroke="#1e40af"
+                            strokeWidth={2}
+                            dot={{ r: 3 }}
+                            activeDot={{ r: 6 }}
+                            connectNulls={true}
+                          />
+                          <Line
+                            yAxisId="left"
+                            type="monotone"
+                            dataKey="currentValue"
+                            name="Current Value"
+                            stroke="#dc2626"
+                            strokeWidth={2}
+                            dot={{ r: 3 }}
+                            activeDot={{ r: 6 }}
+                            connectNulls={true}
+                          />
+                          <Line
+                            yAxisId="left"
+                            type="monotone"
+                            dataKey="sensex"
+                            name="Sensex"
+                            stroke="#f59e0b"
+                            strokeWidth={2}
+                            dot={{ r: 3 }}
+                            activeDot={{ r: 6 }}
+                            connectNulls={true}
+                          />
+                        </>
+                      )}
                     </LineChart>
                   </ResponsiveContainer>
                 )}

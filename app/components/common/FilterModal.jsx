@@ -5,7 +5,6 @@ import Image from "next/image";
 const FilterModal = ({ isOpen, onClose, type }) => {
   const [costRange, setCostRange] = useState([0, 100000]);
   const [rollingReturns, setRollingReturns] = useState([0, 100]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [expandedSections, setExpandedSections] = useState({
     category: true,
     cost: true,

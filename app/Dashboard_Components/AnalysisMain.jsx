@@ -13,28 +13,90 @@ import {
 import Image from "next/image";
 import { Chart } from "react-google-charts";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 
 export default function AnalysisMain() {
   const [activeButton, setActiveButton] = useState("risk");
   const [PortFolioAssetAllocation, setPortFolioAssetAllocation] = useState([]);
+  const [
+    PortfolioMarketCapDistributionData,
+    setPortfolioMarketCapDistributionData,
+  ] = useState([]);
+  const [riskRatiosData, setRiskRatiosData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
 
-  const portfolio_allocation_data = [
-    ["Task", "Hours per Day"],
-    ["Equity", 65],
-    ["Debt", 25],
-    ["Others", 10],
+  // Default data for Risk Ratios chart (will be replaced with API data)
+  const riskRatioData = [
+    {
+      date: "03/07/2024",
+      "Expense Ratio": 1.25,
+      "Std. Dev.": 9.2,
+      Sharpe: 1.3,
+      Beta: 0.65,
+      Alpha: 0.9,
+    },
+    {
+      date: "04/08/2024",
+      "Expense Ratio": 1.2,
+      "Std. Dev.": 9.1,
+      Sharpe: 1.4,
+      Beta: 0.7,
+      Alpha: 3.5,
+    },
+    {
+      date: "01/09/2024",
+      "Expense Ratio": 1.15,
+      "Std. Dev.": 9.15,
+      Sharpe: 1.45,
+      Beta: 0.75,
+      Alpha: 6.5,
+    },
+    {
+      date: "01/10/2024",
+      "Expense Ratio": 1.1,
+      "Std. Dev.": 9.2,
+      Sharpe: 1.48,
+      Beta: 0.78,
+      Alpha: 6.6,
+    },
+    {
+      date: "10/11/2024",
+      "Expense Ratio": 1.1,
+      "Std. Dev.": 9.25,
+      Sharpe: 1.5,
+      Beta: 0.8,
+      Alpha: 6.65,
+    },
   ];
 
-  const portfolio_MarketCap_data = [
-    ["Category", "Percentage"],
-    ["Large Cap", 43.6],
-    ["Mid Cap", 11.48],
-    ["Small Cap", 9.11],
-    ["Others", 11.68],
+  // Data for Capture Ratios chart
+  const captureRatioData = [
+    {
+      date: "03/07/2024",
+      Up: 90.5,
+      Down: 85.0,
+    },
+    {
+      date: "04/08/2024",
+      Up: 92.3,
+      Down: 78.0,
+    },
+    {
+      date: "01/09/2024",
+      Up: 93.5,
+      Down: 70.0,
+    },
+    {
+      date: "01/10/2024",
+      Up: 94.0,
+      Down: 65.0,
+    },
+    {
+      date: "10/11/2024",
+      Up: 94.2,
+      Down: 67.0,
+    },
   ];
 
   const portfolio_allocation_options = {
@@ -172,79 +234,6 @@ export default function AnalysisMain() {
     },
   };
 
-  // Data for Risk Ratios chart
-  const riskRatioData = [
-    {
-      date: "03/07/2024",
-      "Expense Ratio": 1.25,
-      "Std. Dev.": 9.2,
-      Sharpe: 1.3,
-      Beta: 0.65,
-      Alpha: 0.9,
-    },
-    {
-      date: "04/08/2024",
-      "Expense Ratio": 1.2,
-      "Std. Dev.": 9.1,
-      Sharpe: 1.4,
-      Beta: 0.7,
-      Alpha: 3.5,
-    },
-    {
-      date: "01/09/2024",
-      "Expense Ratio": 1.15,
-      "Std. Dev.": 9.15,
-      Sharpe: 1.45,
-      Beta: 0.75,
-      Alpha: 6.5,
-    },
-    {
-      date: "01/10/2024",
-      "Expense Ratio": 1.1,
-      "Std. Dev.": 9.2,
-      Sharpe: 1.48,
-      Beta: 0.78,
-      Alpha: 6.6,
-    },
-    {
-      date: "10/11/2024",
-      "Expense Ratio": 1.1,
-      "Std. Dev.": 9.25,
-      Sharpe: 1.5,
-      Beta: 0.8,
-      Alpha: 6.65,
-    },
-  ];
-
-  // Data for Capture Ratios chart
-  const captureRatioData = [
-    {
-      date: "03/07/2024",
-      Up: 90.5,
-      Down: 85.0,
-    },
-    {
-      date: "04/08/2024",
-      Up: 92.3,
-      Down: 78.0,
-    },
-    {
-      date: "01/09/2024",
-      Up: 93.5,
-      Down: 70.0,
-    },
-    {
-      date: "01/10/2024",
-      Up: 94.0,
-      Down: 65.0,
-    },
-    {
-      date: "10/11/2024",
-      Up: 94.2,
-      Down: 67.0,
-    },
-  ];
-
   const portfolio_AMC_Distribution_data = [
     ["Task", "Hours per Day"],
     ["ICICI", 80.25],
@@ -296,6 +285,11 @@ export default function AnalysisMain() {
 
   // Get active data based on button selection
   const getActiveData = () => {
+    // If risk button is active and we have API data, use it
+    if (activeButton === "risk" && riskRatiosData.length > 0) {
+      return riskRatiosData;
+    }
+    // Otherwise use the default data
     return activeButton === "risk" ? riskRatioData : captureRatioData;
   };
 
@@ -333,9 +327,7 @@ export default function AnalysisMain() {
     },
   ];
 
-
   const fetchPortFolioAssetAllocation = async (fundId) => {
-    // Note: We no longer set isLoading here since it's handled in handleAddFund
     try {
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/portfolio-asset-allocation-graph",
@@ -367,6 +359,94 @@ export default function AnalysisMain() {
     }
   };
 
+  const GetPortfolioMarketCapDistributionData = async (fundId) => {
+    try {
+      const response = await fetch(
+        "https://dev.netrumusa.com/starkcapital/api-backend/portfolio-market-cap-distribution-graph",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ user_id: fundId.toString() }),
+        }
+      );
+
+      if (!response?.ok) {
+        throw new Error(`HTTP error! status: ${response?.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data?.status === "success") {
+        // Transform the data into the required format for Google Charts
+        const formattedData = [["Category", "Percentage"]];
+
+        // Map through the received data and format it
+        data?.data?.forEach((item) => {
+          // Format category name to title case (e.g., "large_cap" to "Large Cap")
+          const formattedCategory = item?.category
+            .split("_")
+            .map((word) => word?.charAt(0).toUpperCase() + word?.slice(1))
+            .join(" ");
+
+          // Add the category and percentage to the formatted data
+          formattedData?.push([formattedCategory, item?.percentage]);
+        });
+
+        setPortfolioMarketCapDistributionData(formattedData);
+      } else {
+        console.error("Failed to fetch fund details", data);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching fund details:", error);
+      return null;
+    }
+  };
+
+  // New function to fetch risk ratios data
+  const fetchRiskRatiosData = async (userId) => {
+    try {
+      const response = await fetch(
+        "https://dev.netrumusa.com/starkcapital/api-backend/risk-ratios-graph",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ user_id: userId.toString() }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data?.status === "success") {
+        // Format the API response data for the chart
+        const formattedData = data.summaries
+          .filter((item) => item.currentValue > 0) // Only include records with values
+          .map((item) => ({
+            date: item.date, // Use date as is
+            "Current Value": item.currentValue,
+            Sharpe: item.weightedSharpeRatio,
+            Alpha: item.weightedAlpha,
+            Beta: item.weightedBeta,
+            "Std. Dev.": item.weightedStdDev,
+          }));
+
+        setRiskRatiosData(formattedData);
+      } else {
+        console.error("Failed to fetch risk ratios data", data);
+      }
+    } catch (error) {
+      console.error("Error fetching risk ratios data:", error);
+    }
+  };
+
   useEffect(() => {
     const initializeData = async () => {
       try {
@@ -378,7 +458,15 @@ export default function AnalysisMain() {
           return;
         }
 
-        await fetchPortFolioAssetAllocation(JSON.parse(userId));
+        // Parse the user ID
+        const parsedUserId = JSON.parse(userId);
+
+        // Fetch all required data
+        await Promise.all([
+          fetchPortFolioAssetAllocation(parsedUserId),
+          GetPortfolioMarketCapDistributionData(parsedUserId),
+          fetchRiskRatiosData(parsedUserId),
+        ]);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -413,7 +501,7 @@ export default function AnalysisMain() {
               <div className="pt-4">
                 <Chart
                   chartType="PieChart"
-                  data={portfolio_MarketCap_data}
+                  data={PortfolioMarketCapDistributionData}
                   options={portfolio_MarketCap_options}
                   width={"100%"}
                   height={"200px"}
@@ -457,76 +545,223 @@ export default function AnalysisMain() {
               </div>
 
               {/* Chart container */}
+              {/* Chart container */}
+              {/* Chart container */}
               <div className="w-full h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
                     data={getActiveData()}
                     margin={{
-                      top: 20,
+                      top: 10,
                       right: 30,
-                      left: 10,
-                      bottom: 20,
+                      left: 20,
+                      bottom: 30,
                     }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                    <XAxis
+                      dataKey="date"
+                      angle={-45}
+                      textAnchor="end"
+                      height={70}
+                      interval={0}
+                      tick={{ fontSize: 11 }}
+                    />
 
                     {activeButton === "risk" ? (
+                      // Risk Ratio view axes and lines
                       <>
-                        <Line
-                          type="monotone"
-                          dataKey="Expense Ratio"
-                          stroke="#4285F4"
-                          activeDot={{ r: 8 }}
-                          strokeWidth={2}
+                        <YAxis
+                          yAxisId="left"
+                          orientation="left"
+                          domain={["auto", "auto"]}
                         />
-                        <Line
-                          type="monotone"
-                          dataKey="Std. Dev."
-                          stroke="#EA4335"
-                          activeDot={{ r: 8 }}
-                          strokeWidth={2}
+                        {riskRatiosData.length > 0 && (
+                          <YAxis
+                            yAxisId="currentValue"
+                            orientation="right"
+                            domain={["auto", "auto"]}
+                          />
+                        )}
+                        <Tooltip
+                          content={({ active, payload, label }) => {
+                            if (active && payload && payload.length) {
+                              return (
+                                <div className="bg-white p-4 border border-gray-200 rounded shadow-md">
+                                  <p className="font-bold">{label}</p>
+                                  {payload.map((entry, index) => (
+                                    <p
+                                      key={`tooltip-${index}`}
+                                      style={{ color: entry.color }}
+                                    >
+                                      {entry.name}: {entry.value}
+                                    </p>
+                                  ))}
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
                         />
-                        <Line
-                          type="monotone"
-                          dataKey="Sharpe"
-                          stroke="#FBBC05"
-                          activeDot={{ r: 8 }}
-                          strokeWidth={2}
-                        />
-                        <Line
-                          type="monotone"
-                          dataKey="Beta"
-                          stroke="#34A853"
-                          activeDot={{ r: 8 }}
-                          strokeWidth={2}
-                        />
-                        <Line
-                          type="monotone"
-                          dataKey="Alpha"
-                          stroke="#FF6D01"
-                          activeDot={{ r: 8 }}
-                          strokeWidth={2}
-                        />
+                        <Legend />
+
+                        {riskRatiosData.length > 0 ? (
+                          // Use API data when available
+                          <>
+                            <Line
+                              type="monotone"
+                              dataKey="Current Value"
+                              name="Current Value"
+                              stroke="#4285F4"
+                              activeDot={{ r: 6 }}
+                              strokeWidth={2}
+                              yAxisId="currentValue"
+                              connectNulls={true}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="Std. Dev."
+                              name="Std. Dev."
+                              stroke="#EA4335"
+                              activeDot={{ r: 6 }}
+                              strokeWidth={2}
+                              yAxisId="left"
+                              connectNulls={true}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="Sharpe"
+                              name="Sharpe"
+                              stroke="#FBBC05"
+                              activeDot={{ r: 6 }}
+                              strokeWidth={2}
+                              yAxisId="left"
+                              connectNulls={true}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="Beta"
+                              name="Beta"
+                              stroke="#34A853"
+                              activeDot={{ r: 6 }}
+                              strokeWidth={2}
+                              yAxisId="left"
+                              connectNulls={true}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="Alpha"
+                              name="Alpha"
+                              stroke="#FF6D01"
+                              activeDot={{ r: 6 }}
+                              strokeWidth={2}
+                              yAxisId="left"
+                              connectNulls={true}
+                            />
+                          </>
+                        ) : (
+                          // Use default data when API data is not available
+                          <>
+                            <Line
+                              type="monotone"
+                              dataKey="Expense Ratio"
+                              name="Expense Ratio"
+                              stroke="#4285F4"
+                              activeDot={{ r: 6 }}
+                              strokeWidth={2}
+                              yAxisId="left"
+                              connectNulls={true}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="Std. Dev."
+                              name="Std. Dev."
+                              stroke="#EA4335"
+                              activeDot={{ r: 6 }}
+                              strokeWidth={2}
+                              yAxisId="left"
+                              connectNulls={true}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="Sharpe"
+                              name="Sharpe"
+                              stroke="#FBBC05"
+                              activeDot={{ r: 6 }}
+                              strokeWidth={2}
+                              yAxisId="left"
+                              connectNulls={true}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="Beta"
+                              name="Beta"
+                              stroke="#34A853"
+                              activeDot={{ r: 6 }}
+                              strokeWidth={2}
+                              yAxisId="left"
+                              connectNulls={true}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="Alpha"
+                              name="Alpha"
+                              stroke="#FF6D01"
+                              activeDot={{ r: 6 }}
+                              strokeWidth={2}
+                              yAxisId="left"
+                              connectNulls={true}
+                            />
+                          </>
+                        )}
                       </>
                     ) : (
+                      // Capture Ratio view axes and lines
                       <>
+                        <YAxis
+                          yAxisId="left"
+                          orientation="left"
+                          domain={[0, 100]}
+                          tickFormatter={(value) => `${value}%`}
+                        />
+                        <Tooltip
+                          content={({ active, payload, label }) => {
+                            if (active && payload && payload.length) {
+                              return (
+                                <div className="bg-white p-4 border border-gray-200 rounded shadow-md">
+                                  <p className="font-bold">{label}</p>
+                                  <p style={{ color: "#4285F4" }}>
+                                    Up Capture: {payload[0]?.value || 0}%
+                                  </p>
+                                  <p style={{ color: "#EA4335" }}>
+                                    Down Capture: {payload[1]?.value || 0}%
+                                  </p>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Legend />
                         <Line
                           type="monotone"
                           dataKey="Up"
+                          name="Up Capture"
                           stroke="#4285F4"
-                          activeDot={{ r: 8 }}
+                          activeDot={{ r: 6 }}
                           strokeWidth={2}
+                          yAxisId="left"
+                          connectNulls={true}
                         />
                         <Line
                           type="monotone"
                           dataKey="Down"
+                          name="Down Capture"
                           stroke="#EA4335"
-                          activeDot={{ r: 8 }}
+                          activeDot={{ r: 6 }}
                           strokeWidth={2}
+                          yAxisId="left"
+                          connectNulls={true}
                         />
                       </>
                     )}
