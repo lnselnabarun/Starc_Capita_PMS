@@ -12,7 +12,7 @@ const AMCCard = ({ amc, index }) => {
     // Navigate to details page using the ISIN if available, otherwise use id
     const detailId = amc?.id;
     const USER_ID = amc?.user_reg_id;
-    router.push(`/AMCDetails/${detailId}?userid=${USER_ID}`);
+    router.push(`/AMCDetails/${amc?.amc}`);
   };
 
   // Determine logo source - this would need to be mapped to actual logos
@@ -65,9 +65,9 @@ const AMCCard = ({ amc, index }) => {
           <h3 className="font-medium text-gray-800 mt-2 text-sm sm:text-base md:text-lg">
             {amc.amc}
           </h3>
-          <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+          {/* <p className="text-sm text-gray-600 mt-1 line-clamp-2">
             {amc.scheme}
-          </p>
+          </p> */}
 
           {/* {amc.currentValue && (
             <p className={`text-sm font-semibold mt-2 ${amc.currentValue < 0 ? 'text-red-500' : 'text-green-500'}`}>
@@ -140,15 +140,14 @@ const AMCGrid = () => {
         if (response.data) {
           // Filter unique FSCBI-FundLegalName entries
           const allData = response?.data?.data || [];
-          const uniqueData = filterUniqueFunds(allData);
+          // const uniqueData = filterUniqueFunds(allData);
 
-          setAmcData(uniqueData);
-          setFilteredData(uniqueData);
+          setAmcData(allData);
+          // setFilteredData(uniqueData);
         } else {
           setError("No data received from API");
         }
       } catch (err) {
-        console.error("Error fetching AMC data:", err);
         setError("Failed to fetch AMC data. Please try again later.");
       } finally {
         setIsLoading(false);
@@ -253,9 +252,9 @@ const AMCGrid = () => {
           </p>
         </motion.div>
 
-        <SearchAndFilter onSearch={handleSearch} />
+        {/* <SearchAndFilter onSearch={handleSearch} /> */}
 
-        {filteredData.length === 0 ? (
+        {/* {filteredData.length === 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -265,19 +264,19 @@ const AMCGrid = () => {
               No mutual funds found matching your search.
             </p>
           </motion.div>
-        ) : (
+        ) : ( */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredData?.map((amc, index) => (
+              {amcData?.map((amc, index) => (
                 <AMCCard key={amc.id || index} amc={amc} index={index} />
               ))}
             </div>
           </motion.div>
-        )}
+        {/* )} */}
       </div>
     </div>
   );

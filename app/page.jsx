@@ -82,7 +82,6 @@ const App = () => {
     // Check if localStorage is available (client-side only)
     if (typeof window !== "undefined") {
       const data = localStorage.getItem('myData');
-      console.log(data,"Token")
       setSavedData(data);
     }
   }, []);

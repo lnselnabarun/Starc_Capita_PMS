@@ -49,18 +49,15 @@ const MutualFundComparison = () => {
             },
           ]);
         } else {
-          console.error("Failed to fetch fund details for:", fund.scheme);
           // Could add user notification here
         }
       } catch (error) {
-        console.error("Error in handleAddFund:", error);
       } finally {
         setSearchQuery("");
         setShowSearchResults(false);
         setIsLoading(false);
       }
     } else if (isAlreadySelected) {
-      console.log("Fund already selected");
     }
   };
 
@@ -98,16 +95,13 @@ const MutualFundComparison = () => {
       if (data?.status === "success" && data?.data) {
         // Add a check to ensure details property exists
         if (!data.data.details) {
-          console.warn("Fund details missing in API response");
           data.data.details = []; // Initialize with empty array to prevent errors
         }
         return data.data;
       } else {
-        console.error("Failed to fetch fund details", data);
         return null;
       }
     } catch (error) {
-      console.error("Error fetching fund details:", error);
       return null;
     }
   };
@@ -154,11 +148,9 @@ const MutualFundComparison = () => {
 
         setSearchResults(formattedResults);
       } else {
-        console.warn("Search API returned unexpected format:", data);
         setSearchResults([]);
       }
     } catch (error) {
-      console.error("Error fetching search results:", error);
       setSearchResults([]);
     } finally {
       setIsLoading(false);
@@ -278,10 +270,6 @@ const MutualFundComparison = () => {
 
       return value;
     } catch (error) {
-      console.warn(
-        `Error formatting value ${value} for field ${fieldKey}:`,
-        error
-      );
       return value;
     }
   };
@@ -362,7 +350,7 @@ const MutualFundComparison = () => {
                           key={fund.id}
                           className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
                           onClick={() => {
-                            console.log(fund), handleAddFund(fund);
+                            handleAddFund(fund);
                           }}
                         >
                           <div className="font-medium text-gray-800">

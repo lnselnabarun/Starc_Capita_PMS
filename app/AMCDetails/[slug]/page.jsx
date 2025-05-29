@@ -18,6 +18,7 @@ const AMCDetails = ({ params }) => {
   // const id = params.id;
   const userId = searchParams.get("userid");
 
+
   const handleBack = () => {
     route.back();
   };
@@ -61,8 +62,13 @@ const AMCDetails = ({ params }) => {
           return;
         }
         const parsedToken = JSON.parse(token);
-        const response = await axios.get(
-          `https://dev.netrumusa.com/starkcapital/api-backend/portfolio-detailswithuserid?id=${params?.slug}&usr_reg_id=${userId}`,
+        
+        // POST API call to get user MF data for particular AMC
+        const response = await axios.post(
+          `https://dev.netrumusa.com/starkcapital/api-backend/get-usermf-data-forparticularamc`,
+          {
+            amc: decodeURIComponent(params?.slug) // Using the decoded slug as AMC name
+          },
           {
             headers: {
               "Content-Type": "application/json",
@@ -70,8 +76,9 @@ const AMCDetails = ({ params }) => {
             },
           }
         );
+        
         if (response.data?.status === "success") {
-          setDetailsData(response?.data?.data?.details || []);
+          setDetailsData(response?.data?.data?.funds || []);
         } else {
           throw new Error(
             response.data?.message || "Failed to fetch mutual fund data"
@@ -124,21 +131,27 @@ const AMCDetails = ({ params }) => {
           {/* Transaction List Container */}
 
           <div className="flex flex-wrap justify-between">
-            {DetailsData?.map((detail, index) => (
+          {DetailsData?.map((detail, index) => (
               <div
                 key={index}
-                className="w-full md:w-[48%] mb-4 p-4 rounded-lg bg-[#F5F5F5] shadow-lg transition-all duration-300 ease-in-out hover:transform hover:scale-105 hover:shadow-xl"
+                className="w-full md:w-[48%] lg:w-[32%] mb-4 p-6 rounded-lg bg-[#F5F5F5] shadow-lg transition-all duration-300 ease-in-out hover:transform hover:scale-105 hover:shadow-xl border border-gray-200"
               >
-                <div className="flex justify-between items-center">
-                  <div className="text-[12px] font-semibold text-left text-black">
-                    {detail.name}
+                <div className="space-y-3">
+                  <div className="text-sm font-bold text-black bg-white px-3 py-2 rounded-md shadow-sm">
+                    <span className="text-gray-600 font-medium">AMC:</span> {detail?.amc}
                   </div>
-                  <div className="text-[12px] font-medium text-left text-gray-600 ml-2">
-                    {detail.details}
+                  
+                  <div className="text-sm font-medium text-gray-700 bg-blue-50 px-3 py-2 rounded-md">
+                    <span className="text-gray-600 font-medium">Scheme:</span> {detail.scheme}
+                  </div>
+                  
+                  <div className="text-sm font-medium text-gray-700 bg-green-50 px-3 py-2 rounded-md">
+                    <span className="text-gray-600 font-medium">Category:</span> {detail?.["AT-FundLevelCategoryName"]}
                   </div>
                 </div>
               </div>
             ))}
+
           </div>
         </div>
       </div>

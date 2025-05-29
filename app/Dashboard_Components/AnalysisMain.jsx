@@ -9,7 +9,9 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  
 } from "recharts";
+import { Activity, TrendingUp, BarChart3, Target, ArrowUp, ArrowDown } from 'lucide-react';
 import Image from "next/image";
 import { Chart } from "react-google-charts";
 import { useRouter } from "next/navigation";
@@ -21,7 +23,12 @@ export default function AnalysisMain() {
     PortfolioMarketCapDistributionData,
     setPortfolioMarketCapDistributionData,
   ] = useState([]);
+
+  const [Category_Distribution, setCategory_Distribution] = useState([]);
+  const [captureRatiosData, setCaptureRatiosData] = useState([]);
+  const [captureRatiosDataForShowLastValue, setCaptureRatiosDataForShowLastValue] = useState(); // New state for last capture ratio values
   const [riskRatiosData, setRiskRatiosData] = useState([]);
+  const [riskRatiosDataForShowLastValue, setriskRatiosDataForShowLastValue] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
@@ -290,7 +297,7 @@ export default function AnalysisMain() {
       return riskRatiosData;
     }
     // Otherwise use the default data
-    return activeButton === "risk" ? riskRatioData : captureRatioData;
+    return activeButton === "risk" ? riskRatioData : captureRatiosData;
   };
 
   // Get chart title based on active button
@@ -350,11 +357,9 @@ export default function AnalysisMain() {
         // Add a check to ensure details property exists
         setPortFolioAssetAllocation(data?.data);
       } else {
-        console.error("Failed to fetch fund details", data);
         return null;
       }
     } catch (error) {
-      console.error("Error fetching fund details:", error);
       return null;
     }
   };
@@ -396,12 +401,48 @@ export default function AnalysisMain() {
 
         setPortfolioMarketCapDistributionData(formattedData);
       } else {
-        console.error("Failed to fetch fund details", data);
         return null;
       }
     } catch (error) {
-      console.error("Error fetching fund details:", error);
       return null;
+    }
+  };
+
+  const fetchCategoryDistribution = async (userId) => {
+    try {
+      const response = await fetch(
+        "https://dev.netrumusa.com/starkcapital/api-backend/category-distribution-graph",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ user_id: userId.toString() }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data?.status === "success") {
+        // Format the API response data for the chart
+        const formattedData = [["Category", "Percentage"]];
+
+        // Map through the received data and format it
+        data?.data?.forEach((item) => {
+          if (item?.percentage > 0) {
+            // Only include categories with percentage > 0
+            formattedData?.push([item?.category, item?.percentage]);
+          }
+        });
+
+        setCategory_Distribution(formattedData);
+      } else {
+      }
+    } catch (error) {
     }
   };
 
@@ -427,23 +468,59 @@ export default function AnalysisMain() {
 
       if (data?.status === "success") {
         // Format the API response data for the chart
-        const formattedData = data.summaries
-          .filter((item) => item.currentValue > 0) // Only include records with values
+        const formattedData = data?.summaries
+          .filter((item) => item?.currentValue > 0) // Only include records with values
           .map((item) => ({
             date: item.date, // Use date as is
-            "Current Value": item.currentValue,
-            Sharpe: item.weightedSharpeRatio,
-            Alpha: item.weightedAlpha,
-            Beta: item.weightedBeta,
-            "Std. Dev.": item.weightedStdDev,
+            "Current Value": item?.currentValue,
+            Sharpe: item?.weightedSharpeRatio,
+            Alpha: item?.weightedAlpha,
+            Beta: item?.weightedBeta,
+            "Std. Dev.": item?.weightedStdDev,
           }));
 
         setRiskRatiosData(formattedData);
+        setriskRatiosDataForShowLastValue(data.summaries?.[data?.summaries?.length - 1])
       } else {
-        console.error("Failed to fetch risk ratios data", data);
       }
     } catch (error) {
-      console.error("Error fetching risk ratios data:", error);
+    }
+  };
+
+  const fetchCaptureRatiosData = async (userId) => {
+    try {
+      const response = await fetch(
+        "https://dev.netrumusa.com/starkcapital/api-backend/capture-ratios-graph",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ user_id: userId.toString() }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data?.status === "success") {
+        // Format the API response data for the chart
+        const formattedData = data?.summaries
+          .filter((item) => item?.weightedCaptureRatioUpside1Yr !== null && item?.weightedCaptureRatioDownside1Yr !== null) // Only include records with values
+          .map((item) => ({
+            date: item.date, // Use date as is
+            Up: parseFloat(item?.weightedCaptureRatioUpside1Yr) || 0,
+            Down: parseFloat(item?.weightedCaptureRatioDownside1Yr) || 0,
+          }));
+
+        setCaptureRatiosData(formattedData);
+        setCaptureRatiosDataForShowLastValue(formattedData?.[formattedData?.length - 1]);
+      } else {
+      }
+    } catch (error) {
     }
   };
 
@@ -466,6 +543,8 @@ export default function AnalysisMain() {
           fetchPortFolioAssetAllocation(parsedUserId),
           GetPortfolioMarketCapDistributionData(parsedUserId),
           fetchRiskRatiosData(parsedUserId),
+          fetchCategoryDistribution(parsedUserId),
+          fetchCaptureRatiosData(parsedUserId)
         ]);
       } catch (err) {
         setError(err.message);
@@ -477,12 +556,68 @@ export default function AnalysisMain() {
     initializeData();
   }, []);
 
+ const metrics = [
+      {
+        label: "STD. DEV",
+        value: riskRatiosDataForShowLastValue?.weightedStdDev,
+        icon: <Activity className="w-5 h-5 text-blue-500" />
+      },
+      {
+        label: "Sharpe Ratio",
+        value:riskRatiosDataForShowLastValue?.weightedSharpeRatio,
+        icon: <TrendingUp className="w-5 h-5 text-green-500" />
+      },
+      {
+        label: "Beta",
+        value: riskRatiosDataForShowLastValue?.weightedBeta,
+        icon: <BarChart3 className="w-5 h-5 text-purple-500" />
+      },
+      {
+        label: "Alpha",
+        value:riskRatiosDataForShowLastValue?.weightedAlpha,
+        icon: <Target className="w-5 h-5 text-orange-500" />
+      },
+      {
+        label: "Capture Ratio (Up)",
+        value: captureRatiosDataForShowLastValue?.Up,
+        icon: <ArrowUp className="w-5 h-5 text-emerald-500" />
+      },
+      {
+        label: "Capture Ratio (Down)",
+        value: captureRatiosDataForShowLastValue?.Down,
+        icon: <ArrowDown className="w-5 h-5 text-red-500" />
+      }
+    ];
+    
   return (
     <>
       <div className="flex flex-col md:flex-row w-full justify-between px-4 sm:px-6 lg:px-28">
         {/* First div with 70% width on medium and larger screens */}
-        <div className="w-full md:w-[70%] flex flex-wrap gap-4 justify-between">
-          <div className="w-full md:w-[100%] flex flex-wrap gap-4 justify-between">
+        <div className="w-full md:w-[95%] flex flex-wrap gap-4 justify-between">
+        <div className="w-full md:w-[100%] flex flex-wrap gap-4 justify-between">
+        {metrics.map((metric, index) => (
+          <div 
+            key={index}
+            className="relative flex-1 min-w-[160px] max-w-[275px] bg-white border border-[#D9D9D9] rounded-lg p-3 h-[100px] sm:h-[110px] md:h-[120px] hover:shadow-lg transition-shadow duration-200"
+          >
+            {/* Row 1 - Icon and Label */}
+            <div className="flex items-center mb-3">
+              {metric.icon}
+              <p className="text-xs sm:text-sm font-medium text-[#6E7499] ml-2">
+                {metric.label}
+              </p>
+            </div>
+  
+            {/* Row 2 - Value */}
+            <div className="mb-3">
+              <p className="text-lg sm:text-xl md:text-2xl font-semibold text-[#2B2B2B]">
+                {metric.value}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+          <div className="w-full flex flex-wrap gap-4 justify-between">
             {/* Card 1 */}
             <div className="relative flex-1 w-1/2 bg-white border border-[#D9D9D9] rounded-xl p-4 z-10">
               <div className="pt-4">
@@ -544,9 +679,6 @@ export default function AnalysisMain() {
                 </div>
               </div>
 
-              {/* Chart container */}
-              {/* Chart container */}
-              {/* Chart container */}
               <div className="w-full h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
@@ -605,7 +737,7 @@ export default function AnalysisMain() {
                         />
                         <Legend />
 
-                        {riskRatiosData.length > 0 ? (
+                        {riskRatiosData?.length > 0 ? (
                           // Use API data when available
                           <>
                             <Line
@@ -777,7 +909,7 @@ export default function AnalysisMain() {
               <div className="pt-4">
                 <Chart
                   chartType="PieChart"
-                  data={portfolio_category_data}
+                  data={Category_Distribution}
                   options={portfolio_CATEGORY_options}
                   width={"100%"}
                   height={"220px"}
@@ -802,7 +934,7 @@ export default function AnalysisMain() {
         </div>
 
         {/* Second div with 20% width on medium and larger screens */}
-        <div className="w-full md:w-[27%] bg-[#f5F5F5F5] p-1 sm:p-2">
+        {/* <div className="w-full md:w-[27%] bg-[#f5F5F5F5] p-1 sm:p-2">
           <div className="flex items-center space-x-4 justify-between">
             <div className="font-sans text-lg sm:text-base md:text-lg font-medium leading-5 text-left text-[#3F4765]">
               My Balance
@@ -819,9 +951,9 @@ export default function AnalysisMain() {
           </div>
 
           <div className="flex flex-col sm:flex-row justify-between space-x-0 sm:space-x-4 mt-3">
-            {/* <!-- First Card --> */}
+           
             <div className="relative bg-[#60BC63] rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto">
-              {/* <!-- First Two Text Elements in Column --> */}
+             
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
                   US Dollar
@@ -831,10 +963,9 @@ export default function AnalysisMain() {
                 </div>
               </div>
 
-              {/* <!-- Dashed Border --> */}
+             
               <div className="border-t border-dashed border-white my-4"></div>
 
-              {/* <!-- Third Text and Image in Column --> */}
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
                   {`₹ 0,0014`}
@@ -850,7 +981,7 @@ export default function AnalysisMain() {
                 </div>
               </div>
 
-              {/* <!-- Absolute Image at Bottom Right --> */}
+            
               <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10">
                 <Image
                   src={require("../assets/logo/Highlight_green.png")}
@@ -863,9 +994,7 @@ export default function AnalysisMain() {
               </div>
             </div>
 
-            {/* <!-- Second Card --> */}
             <div className="relative bg-[#FFBA33] rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto">
-              {/* <!-- First Two Text Elements in Column --> */}
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
                   Bitcoin
@@ -875,10 +1004,8 @@ export default function AnalysisMain() {
                 </div>
               </div>
 
-              {/* <!-- Dashed Border --> */}
               <div className="border-t border-dashed border-white my-4"></div>
 
-              {/* <!-- Third Text and Image in Column --> */}
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
                   {`₹ 109106,60`}
@@ -894,7 +1021,6 @@ export default function AnalysisMain() {
                 </div>
               </div>
 
-              {/* <!-- Absolute Image at Bottom Right --> */}
               <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10">
                 <Image
                   src={require("../assets/logo/Highlight_yellow.png")}
@@ -911,19 +1037,19 @@ export default function AnalysisMain() {
           <div className="flex space-x-4 mt-4">
             <div className="w-1/2">
               <Image
-                src={require("../assets/logo/Withdraw.png")} // replace with your image path
+                src={require("../assets/logo/Withdraw.png")}
                 alt="Image 1"
-                width={500} // adjust the width as needed
-                height={300} // adjust the height as needed
+                width={500} 
+                height={300} 
                 className="w-full h-auto object-cover"
               />
             </div>
             <div className="w-1/2 ">
               <Image
-                src={require("../assets/logo/Deposit.png")} // replace with your image path
+                src={require("../assets/logo/Deposit.png")}
                 alt="Image 2"
-                width={500} // adjust the width as needed
-                height={300} // adjust the height as needed
+                width={500} 
+                height={300}
                 className="w-full h-auto object-cover"
               />
             </div>
@@ -938,7 +1064,6 @@ export default function AnalysisMain() {
           </div>
 
           <div className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-2">
-            {/* First Section: Image and Text in one row */}
             <div className="flex items-center space-x-4">
               <Image
                 src={require("../assets/logo/Logo_Bit.png")}
@@ -952,7 +1077,6 @@ export default function AnalysisMain() {
               </div>
             </div>
 
-            {/* Second Section: Two text elements column-wise */}
             <div className="flex flex-col space-y-2">
               <p className="text-sm font-semibold text-[#F85842] text-end">
                 ₹2,435.80
@@ -964,7 +1088,6 @@ export default function AnalysisMain() {
           </div>
 
           <div className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-4">
-            {/* First Section: Image and Text in one row */}
             <div className="flex items-center space-x-4">
               <Image
                 src={require("../assets/logo/Logo_B.png")}
@@ -980,7 +1103,6 @@ export default function AnalysisMain() {
               </div>
             </div>
 
-            {/* Second Section: Two text elements column-wise */}
             <div className="flex flex-col space-y-2">
               <p className="text-sm font-semibold text-[#24A959] text-end">
                 ₹1,435.72
@@ -991,7 +1113,6 @@ export default function AnalysisMain() {
             </div>
           </div>
           <div className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-4">
-            {/* First Section: Image and Text in one row */}
             <div className="flex items-center space-x-4">
               <Image
                 src={require("../assets/logo/Logo_A.png")}
@@ -1007,7 +1128,6 @@ export default function AnalysisMain() {
               </div>
             </div>
 
-            {/* Second Section: Two text elements column-wise */}
             <div className="flex flex-col space-y-2">
               <p className="text-sm font-semibold text-[#24A959] text-end">
                 ₹1,435.72
@@ -1035,7 +1155,6 @@ export default function AnalysisMain() {
                 key={item}
                 className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-4"
               >
-                {/* First Section: Image and Text in one row */}
                 <div className="flex items-center space-x-4 w-[70%]">
                   <div className="flex flex-col">
                     <p className="text-sm font-medium text-[#3F4765] ">
@@ -1047,12 +1166,11 @@ export default function AnalysisMain() {
                   </div>
                 </div>
 
-                {/* Second Section: Two text elements column-wise */}
                 <div className="flex flex-col  h-10 w-10 bg-[#C4C4C4] border border-gray-300 rounded-md md:h-16 md:w-16"></div>
               </div>
             );
           })}
-        </div>
+        </div> */}
       </div>
     </>
   );

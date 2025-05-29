@@ -92,7 +92,6 @@ const PDFUploadPage = () => {
           },
         }
       );
-      console.log(response.data, "response.data handleSubmit");
       if (response.data?.status === "success") {
         setFile(null);
         setPassword("");

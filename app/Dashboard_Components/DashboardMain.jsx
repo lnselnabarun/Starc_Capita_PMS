@@ -47,6 +47,51 @@ export default function DashboardMain() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [PortfolioData, setPortfolioData] = useState([]);
+  const [balanceData, setBalanceData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  console.log(PortfolioData,"PortfolioDataPortfolioData")
+
+  const fetchBalanceData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Get user ID from localStorage
+      const userId = localStorage.getItem("UserId");
+      
+      if (!userId) {
+        throw new Error("User ID not found in localStorage");
+      }
+
+      const response = await fetch("https://dev.netrumusa.com/starkcapital/api-backend/my-balance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_reg_id: userId
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.status === "success") {
+        setBalanceData(data?.data);
+      } else {
+        throw new Error(data.message || "Failed to fetch balance data");
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error("Error fetching balance data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const initializeData = async () => {
@@ -130,14 +175,10 @@ export default function DashboardMain() {
 
         setPortfolioData(processedData);
       } else {
-        console.error("Failed to fetch fund details", data);
       }
     } catch (error) {
-      console.error("Error fetching fund details:", error);
     }
   };
-
-  console.log(PortfolioData, "PortfolioDataPortfolioData");
 
   function formatMoney(amount) {
     if (!amount) return "0.00";
@@ -199,6 +240,17 @@ export default function DashboardMain() {
       day: "numeric",
     });
   };
+  const getGainLossText = () => {
+    if (!balanceData) return "Gain";
+    return balanceData.todaysGain < 0 ? "Loss" : "Gain";
+  };
+  useEffect(() => {
+    fetchBalanceData();
+  }, []);
+  const formatCurrency = (amount) => {
+    if (amount === null || amount === undefined) return "₹0";
+    return `₹${Math.abs(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
   return (
     <>
       <div className="flex flex-col md:flex-row w-full justify-between px-4 sm:px-6 lg:px-28">
@@ -230,18 +282,7 @@ export default function DashboardMain() {
 
             {/* Row 3 */}
             <div>
-              {/* <p className="text-[10px] sm:text-xs md:text-sm font-medium text-[#24A959] ml-0 sm:ml-1">
-                ↑ 1.7%
-              </p> */}
             </div>
-            {/* <Image
-              src={require("../assets/logo/Graph.png")} // Replace with the correct image path
-              alt="Description"
-              className="absolute bottom-2 right-2 z-50"
-              width={90} // Set the width you want
-              height={60} // Set the height you want
-              layout="intrinsic"
-            /> */}
           </div>
 
           {/* Card 2 */}
@@ -261,18 +302,12 @@ export default function DashboardMain() {
 
             {/* Row 2 */}
             <div className="mb-3">
-              {/* <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
-                {`₹ ${formatMoney(PortfolioData[0]?.totalCost)}`}
-              </p> */}
-
               <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
                 {`₹ ${formatMoney(
                   PortfolioData[PortfolioData.length - 1]?.totalCost
                 )}`}
               </p>
             </div>
-
-           
           </div>
 
           {/* Card 3 */}
@@ -292,9 +327,6 @@ export default function DashboardMain() {
 
             {/* Row 2 */}
             <div className="mb-3">
-              {/* <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
-                {`₹ ${formatMoney(PortfolioData[0]?.xirr)}%`}
-              </p> */}
               <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
                 {`₹ ${formatMoney(
                   PortfolioData[PortfolioData.length - 1]?.xirr
@@ -339,11 +371,8 @@ export default function DashboardMain() {
                 </button>
               </div>
             </div>
-            {/* <div className="w-full bg-white p-6 rounded-lg shadow"> */}
-            <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg">
-             
-
-              <div className="w-full h-96">
+            
+            <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg"> <div className="w-full h-96">
                 {isLoading ? (
                   <div className="w-full h-full flex items-center justify-center">
                     <p>Loading chart data...</p>
@@ -726,7 +755,7 @@ export default function DashboardMain() {
                   {`Gain`}
                 </div> */}
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                  Gain
+                {`Today's ${getGainLossText()}`}
                 </div>
               </div>
 
@@ -736,7 +765,7 @@ export default function DashboardMain() {
               {/* <!-- Third Text and Image in Column --> */}
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                  {`₹ ${DashboardData?.differenceAmount}`}
+                {balanceData ? formatCurrency(balanceData?.todaysGain) : "₹0"}
                 </div>
                 <div className="w-6 h-6 sm:w-8 sm:h-8">
                   <Image
@@ -780,7 +809,7 @@ export default function DashboardMain() {
               {/* <!-- Third Text and Image in Column --> */}
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                  {`₹ ${DashboardData?.totalNetExpenseRatio}`}
+                {balanceData ? formatCurrency(balanceData.weightedExpenseRatio) : "₹0"}
                 </div>
                 <div className="w-6 h-6 sm:w-8 sm:h-8">
                   <Image
