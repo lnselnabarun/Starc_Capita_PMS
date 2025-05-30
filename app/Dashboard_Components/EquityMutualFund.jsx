@@ -5,7 +5,7 @@ import axios from "axios";
 import { Filter, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 
-export default function EquityMutualFund() {
+export default function CombinedMutualFund() {
   const router = useRouter();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [familyData, setFamilyData] = useState([]);
@@ -118,22 +118,7 @@ export default function EquityMutualFund() {
     initializeData();
   }, []);
 
-  // Apply filters whenever filter states change
-  useEffect(() => {
-    if (familyData?.length > 0) {
-      applyFilters();
-    }
-  }, [
-    familyData,
-    searchTerm,
-    costRange,
-    selectedCategories,
-    selectedMarketCaps,
-    rollingReturns,
-    selectedReturnPeriods,
-    selectedMarketCap,
-    selectedRollingReturn,
-  ]);
+ 
 
   const applyFilters = () => {
     let filtered = [...familyData];
@@ -165,38 +150,130 @@ export default function EquityMutualFund() {
       );
     }
 
-    setFilteredData(filtered);
+    // setFilteredData(filtered);
   };
 
   async function GetCombindMutualFund(token) {
+
+
+    
     try {
-      const response = await axios({
-        method: "post",
-        url: "https://dev.netrumusa.com/starkcapital/api-backend/get-usermf-data",
-        headers: {
-          "Cache-Control": "no-cache",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        data: {},
-      });
-
+      const response = await axios.post(
+        "https://dev.netrumusa.com/starkcapital/api-backend/get-usermf-data",
+        { category: "ALL" },
+        {
+          headers: {
+            "Cache-Control": "no-cache",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      console.log("=== API Response Debug ===");
+      console.log("Full response:", response);
+      console.log("Response data:", response.data);
+      console.log("Response status:", response.data?.status);
+      
       if (response.data?.status === "success") {
-        const uniqueData = (response?.data?.data || []).filter(
-          (item, index, self) =>
-            index === self.findIndex((t) => t?.id === item?.id)
-        );
-
-        // Save the filtered data
-        setFamilyData(uniqueData);
-        setFilteredData(uniqueData); // Initialize filtered data with all data
+        // Debug the exact structure
+        console.log("=== Data Structure Debug ===");
+        console.log("response.data:", response.data);
+        console.log("response.data.data:", response.data?.data);
+        console.log("Type of response.data.data:", typeof response.data?.data);
+        console.log("Is array?", Array.isArray(response.data?.data));
+        
+        // Handle different possible structures
+        let rawData;
+        
+        // Check if data is nested deeper (like response.data.data.data)
+        if (response.data?.data?.data) {
+          rawData = response.data.data.data;
+          console.log("Using nested data (response.data.data.data)");
+        } 
+        // Check if data is at response.data.data level
+        else if (response.data?.data) {
+          rawData = response.data.data;
+          console.log("Using data at response.data.data level");
+        }
+        // Fallback to direct data
+        else {
+          rawData = response.data;
+          console.log("Using direct response.data");
+        }
+        
+        console.log("Raw data structure:", rawData);
+        console.log("Raw data type:", typeof rawData);
+        console.log("Raw data is array:", Array.isArray(rawData));
+        
+        // If rawData is your grouped structure (array of objects with 'data' property)
+        if (Array.isArray(rawData) && rawData.length > 0 && rawData[0]?.data) {
+          console.log("Detected grouped data structure");
+          // Set the data as is - don't flatten it since your render logic expects this structure
+          setFilteredData(rawData);
+          
+          // If you also want to set family data with flattened structure
+          const flattenedData = rawData.flatMap(group => group.data || []);
+          console.log("Flattened data count:", flattenedData.length);
+          setFamilyData(flattenedData);
+        }
+        // If rawData is a flat array
+        if (Array.isArray(rawData)) {
+          console.log("Detected flat array structure");
+          
+          // Remove duplicates
+          
+          const uniqueData = rawData.map( dataOne => {
+            dataOne.data = dataOne.data.filter((item, index, self) => {
+              return index === self.findIndex((t) => {
+                if (item?.id && t?.id) return t.id === item.id;
+                if (item?.isin && t?.isin) return t.isin === item.isin;
+                if (item?.scheme && t?.scheme) return t.scheme === item.scheme;
+                return false;
+              });
+            });
+            return dataOne
+          })
+          
+          
+          
+          console.log("Original count:", rawData.length);
+          console.log("After deduplication:", uniqueData,uniqueData.length);
+          
+          setFamilyData(uniqueData);
+          // setFilteredData(uniqueData);
+          setFilteredData(response.data.data);
+        }
+        // If rawData is an object
+        else {
+          console.log("Data is not an array, handling as object");
+          setFilteredData([rawData]);
+          setFamilyData([rawData]);
+        }
+        
       } else {
         throw new Error(
-          response?.data?.message || "Failed to fetch mutual fund data"
+          response.data?.message || "API returned unsuccessful status"
         );
       }
     } catch (error) {
-      throw error;
+      console.error("=== API Error Debug ===");
+      console.error("Error object:", error);
+      console.error("Error message:", error.message);
+      console.error("Error response:", error.response?.data);
+      console.error("Error status:", error.response?.status);
+      
+      if (error.response) {
+        throw new Error(
+          `API Error (${error.response.status}): ${
+            error.response.data?.message || error.response.statusText || error.message
+          }`
+        );
+      } else if (error.request) {
+        throw new Error("Network Error: No response from server");
+      } else {
+        throw new Error(`Request Error: ${error.message}`);
+      }
     }
   }
 
@@ -224,7 +301,7 @@ export default function EquityMutualFund() {
     setSelectedReturnPeriods([]);
     setSelectedMarketCap("All");
     setSelectedRollingReturn("1 Year");
-    setFilteredData(familyData);
+    // setFilteredData(familyData);
     setIsFilterOpen(false);
   };
 
@@ -261,6 +338,9 @@ export default function EquityMutualFund() {
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
               <h1 className="text-2xl font-bold text-gray-900">Fund List</h1>
               <div className="flex items-center space-x-4">
+                <div className="text-sm text-gray-600">
+                  Total Funds: {filteredData?.length || 0}
+                </div>
                 <button
                   onClick={() => setIsFilterOpen(!isFilterOpen)}
                   className="p-2 rounded-md hover:bg-gray-100"
@@ -310,310 +390,559 @@ export default function EquityMutualFund() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredData?.map((item) => (
+                  {filteredData?.map((items, indexs) => (
                     <>
-                      {item?.["category-wisename"] === "EQUITY" ? (
-                        <tr key={item.id} className="hover:bg-gray-50">
-                          {/* Fixed width for name column */}
-                          <td
-                            className="sticky left-0 z-20 bg-white px-6 py-4 whitespace-normal"
-                            style={{
-                              minWidth: "200px",
-                              maxWidth: "250px",
-                              boxShadow: "2px 0 5px -2px rgba(0,0,0,0.1)",
-                            }}
-                          >
-                            <div className="text-sm font-medium text-gray-900 line-clamp-2">
-                              {item?.scheme}
-                            </div>
-                          </td>
-                          {/* Fixed width for category column */}
-                          <td
-                            className="sticky left-[200px] z-10 bg-white px-6 py-4 whitespace-normal"
-                            style={{
-                              minWidth: "150px",
-                              boxShadow: "2px 0 5px -2px rgba(0,0,0,0.1)",
-                            }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.["AT-FundLevelCategoryName"]}
-                            </div>
-                          </td>
-                          {/* Current isin */}
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.isin ? `${item.isin}` : ""}
-                            </div>
-                          </td>
-                          {/* Current Cost */}
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {`${formatMoney(item?.valuation_cost)}`}
-                            </div>
-                          </td>
-                          {/* Current XIRR */}
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.currentXIRR
-                                ? `${item.currentXIRR}%`
-                                : "0%"}
-                            </div>
-                          </td>
-                          {/* Current Value */}
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "150px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {`₹${formatMoney(
-                                item?.currentValue?.toFixed(2) || 0
-                              )}`}
-                            </div>
-                          </td>
-                          {/* Expense Ratio */}
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.["ARF-InterimNetExpenseRatio"]
-                                ? `${item["ARF-InterimNetExpenseRatio"]}%`
-                                : "0%"}
-                            </div>
-                          </td>
-                          {/* Exit Load */}
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {/* {item?.["LS-DeferLoads"]} */}0
-                            </div>
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.["IMCBD-IndiaLargeCapLong"]}
-                            </div>
-                          </td>
-
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.largeCapAUM}
-                            </div>
-                          </td>
-
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.["IMCBD-IndiaMidCapNet"]}
-                            </div>
-                          </td>
-
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.midCapAUM}
-                            </div>
-                          </td>
-
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.["IMCBD-IndiaSmallCapNet"]}
-                            </div>
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.smallCapAUM}
-                            </div>
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">0</div>
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.otherAUM}
-                            </div>
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.["RM-StdDev1Yr"]}
-                            </div>
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.["RM-SharpeRatio1Yr"]}
-                            </div>
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.["RMP-CaptureRatioUpside1Yr"]}
-                            </div>
-                          </td>
-
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.["RMP-CaptureRatioDownside1Yr"]}
-                            </div>
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.["RMP-Beta1Yr"]}
-                            </div>
-                          </td>
-
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.["RMP-Alpha1Yr"]}
-                            </div>
-                          </td>
-
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {
-                                item?.[
-                                  "Rolling Return Max 0.08333333333333333YR"
-                                ]
-                              }
-                            </div>
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {
-                                item?.[
-                                  "Rolling Return Avg 0.08333333333333333YR"
-                                ]
-                              }
-                            </div>
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {
-                                item?.[
-                                  "Rolling Return Min 0.08333333333333333YR"
-                                ]
-                              }
-                            </div>
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.["Rolling Return Max 0.25YR"]}
-                            </div>
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.["Rolling Return Avg 0.25YR"]}
-                            </div>
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.["Rolling Return Min 0.25YR"]}
-                            </div>
-                          </td>
-
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.["DP-Return1Mth"]}
-                            </div>
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            style={{ minWidth: "120px" }}
-                          >
-                            <div className="text-sm text-gray-900">
-                              {item?.["DP-Return3Yr"]}
-                            </div>
-                          </td>
-                          {/* Additional data columns would go here */}
-                          {/* For brevity, we're not including all columns */}
-
-                          {/* Action column */}
-                          <td
-                            className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
-                            style={{ minWidth: "100px" }}
-                          >
-                            <button
-                              onClick={() =>
-                                router.push(
-                                  `/CombinedDetailsMutualFund/${item.id}`
-                                )
-                              }
-                              className="text-green-600 hover:text-green-900 px-3 py-1 border border-green-600 rounded-md hover:bg-green-50"
+                      {items?.data?.map((item, index) => {
+                        return (
+                          <tr key={item.id} className="hover:bg-gray-50">
+                            {/* Fixed width for name column */}
+                            <td
+                              className="sticky left-0 z-20 bg-white px-6 py-4 whitespace-normal"
+                              style={{
+                                minWidth: "200px",
+                                maxWidth: "250px",
+                                boxShadow: "2px 0 5px -2px rgba(0,0,0,0.1)",
+                              }}
                             >
-                              Detail
-                            </button>
-                          </td>
-                        </tr>
-                      ) : null}
+                              <div className="text-sm font-medium text-gray-900 line-clamp-2">
+                                {item?.scheme ||
+                                  item?.["FSCBI-FundLegalName"] ||
+                                  "N/A"}
+                              </div>
+                            </td>
+                            {/* Fixed width for category column */}
+                            <td
+                              className="sticky left-[200px] z-10 bg-white px-6 py-4 whitespace-normal"
+                              style={{
+                                minWidth: "150px",
+                                boxShadow: "2px 0 5px -2px rgba(0,0,0,0.1)",
+                              }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.["AT-FundLevelCategoryName"] || "N/A"}
+                              </div>
+                            </td>
+                            {/* Current isin */}
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.isin || "N/A"}
+                              </div>
+                            </td>
+                            {/* Current Cost */}
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.valuation_cost
+                                  ? `₹${formatMoney(item.valuation_cost)}`
+                                  : "N/A"}
+                              </div>
+                            </td>
+                            {/* Current XIRR */}
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.currentXIRR
+                                  ? `${item.currentXIRR}%`
+                                  : "0%"}
+                              </div>
+                            </td>
+                            {/* Current Value */}
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "150px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.currentValue
+                                  ? `₹${formatMoney(item.currentValue)}`
+                                  : "N/A"}
+                              </div>
+                            </td>
+                            {/* Expense Ratio */}
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.["ARF-InterimNetExpenseRatio"]
+                                  ? `${item["ARF-InterimNetExpenseRatio"]}%`
+                                  : "N/A"}
+                              </div>
+                            </td>
+                            {/* Exit Load */}
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.["LS-DeferLoads"] || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.["IMCBD-IndiaLargeCapLong"] || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.largeCapAUM || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.["IMCBD-IndiaMidCapNet"] || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.midCapAUM || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.["IMCBD-IndiaSmallCapNet"] || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.smallCapAUM || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">0</div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.otherAUM || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.["RM-StdDev1Yr"] || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.["RM-SharpeRatio1Yr"] || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.["RMP-CaptureRatioUpside1Yr"] || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.["RMP-CaptureRatioDownside1Yr"] || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.["RMP-Beta1Yr"] || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.["RMP-Alpha1Yr"] || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.[
+                                  "Rolling Return Max 0.08333333333333333YR"
+                                ] || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.[
+                                  "Rolling Return Avg 0.08333333333333333YR"
+                                ] || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.[
+                                  "Rolling Return Min 0.08333333333333333YR"
+                                ] || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.["Rolling Return Max 0.25YR"] || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.["Rolling Return Avg 0.25YR"] || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.["Rolling Return Min 0.25YR"] || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.["DP-Return1Yr"] || "N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {item?.["DP-Return3Yr"] || "N/A"}
+                              </div>
+                            </td>
+
+                            {/* Action column */}
+                            <td
+                              className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                              style={{ minWidth: "100px" }}
+                            >
+                              <button
+                                onClick={() =>
+                                  router.push(
+                                    `/CombinedDetailsMutualFund/${item.id}`
+                                  )
+                                }
+                                className="text-green-600 hover:text-green-900 px-3 py-1 border border-green-600 rounded-md hover:bg-green-50"
+                              >
+                                Detail
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+
+                      <tr key={items.id} className="hover:bg-slate-300 bg-slate-200">
+                        {/* Fixed width for name column */}
+                        <td
+                          className="sticky left-0 z-20 bg-slate-200 px-6 py-1 whitespace-normal"
+                          style={{
+                            minWidth: "200px",
+                            maxWidth: "250px",
+                            boxShadow: "2px 0 5px -2px rgba(0,0,0,0.1)",
+                          }}
+                        >
+                          <div className="text-base font-bold text-fuchsia-950 line-clamp-2">
+                          Summary
+                          </div>
+                        </td>
+                        {/* Fixed width for category column */}
+                        <td
+                          className="sticky left-[200px] z-10 bg-slate-200 px-6 py-1 whitespace-normal"
+                          style={{
+                            minWidth: "150px",
+                            boxShadow: "2px 0 5px -2px rgba(0,0,0,0.1)",
+                          }}
+                        >
+                          <div className="text-sm text-gray-900">
+                            
+                          </div>
+                        </td>
+                        {/* Current isin */}
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                           
+                          </div>
+                        </td>
+                        {/* Current Cost */}
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                            
+                          </div>
+                        </td>
+                        {/* Current XIRR */}
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                          
+                          </div>
+                        </td>
+                        {/* Current Value */}
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "150px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                           {items?.summery?.totalCurrentValue}
+                          </div>
+                        </td>
+                        {/* Expense Ratio */}
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                          {items?.summery?.weightedExpenseRatio}
+                          </div>
+                        </td>
+                        {/* Exit Load */}
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                          
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                          
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                          
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                           
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                           
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                           
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                           
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">0</div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                            
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                          {items?.summery?.weightedStdDev}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                          {items?.summery?.weightedSharpeRatio}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                          {items?.summery?.weightedUpsideCapture}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                          {items?.summery?.weightedDownsideCapture}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                          {items?.summery?.weightedBeta}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                          {items?.summery?.weightedAlpha}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                          {items?.summery?.weightedRolling1YrMax}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                          {items?.summery?.weightedRolling1YrAvg}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                          {items?.summery?.weightedRolling1YrMin}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                          {items?.summery?.weightedRolling3YrMax}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                          {items?.summery?.weightedRolling3YrAvg}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                          {items?.summery?.weightedRolling3YrMin}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                           
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                          
+                          </div>
+                        </td>
+
+                        {/* Action column */}
+                      
+                      </tr>
                     </>
                   ))}
                 </tbody>
@@ -659,6 +988,18 @@ export default function EquityMutualFund() {
               </div>
             </div>
 
+            {/* Search Section */}
+            <div className="mb-6">
+              <h3 className="text-lg font-medium mb-2">Search</h3>
+              <input
+                type="text"
+                placeholder="Search by fund name or category..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
+              />
+            </div>
+
             {/* Category Section */}
             <div className="mb-6">
               <div className="flex justify-between items-center mb-2">
@@ -675,7 +1016,7 @@ export default function EquityMutualFund() {
                 </button>
               </div>
               {expandedSections?.category && (
-                <div className="space-y-2">
+                <div className="space-y-2 max-h-48 overflow-y-auto">
                   {categories?.map((category) => (
                     <div key={category} className="flex items-center">
                       <input
@@ -685,7 +1026,10 @@ export default function EquityMutualFund() {
                         checked={selectedCategories.includes(category)}
                         onChange={() => handleCategoryChange(category)}
                       />
-                      <label htmlFor={category} className="text-gray-600">
+                      <label
+                        htmlFor={category}
+                        className="text-gray-600 text-sm"
+                      >
                         {category}
                       </label>
                     </div>
@@ -697,7 +1041,7 @@ export default function EquityMutualFund() {
             {/* Cost Section */}
             <div className="mb-6">
               <div className="flex justify-between items-center mb-2">
-                <h3 className="text-lg font-medium">Cost</h3>
+                <h3 className="text-lg font-medium">Cost Range</h3>
                 <button
                   onClick={() => toggleSection("cost")}
                   className="focus:outline-none"
@@ -721,9 +1065,9 @@ export default function EquityMutualFund() {
                     }
                     className="w-full"
                   />
-                  <div className="flex justify-between">
-                    <span>₹{costRange[0]}</span>
-                    <span>₹{costRange[1]}</span>
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>₹{formatMoney(costRange[0])}</span>
+                    <span>₹{formatMoney(costRange[1])}</span>
                   </div>
                 </div>
               )}
