@@ -160,7 +160,7 @@ export default function CombinedMutualFund() {
     try {
       const response = await axios.post(
         "https://dev.netrumusa.com/starkcapital/api-backend/get-usermf-data",
-        { category: "ALL" },
+        { category: "DEBT" },
         {
           headers: {
             "Cache-Control": "no-cache",
