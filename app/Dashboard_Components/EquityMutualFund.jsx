@@ -170,18 +170,18 @@ export default function CombinedMutualFund() {
         }
       );
   
-      console.log("=== API Response Debug ===");
-      console.log("Full response:", response);
-      console.log("Response data:", response.data);
-      console.log("Response status:", response.data?.status);
+      // console.log("=== API Response Debug ===");
+      // console.log("Full response:", response);
+      // console.log("Response data:", response.data);
+      // console.log("Response status:", response.data?.status);
       
       if (response.data?.status === "success") {
         // Debug the exact structure
-        console.log("=== Data Structure Debug ===");
-        console.log("response.data:", response.data);
-        console.log("response.data.data:", response.data?.data);
-        console.log("Type of response.data.data:", typeof response.data?.data);
-        console.log("Is array?", Array.isArray(response.data?.data));
+        // console.log("=== Data Structure Debug ===");
+        // console.log("response.data:", response.data);
+        // console.log("response.data.data:", response.data?.data);
+        // console.log("Type of response.data.data:", typeof response.data?.data);
+        // console.log("Is array?", Array.isArray(response.data?.data));
         
         // Handle different possible structures
         let rawData;
@@ -189,37 +189,37 @@ export default function CombinedMutualFund() {
         // Check if data is nested deeper (like response.data.data.data)
         if (response.data?.data?.data) {
           rawData = response.data.data.data;
-          console.log("Using nested data (response.data.data.data)");
+          // console.log("Using nested data (response.data.data.data)");
         } 
         // Check if data is at response.data.data level
         else if (response.data?.data) {
           rawData = response.data.data;
-          console.log("Using data at response.data.data level");
+          // console.log("Using data at response.data.data level");
         }
         // Fallback to direct data
         else {
           rawData = response.data;
-          console.log("Using direct response.data");
+          // console.log("Using direct response.data");
         }
         
-        console.log("Raw data structure:", rawData);
-        console.log("Raw data type:", typeof rawData);
-        console.log("Raw data is array:", Array.isArray(rawData));
+        // console.log("Raw data structure:", rawData);
+        // console.log("Raw data type:", typeof rawData);
+        // console.log("Raw data is array:", Array.isArray(rawData));
         
         // If rawData is your grouped structure (array of objects with 'data' property)
         if (Array.isArray(rawData) && rawData.length > 0 && rawData[0]?.data) {
-          console.log("Detected grouped data structure");
+          // console.log("Detected grouped data structure");
           // Set the data as is - don't flatten it since your render logic expects this structure
           setFilteredData(rawData);
           
           // If you also want to set family data with flattened structure
           const flattenedData = rawData.flatMap(group => group.data || []);
-          console.log("Flattened data count:", flattenedData.length);
+          // console.log("Flattened data count:", flattenedData.length);
           setFamilyData(flattenedData);
         }
         // If rawData is a flat array
         if (Array.isArray(rawData)) {
-          console.log("Detected flat array structure");
+          // console.log("Detected flat array structure");
           
           // Remove duplicates
           
@@ -237,8 +237,8 @@ export default function CombinedMutualFund() {
           
           
           
-          console.log("Original count:", rawData.length);
-          console.log("After deduplication:", uniqueData,uniqueData.length);
+          // console.log("Original count:", rawData.length);
+          // console.log("After deduplication:", uniqueData,uniqueData.length);
           
           setFamilyData(uniqueData);
           // setFilteredData(uniqueData);
@@ -246,7 +246,7 @@ export default function CombinedMutualFund() {
         }
         // If rawData is an object
         else {
-          console.log("Data is not an array, handling as object");
+          // console.log("Data is not an array, handling as object");
           setFilteredData([rawData]);
           setFamilyData([rawData]);
         }

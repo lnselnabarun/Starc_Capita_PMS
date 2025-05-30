@@ -50,8 +50,6 @@ export default function DashboardMain() {
   const [balanceData, setBalanceData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  console.log(PortfolioData,"PortfolioDataPortfolioData")
-
   const fetchBalanceData = async () => {
     try {
       setLoading(true);
