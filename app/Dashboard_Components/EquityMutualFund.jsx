@@ -696,7 +696,7 @@ export default function CombinedMutualFund() {
                           }}
                         >
                           <div className="text-base font-bold text-fuchsia-950 line-clamp-2">
-                          Summary
+                          Category Average
                           </div>
                         </td>
                         {/* Fixed width for category column */}
@@ -708,7 +708,7 @@ export default function CombinedMutualFund() {
                           }}
                         >
                           <div className="text-sm text-gray-900">
-                            
+                          {items?.category}
                           </div>
                         </td>
                         {/* Current isin */}
@@ -744,7 +744,7 @@ export default function CombinedMutualFund() {
                           style={{ minWidth: "150px" }}
                         >
                           <div className="text-sm text-gray-900">
-                           {items?.summery?.totalCurrentValue}
+                          {`₹${formatMoney(items?.summery?.totalCurrentValue)}`}
                           </div>
                         </td>
                         {/* Expense Ratio */}

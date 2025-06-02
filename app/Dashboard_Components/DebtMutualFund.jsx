@@ -696,7 +696,7 @@ export default function CombinedMutualFund() {
                           }}
                         >
                           <div className="text-base font-bold text-fuchsia-950 line-clamp-2">
-                          Summary
+                          Category Average
                           </div>
                         </td>
                         {/* Fixed width for category column */}
@@ -708,7 +708,7 @@ export default function CombinedMutualFund() {
                           }}
                         >
                           <div className="text-sm text-gray-900">
-                            
+                          {items?.category}
                           </div>
                         </td>
                         {/* Current isin */}
@@ -744,7 +744,7 @@ export default function CombinedMutualFund() {
                           style={{ minWidth: "150px" }}
                         >
                           <div className="text-sm text-gray-900">
-                           {items?.summery?.totalCurrentValue}
+                          {`₹${formatMoney(items?.summery?.totalCurrentValue)}`}
                           </div>
                         </td>
                         {/* Expense Ratio */}
@@ -954,12 +954,12 @@ export default function CombinedMutualFund() {
             <p className="text-gray-600">
               No mutual funds match your filters. Try adjusting your criteria.
             </p>
-            <button
+            {/* <button
               onClick={resetFilters}
               className="mt-4 px-4 py-2 bg-fuchsia-950 text-white rounded-md hover:bg-fuchsia-800"
             >
               Reset Filters
-            </button>
+            </button> */}
           </div>
         )}
       </div>

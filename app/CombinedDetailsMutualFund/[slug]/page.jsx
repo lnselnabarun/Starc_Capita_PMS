@@ -335,7 +335,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
                   </button>
 
                   {/* Select Time Period Dropdown */}
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 space-y-2 sm:space-y-0">
+                  {/* <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 space-y-2 sm:space-y-0">
                     <span className="font-medium text-xs sm:text-sm text-[#848CA9] text-left">
                       Select Time Period:
                     </span>
@@ -344,7 +344,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
                       <option className="bg-white text-black">2 Year</option>
                       <option className="bg-white text-black">3 Year</option>
                     </select>
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
