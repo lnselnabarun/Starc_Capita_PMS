@@ -133,7 +133,7 @@ const fetchFundDetails = async (fundId) => {
     const data = await response.json();
     if (data?.status === "success" && data?.data) {
       // Transform the flat API response into the expected details array format
-      const transformedDetails = transformApiResponseToDetails(data?.data?.[0]?.api);
+      const transformedDetails = transformApiResponseToDetails(data?.data?.api);
       
       return {
         details: transformedDetails,
