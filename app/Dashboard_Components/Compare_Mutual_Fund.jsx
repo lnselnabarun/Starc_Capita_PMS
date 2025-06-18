@@ -83,15 +83,15 @@ const MutualFundComparison = () => {
   detailsArray.push({ name: "Return Since Inception", details: apiData["TTR-ReturnSinceInception"] || "N/A" });
   
   // Rolling Returns (using available data or marking as N/A)
-  // detailsArray.push({ name: "Rolling Return Avg 0.08333333333333333YR", details: "N/A" });
-  // detailsArray.push({ name: "Rolling Return Max 0.08333333333333333YR", details: "N/A" });
-  // detailsArray.push({ name: "Rolling Return Min 0.08333333333333333YR", details: "N/A" });
-  // detailsArray.push({ name: "Rolling Return Avg 0.25YR", details: "N/A" });
-  // detailsArray.push({ name: "Rolling Return Max 0.25YR", details: "N/A" });
-  // detailsArray.push({ name: "Rolling Return Min 0.25YR", details: "N/A" });
-  // detailsArray.push({ name: "Rolling Return Avg 0.4166666666666667YR", details: "N/A" });
-  // detailsArray.push({ name: "Rolling Return Max 0.4166666666666667YR", details: "N/A" });
-  // detailsArray.push({ name: "Rolling Return Min 0.4166666666666667YR", details: "N/A" });
+  detailsArray.push({ name: "Rolling Return Avg 0.08333333333333333YR", details: "N/A" });
+  detailsArray.push({ name: "Rolling Return Max 0.08333333333333333YR", details: "N/A" });
+  detailsArray.push({ name: "Rolling Return Min 0.08333333333333333YR", details: "N/A" });
+  detailsArray.push({ name: "Rolling Return Avg 0.25YR", details: "N/A" });
+  detailsArray.push({ name: "Rolling Return Max 0.25YR", details: "N/A" });
+  detailsArray.push({ name: "Rolling Return Min 0.25YR", details: "N/A" });
+  detailsArray.push({ name: "Rolling Return Avg 0.4166666666666667YR", details: "N/A" });
+  detailsArray.push({ name: "Rolling Return Max 0.4166666666666667YR", details: "N/A" });
+  detailsArray.push({ name: "Rolling Return Min 0.4166666666666667YR", details: "N/A" });
   
   // Portfolio Allocation
   detailsArray.push({ name: "Asset Alloc Bond Net", details: apiData["AABRP-AssetAllocBondNet"] || "N/A" });
@@ -242,33 +242,33 @@ const fetchFundDetails = async (fundId) => {
         { key: "Trailing Return 3 Year", label: "3 Year Trailing" },
         { key: "Trailing Return 5 Year", label: "5 Year Trailing" },
         { key: "Return Since Inception", label: "Since Inception" },
-        // {
-        //   key: "Rolling Return Avg 0.08333333333333333YR",
-        //   label: "1 Year Avg Rolling",
-        // },
-        // {
-        //   key: "Rolling Return Max 0.08333333333333333YR",
-        //   label: "1 Year Max Rolling",
-        // },
-        // {
-        //   key: "Rolling Return Min 0.08333333333333333YR",
-        //   label: "1 Year Min Rolling",
-        // },
-        // { key: "Rolling Return Avg 0.25YR", label: "3 Year Avg Rolling" },
-        // { key: "Rolling Return Max 0.25YR", label: "3 Year Max Rolling" },
-        // { key: "Rolling Return Min 0.25YR", label: "3 Year Min Rolling" },
-        // {
-        //   key: "Rolling Return Avg 0.4166666666666667YR",
-        //   label: "5 Year Avg Rolling",
-        // },
-        // {
-        //   key: "Rolling Return Max 0.4166666666666667YR",
-        //   label: "5 Year Max Rolling",
-        // },
-        // {
-        //   key: "Rolling Return Min 0.4166666666666667YR",
-        //   label: "5 Year Min Rolling",
-        // },
+        {
+          key: "Rolling Return Avg 0.08333333333333333YR",
+          label: "1 Year Avg Rolling",
+        },
+        {
+          key: "Rolling Return Max 0.08333333333333333YR",
+          label: "1 Year Max Rolling",
+        },
+        {
+          key: "Rolling Return Min 0.08333333333333333YR",
+          label: "1 Year Min Rolling",
+        },
+        { key: "Rolling Return Avg 0.25YR", label: "3 Year Avg Rolling" },
+        { key: "Rolling Return Max 0.25YR", label: "3 Year Max Rolling" },
+        { key: "Rolling Return Min 0.25YR", label: "3 Year Min Rolling" },
+        {
+          key: "Rolling Return Avg 0.4166666666666667YR",
+          label: "5 Year Avg Rolling",
+        },
+        {
+          key: "Rolling Return Max 0.4166666666666667YR",
+          label: "5 Year Max Rolling",
+        },
+        {
+          key: "Rolling Return Min 0.4166666666666667YR",
+          label: "5 Year Min Rolling",
+        },
       ],
     },
     portfolio: {
