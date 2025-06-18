@@ -34,7 +34,7 @@ export default function AnalysisMain() {
   const router = useRouter();
 
   // Default data for Risk Ratios chart (will be replaced with API data)
-  const riskRatioData = [
+  const riskRatioDatas = [
     {
       date: "03/07/2024",
       "Expense Ratio": 1.25,
@@ -297,7 +297,7 @@ export default function AnalysisMain() {
       return riskRatiosData;
     }
     // Otherwise use the default data
-    return activeButton === "risk" ? riskRatioData : captureRatiosData;
+    return activeButton === "risk" ? riskRatiosData : captureRatiosData;
   };
 
   // Get chart title based on active button
@@ -334,7 +334,7 @@ export default function AnalysisMain() {
     },
   ];
 
-  const fetchPortFolioAssetAllocation = async (fundId) => {
+  const fetchPortFolioAssetAllocation = async (fundId, token) => {
     try {
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/portfolio-asset-allocation-graph",
@@ -342,6 +342,7 @@ export default function AnalysisMain() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ user_id: fundId.toString() }),
         }
@@ -364,7 +365,7 @@ export default function AnalysisMain() {
     }
   };
 
-  const GetPortfolioMarketCapDistributionData = async (fundId) => {
+  const GetPortfolioMarketCapDistributionData = async (fundId, token) => {
     try {
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/portfolio-market-cap-distribution-graph",
@@ -372,6 +373,7 @@ export default function AnalysisMain() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ user_id: fundId.toString() }),
         }
@@ -385,21 +387,21 @@ export default function AnalysisMain() {
 
       if (data?.status === "success") {
         // Transform the data into the required format for Google Charts
-        const formattedData = [["Category", "Percentage"]];
+        // const formattedData = [["Category", "Percentage"]];
 
-        // Map through the received data and format it
-        data?.data?.forEach((item) => {
-          // Format category name to title case (e.g., "large_cap" to "Large Cap")
-          const formattedCategory = item?.category
-            .split("_")
-            .map((word) => word?.charAt(0).toUpperCase() + word?.slice(1))
-            .join(" ");
+        // // Map through the received data and format it
+        // data?.data?.forEach((item) => {
+        //   // Format category name to title case (e.g., "large_cap" to "Large Cap")
+        //   const formattedCategory = item?.category
+        //     .split("_")
+        //     .map((word) => word?.charAt(0).toUpperCase() + word?.slice(1))
+        //     .join(" ");
 
-          // Add the category and percentage to the formatted data
-          formattedData?.push([formattedCategory, item?.percentage]);
-        });
+        //   // Add the category and percentage to the formatted data
+        //   formattedData?.push([formattedCategory, item?.percentage]);
+        // });
 
-        setPortfolioMarketCapDistributionData(formattedData);
+        setPortfolioMarketCapDistributionData(data?.summary);
       } else {
         return null;
       }
@@ -408,7 +410,8 @@ export default function AnalysisMain() {
     }
   };
 
-  const fetchCategoryDistribution = async (userId) => {
+  const fetchCategoryDistribution = async (userId, token) => {
+   
     try {
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/category-distribution-graph",
@@ -416,6 +419,7 @@ export default function AnalysisMain() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ user_id: userId.toString() }),
         }
@@ -447,7 +451,8 @@ export default function AnalysisMain() {
   };
 
   // New function to fetch risk ratios data
-  const fetchRiskRatiosData = async (userId) => {
+  const fetchRiskRatiosData = async (userId, token) => {
+  
     try {
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/risk-ratios-graph",
@@ -455,6 +460,7 @@ export default function AnalysisMain() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ user_id: userId.toString() }),
         }
@@ -487,7 +493,7 @@ export default function AnalysisMain() {
     }
   };
 
-  const fetchCaptureRatiosData = async (userId) => {
+  const fetchCaptureRatiosData = async (userId, token) => {
     try {
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/capture-ratios-graph",
@@ -495,6 +501,7 @@ export default function AnalysisMain() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ user_id: userId.toString() }),
         }
@@ -537,14 +544,15 @@ export default function AnalysisMain() {
 
         // Parse the user ID
         const parsedUserId = JSON.parse(userId);
+        const parsedUsertoken = JSON.parse(token);
 
         // Fetch all required data
         await Promise.all([
-          fetchPortFolioAssetAllocation(parsedUserId),
-          GetPortfolioMarketCapDistributionData(parsedUserId),
-          fetchRiskRatiosData(parsedUserId),
-          fetchCategoryDistribution(parsedUserId),
-          fetchCaptureRatiosData(parsedUserId)
+          fetchPortFolioAssetAllocation(parsedUserId, parsedUsertoken),
+          GetPortfolioMarketCapDistributionData(parsedUserId, parsedUsertoken),
+          fetchRiskRatiosData(parsedUserId, parsedUsertoken),
+          fetchCategoryDistribution(parsedUserId, parsedUsertoken),
+          fetchCaptureRatiosData(parsedUserId, parsedUsertoken)
         ]);
       } catch (err) {
         setError(err.message);

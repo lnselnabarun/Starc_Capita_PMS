@@ -22,44 +22,37 @@ const MutualFundComparison = () => {
   };
 
   const handleAddFund = async (fund) => {
-    // Check if the fund is already selected by comparing IDs
-    const isAlreadySelected = selectedFunds?.some(
-      (selectedFund) => selectedFund?.id === fund?.id
-    );
+  const isAlreadySelected = selectedFunds?.some(
+    (selectedFund) => selectedFund?.id === fund?.id
+  );
 
-    // Only add if not already selected and we have fewer than 4 funds
-    if (!isAlreadySelected && selectedFunds?.length < 4) {
-      // Set loading state
-      setIsLoading(true);
+  if (!isAlreadySelected && selectedFunds?.length < 4) {
+    setIsLoading(true);
 
-      try {
-        // Fetch detailed fund data
-        const fundDetails = await fetchFundDetails(fund.id);
+    try {
+      const fundDetails = await fetchFundDetails(fund);
 
-        if (fundDetails) {
-          // Add full fund details to selected funds
-          setSelectedFunds((prevFunds) => [
-            ...prevFunds,
-            {
-              ...fund,
-              details: fundDetails.details || [], // Ensure details exists
-              folio: fundDetails.folio,
-              currentValue: fundDetails.currentValue,
-              currentXIRR: fundDetails.currentXIRR,
-            },
-          ]);
-        } else {
-          // Could add user notification here
-        }
-      } catch (error) {
-      } finally {
-        setSearchQuery("");
-        setShowSearchResults(false);
-        setIsLoading(false);
+      if (fundDetails) {
+        setSelectedFunds((prevFunds) => [
+          ...prevFunds,
+          {
+            ...fund,
+            details: fundDetails.details || [],
+            folio: fundDetails.folio,
+            currentValue: fundDetails.currentValue,
+            currentXIRR: fundDetails.currentXIRR,
+          },
+        ]);
       }
-    } else if (isAlreadySelected) {
+    } catch (error) {
+      console.error("Error adding fund:", error);
+    } finally {
+      setSearchQuery("");
+      setShowSearchResults(false);
+      setIsLoading(false);
     }
-  };
+  }
+};
 
   const findDetailValue = (fund, keyName) => {
     if (!fund || !Array.isArray(fund.details)) return "N/A";
@@ -72,39 +65,90 @@ const MutualFundComparison = () => {
     setSelectedFunds(selectedFunds?.filter((fund) => fund?.id !== fundId));
   };
 
-  const fetchFundDetails = async (fundId) => {
-    // Note: We no longer set isLoading here since it's handled in handleAddFund
-    try {
-      const response = await fetch(
-        "https://dev.netrumusa.com/starkcapital/api-backend/portfolio-detailswithid",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id: fundId.toString() }),
-        }
-      );
+  const transformApiResponseToDetails = (apiData) => {
+    console.log(apiData,"apiDataapiData")
+  const detailsArray = [];
+  
+  // Fund Overview
+  detailsArray.push({ name: "Category", details: apiData["AT-FundLevelCategoryName"] || "N/A" });
+  detailsArray.push({ name: "Fund Name", details: apiData["FSCBI-FundLegalName"] || "N/A" });
+  detailsArray.push({ name: "AUM (in Rs.)", details: apiData["FNA-AsOfOriginalReported"] || "N/A" });
+  detailsArray.push({ name: "NAV Value", details: apiData["TS-DayEndNAV"] || "N/A" });
+  
+  // Returns
+  detailsArray.push({ name: "Trailing Return 1 Month", details: apiData["TTR-Return1Mth"] || "N/A" });
+  detailsArray.push({ name: "Trailing Return 1 Year", details: apiData["TTR-Return1Yr"] || "N/A" });
+  detailsArray.push({ name: "Trailing Return 3 Year", details: apiData["TTR-Return3Yr"] || "N/A" });
+  detailsArray.push({ name: "Trailing Return 5 Year", details: apiData["TTR-Return5Yr"] || "N/A" });
+  detailsArray.push({ name: "Return Since Inception", details: apiData["TTR-ReturnSinceInception"] || "N/A" });
+  
+  // Rolling Returns (using available data or marking as N/A)
+  // detailsArray.push({ name: "Rolling Return Avg 0.08333333333333333YR", details: "N/A" });
+  // detailsArray.push({ name: "Rolling Return Max 0.08333333333333333YR", details: "N/A" });
+  // detailsArray.push({ name: "Rolling Return Min 0.08333333333333333YR", details: "N/A" });
+  // detailsArray.push({ name: "Rolling Return Avg 0.25YR", details: "N/A" });
+  // detailsArray.push({ name: "Rolling Return Max 0.25YR", details: "N/A" });
+  // detailsArray.push({ name: "Rolling Return Min 0.25YR", details: "N/A" });
+  // detailsArray.push({ name: "Rolling Return Avg 0.4166666666666667YR", details: "N/A" });
+  // detailsArray.push({ name: "Rolling Return Max 0.4166666666666667YR", details: "N/A" });
+  // detailsArray.push({ name: "Rolling Return Min 0.4166666666666667YR", details: "N/A" });
+  
+  // Portfolio Allocation
+  detailsArray.push({ name: "Asset Alloc Bond Net", details: apiData["AABRP-AssetAllocBondNet"] || "N/A" });
+  detailsArray.push({ name: "Asset Alloc Cash Net", details: apiData["AABRP-AssetAllocCashNet"] || "N/A" });
+  detailsArray.push({ name: "Asset Alloc Equity Net", details: apiData["AABRP-AssetAllocEquityNet"] || "N/A" });
+  detailsArray.push({ name: "Other Net", details: "N/A" }); // Not available in new API
+  
+  // Risk Measures
+  detailsArray.push({ name: "Standard Deviation 1 Year", details: apiData["RM-StdDev1Yr"] || "N/A" });
+  detailsArray.push({ name: "Sharpe Ratio 1 Year", details: apiData["RM-SharpeRatio1Yr"] || "N/A" });
+  
+  // Fund Details
+  detailsArray.push({ name: "Expense Ratio", details: apiData["ARF-InterimNetExpenseRatio"] || "N/A" });
+  detailsArray.push({ name: "Exit Load", details: apiData["PF-deferred_load_additional_details"] || "N/A" });
+  detailsArray.push({ name: "ISIN", details: apiData["FSCBI-ISIN"] || "N/A" });
+  detailsArray.push({ name: "AMFI Code", details: apiData["FSCBI-AMFICode"] || "N/A" });
+  
+  return detailsArray;
+};
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+ // 1. Update the fetchFundDetails function
+const fetchFundDetails = async (fundId) => {
+  try {
+    const response = await fetch(
+      "https://dev.netrumusa.com/starkcapital/api-backend/get-isindetails-forcombinedsreach",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isin: fundId?.FSCBI_ISIN.toString() }),
       }
+    );
 
-      const data = await response.json();
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-      if (data?.status === "success" && data?.data) {
-        // Add a check to ensure details property exists
-        if (!data.data.details) {
-          data.data.details = []; // Initialize with empty array to prevent errors
-        }
-        return data.data;
-      } else {
-        return null;
-      }
-    } catch (error) {
+    const data = await response.json();
+    if (data?.status === "success" && data?.data) {
+      // Transform the flat API response into the expected details array format
+      const transformedDetails = transformApiResponseToDetails(data.data.api);
+      
+      return {
+        details: transformedDetails,
+        folio: data.data.folio || null,
+        currentValue: data.data.currentValue || null,
+        currentXIRR: data.data.currentXIRR || null,
+      };
+    } else {
       return null;
     }
-  };
+  } catch (error) {
+    console.error("Error fetching fund details:", error);
+    return null;
+  }
+};
 
   const fetchSearchResults = async (query) => {
     if (!query || query.length < 2) {
@@ -115,13 +159,13 @@ const MutualFundComparison = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        "https://dev.netrumusa.com/starkcapital/api-backend/sreach-fund-categories",
+        "http://dev.netrumusa.com/starkcapital/api-backend/get-combineddata-withkeyword",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ search: query }),
+          body: JSON.stringify({ FSCBI_LegalName: query.toString() }),
         }
       );
 
@@ -131,26 +175,30 @@ const MutualFundComparison = () => {
 
       const data = await response.json();
 
-      if (data?.status === "success" && Array.isArray(data?.data)) {
+      console.log(data?.data, "formattedResultsformattedResults")
+      if (data?.status === "success") {
         // Transform API response to match our application's expected format
-        const formattedResults = data.data.map((fund) => ({
-          id: fund["portfolio_summary"],
-          amc: fund["FSCBI-FundLegalName"]?.split(" ")[0] || "Unknown", // Extract first word as AMC with fallback
-          scheme: fund["FSCBI-FundLegalName"] || "Unknown Fund",
-          category: fund["AT-FundLevelCategoryName"] || "Uncategorized",
-          nav: fund["DP-DayEndNAV"],
-          amfiCode: fund["FSCBI-AMFICode"],
-          isin: fund["FSCBI-ISIN"],
-          expenseRatio: fund["ARF-InterimNetExpenseRatio"],
-          currency: fund["DP-Currency"],
-          aum: fund["FNA-AsOfOriginalReported"],
-        }));
+        // const formattedResults = data?.data.map((fund) => ({
+        //   id: fund["id"],
+        //   amc: fund["FSCBI_ProviderCompanyName"] || "Unknown",
+        //   scheme: fund["FSCBI_LegalName"] || "Unknown Fund",
+        //   category: "Mutual Fund",
+        //   nav: "N/A",
+        //   amfiCode: "N/A",
+        //   isin: fund["FSCBI_ISIN"],
+        //   expenseRatio: "N/A",
+        //   currency: "INR",
+        //   aum: "N/A",
+        //   purchaseMode: fund["purchase_mode"] || "N/A",
+        //   distributionStatus: fund["FSCBI_DistributionStatus"] || "N/A"
+        // }));
 
-        setSearchResults(formattedResults);
+        setSearchResults(data?.data);
       } else {
         setSearchResults([]);
       }
     } catch (error) {
+      console.error("Search API Error:", error);
       setSearchResults([]);
     } finally {
       setIsLoading(false);
@@ -164,7 +212,7 @@ const MutualFundComparison = () => {
       } else {
         setSearchResults([]);
       }
-    }, 300); // 300ms debounce time
+    }, 500); // 300ms debounce time
 
     return () => clearTimeout(debounceTimer);
   }, [searchQuery]);
@@ -194,33 +242,33 @@ const MutualFundComparison = () => {
         { key: "Trailing Return 3 Year", label: "3 Year Trailing" },
         { key: "Trailing Return 5 Year", label: "5 Year Trailing" },
         { key: "Return Since Inception", label: "Since Inception" },
-        {
-          key: "Rolling Return Avg 0.08333333333333333YR",
-          label: "1 Year Avg Rolling",
-        },
-        {
-          key: "Rolling Return Max 0.08333333333333333YR",
-          label: "1 Year Max Rolling",
-        },
-        {
-          key: "Rolling Return Min 0.08333333333333333YR",
-          label: "1 Year Min Rolling",
-        },
-        { key: "Rolling Return Avg 0.25YR", label: "3 Year Avg Rolling" },
-        { key: "Rolling Return Max 0.25YR", label: "3 Year Max Rolling" },
-        { key: "Rolling Return Min 0.25YR", label: "3 Year Min Rolling" },
-        {
-          key: "Rolling Return Avg 0.4166666666666667YR",
-          label: "5 Year Avg Rolling",
-        },
-        {
-          key: "Rolling Return Max 0.4166666666666667YR",
-          label: "5 Year Max Rolling",
-        },
-        {
-          key: "Rolling Return Min 0.4166666666666667YR",
-          label: "5 Year Min Rolling",
-        },
+        // {
+        //   key: "Rolling Return Avg 0.08333333333333333YR",
+        //   label: "1 Year Avg Rolling",
+        // },
+        // {
+        //   key: "Rolling Return Max 0.08333333333333333YR",
+        //   label: "1 Year Max Rolling",
+        // },
+        // {
+        //   key: "Rolling Return Min 0.08333333333333333YR",
+        //   label: "1 Year Min Rolling",
+        // },
+        // { key: "Rolling Return Avg 0.25YR", label: "3 Year Avg Rolling" },
+        // { key: "Rolling Return Max 0.25YR", label: "3 Year Max Rolling" },
+        // { key: "Rolling Return Min 0.25YR", label: "3 Year Min Rolling" },
+        // {
+        //   key: "Rolling Return Avg 0.4166666666666667YR",
+        //   label: "5 Year Avg Rolling",
+        // },
+        // {
+        //   key: "Rolling Return Max 0.4166666666666667YR",
+        //   label: "5 Year Max Rolling",
+        // },
+        // {
+        //   key: "Rolling Return Min 0.4166666666666667YR",
+        //   label: "5 Year Min Rolling",
+        // },
       ],
     },
     portfolio: {
@@ -286,7 +334,7 @@ const MutualFundComparison = () => {
               key={fund.id}
               className="px-4 py-3 bg-gray-50 text-left text-sm font-semibold text-gray-700 border-b border-gray-200"
             >
-              {fund?.scheme || "Unknown Fund"}
+              {fund?.['FSCBI_LegalName'] || "Unknown Fund"}
             </th>
           ))}
         </tr>
@@ -345,22 +393,24 @@ const MutualFundComparison = () => {
                 ) : searchResults.length > 0 ? (
                   searchResults.map((fund) => (
                     <>
-                      {fund?.id !== null ? (
-                        <div
-                          key={fund.id}
-                          className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
-                          onClick={() => {
-                            handleAddFund(fund);
-                          }}
-                        >
-                          <div className="font-medium text-gray-800">
-                            {fund.scheme}
-                          </div>
-                          <div className="text-sm text-gray-500 mt-1">
-                            {fund.amc} • {fund.category}
-                          </div>
+
+                      {fund?.FSCBI_ISIN !== null ? <div
+                        key={fund.id}
+                        className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
+                        onClick={() => {
+                          handleAddFund(fund);
+                        }}
+                      >
+                        <div className="font-medium text-gray-800">
+                          {fund.FSCBI_LegalName}
                         </div>
-                      ) : null}
+                        <div className="text-sm text-gray-500 mt-1">
+                          {fund.FSCBI_ProviderCompanyName}
+                        </div>
+
+                      </div> : null}
+
+
                     </>
                   ))
                 ) : searchQuery.length > 0 ? (
@@ -382,8 +432,8 @@ const MutualFundComparison = () => {
               >
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <h3 className="font-medium text-gray-800">{fund.scheme}</h3>
-                    <span className="text-sm text-gray-500">{fund.amc}</span>
+                    <h3 className="font-medium text-gray-800">  {fund?.['FSCBI_LegalName'] || "Unknown Fund"}</h3>
+                    <span className="text-sm text-gray-500">{fund?.['FSCBI_ProviderCompanyName'] || "Unknown Fund"}</span>
                   </div>
                   <button
                     onClick={() => handleRemoveFund(fund?.id)}
