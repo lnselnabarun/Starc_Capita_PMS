@@ -177,7 +177,21 @@ const fetchFundDetails = async (fundId) => {
 
       console.log(data?.data, "formattedResultsformattedResults")
       if (data?.status === "success") {
-  
+        // Transform API response to match our application's expected format
+        // const formattedResults = data?.data.map((fund) => ({
+        //   id: fund["id"],
+        //   amc: fund["FSCBI_ProviderCompanyName"] || "Unknown",
+        //   scheme: fund["FSCBI_LegalName"] || "Unknown Fund",
+        //   category: "Mutual Fund",
+        //   nav: "N/A",
+        //   amfiCode: "N/A",
+        //   isin: fund["FSCBI_ISIN"],
+        //   expenseRatio: "N/A",
+        //   currency: "INR",
+        //   aum: "N/A",
+        //   purchaseMode: fund["purchase_mode"] || "N/A",
+        //   distributionStatus: fund["FSCBI_DistributionStatus"] || "N/A"
+        // }));
 
         setSearchResults(data?.data);
       } else {

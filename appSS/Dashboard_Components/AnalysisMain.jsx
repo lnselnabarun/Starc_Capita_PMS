@@ -9,7 +9,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-
+  
 } from "recharts";
 import { Activity, TrendingUp, BarChart3, Target, ArrowUp, ArrowDown } from 'lucide-react';
 import Image from "next/image";
@@ -23,7 +23,7 @@ export default function AnalysisMain() {
     PortfolioMarketCapDistributionData,
     setPortfolioMarketCapDistributionData,
   ] = useState([]);
-const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([]);
+
   const [Category_Distribution, setCategory_Distribution] = useState([]);
   const [captureRatiosData, setCaptureRatiosData] = useState([]);
   const [captureRatiosDataForShowLastValue, setCaptureRatiosDataForShowLastValue] = useState(); // New state for last capture ratio values
@@ -34,7 +34,7 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
   const router = useRouter();
 
   // Default data for Risk Ratios chart (will be replaced with API data)
-  const riskRatioData = [
+  const riskRatioDatas = [
     {
       date: "03/07/2024",
       "Expense Ratio": 1.25,
@@ -297,7 +297,7 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
       return riskRatiosData;
     }
     // Otherwise use the default data
-    return activeButton === "risk" ? riskRatioData : captureRatiosData;
+    return activeButton === "risk" ? riskRatiosData : captureRatiosData;
   };
 
   // Get chart title based on active button
@@ -334,7 +334,7 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
     },
   ];
 
-  const fetchPortFolioAssetAllocation = async (fundId) => {
+  const fetchPortFolioAssetAllocation = async (fundId, token) => {
     try {
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/portfolio-asset-allocation-graph",
@@ -342,6 +342,7 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ user_id: fundId.toString() }),
         }
@@ -372,7 +373,7 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ user_id: fundId.toString() }),
         }
@@ -383,23 +384,22 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
       }
 
       const data = await response.json();
-      console.log(data, "setPortfolioMarketCapDistributionData")
 
       if (data?.status === "success") {
         // Transform the data into the required format for Google Charts
-        const formattedData = [["Category", "Percentage"]];
+        // const formattedData = [["Category", "Percentage"]];
 
-        // Map through the received data and format it
-        data?.data?.forEach((item) => {
-          // Format category name to title case (e.g., "large_cap" to "Large Cap")
-          const formattedCategory = item?.category
-            .split("_")
-            .map((word) => word?.charAt(0).toUpperCase() + word?.slice(1))
-            .join(" ");
+        // // Map through the received data and format it
+        // data?.data?.forEach((item) => {
+        //   // Format category name to title case (e.g., "large_cap" to "Large Cap")
+        //   const formattedCategory = item?.category
+        //     .split("_")
+        //     .map((word) => word?.charAt(0).toUpperCase() + word?.slice(1))
+        //     .join(" ");
 
-          // Add the category and percentage to the formatted data
-          formattedData?.push([formattedCategory, item?.percentage]);
-        });
+        //   // Add the category and percentage to the formatted data
+        //   formattedData?.push([formattedCategory, item?.percentage]);
+        // });
 
         setPortfolioMarketCapDistributionData(data?.summary);
       } else {
@@ -410,7 +410,8 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
     }
   };
 
-  const fetchCategoryDistribution = async (userId) => {
+  const fetchCategoryDistribution = async (userId, token) => {
+   
     try {
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/category-distribution-graph",
@@ -418,6 +419,7 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ user_id: userId.toString() }),
         }
@@ -449,7 +451,8 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
   };
 
   // New function to fetch risk ratios data
-  const fetchRiskRatiosData = async (userId) => {
+  const fetchRiskRatiosData = async (userId, token) => {
+  
     try {
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/risk-ratios-graph",
@@ -457,6 +460,7 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ user_id: userId.toString() }),
         }
@@ -489,7 +493,7 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
     }
   };
 
-  const fetchCaptureRatiosData = async (userId) => {
+  const fetchCaptureRatiosData = async (userId, token) => {
     try {
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/capture-ratios-graph",
@@ -497,6 +501,7 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ user_id: userId.toString() }),
         }
@@ -539,14 +544,15 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
 
         // Parse the user ID
         const parsedUserId = JSON.parse(userId);
-        const tokenParse = JSON.parse(token);
+        const parsedUsertoken = JSON.parse(token);
+
         // Fetch all required data
         await Promise.all([
-          fetchPortFolioAssetAllocation(parsedUserId),
-          GetPortfolioMarketCapDistributionData(parsedUserId, tokenParse),
-          fetchRiskRatiosData(parsedUserId),
-          fetchCategoryDistribution(parsedUserId),
-          fetchCaptureRatiosData(parsedUserId)
+          fetchPortFolioAssetAllocation(parsedUserId, parsedUsertoken),
+          GetPortfolioMarketCapDistributionData(parsedUserId, parsedUsertoken),
+          fetchRiskRatiosData(parsedUserId, parsedUsertoken),
+          fetchCategoryDistribution(parsedUserId, parsedUsertoken),
+          fetchCaptureRatiosData(parsedUserId, parsedUsertoken)
         ]);
       } catch (err) {
         setError(err.message);
@@ -558,67 +564,67 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
     initializeData();
   }, []);
 
-  const metrics = [
-    {
-      label: "STD. DEV",
-      value: riskRatiosDataForShowLastValue?.weightedStdDev,
-      icon: <Activity className="w-5 h-5 text-blue-500" />
-    },
-    {
-      label: "Sharpe Ratio",
-      value: riskRatiosDataForShowLastValue?.weightedSharpeRatio,
-      icon: <TrendingUp className="w-5 h-5 text-green-500" />
-    },
-    {
-      label: "Beta",
-      value: riskRatiosDataForShowLastValue?.weightedBeta,
-      icon: <BarChart3 className="w-5 h-5 text-purple-500" />
-    },
-    {
-      label: "Alpha",
-      value: riskRatiosDataForShowLastValue?.weightedAlpha,
-      icon: <Target className="w-5 h-5 text-orange-500" />
-    },
-    {
-      label: "Capture Ratio (Up)",
-      value: captureRatiosDataForShowLastValue?.Up,
-      icon: <ArrowUp className="w-5 h-5 text-emerald-500" />
-    },
-    {
-      label: "Capture Ratio (Down)",
-      value: captureRatiosDataForShowLastValue?.Down,
-      icon: <ArrowDown className="w-5 h-5 text-red-500" />
-    }
-  ];
-
+ const metrics = [
+      {
+        label: "STD. DEV",
+        value: riskRatiosDataForShowLastValue?.weightedStdDev,
+        icon: <Activity className="w-5 h-5 text-blue-500" />
+      },
+      {
+        label: "Sharpe Ratio",
+        value:riskRatiosDataForShowLastValue?.weightedSharpeRatio,
+        icon: <TrendingUp className="w-5 h-5 text-green-500" />
+      },
+      {
+        label: "Beta",
+        value: riskRatiosDataForShowLastValue?.weightedBeta,
+        icon: <BarChart3 className="w-5 h-5 text-purple-500" />
+      },
+      {
+        label: "Alpha",
+        value:riskRatiosDataForShowLastValue?.weightedAlpha,
+        icon: <Target className="w-5 h-5 text-orange-500" />
+      },
+      {
+        label: "Capture Ratio (Up)",
+        value: captureRatiosDataForShowLastValue?.Up,
+        icon: <ArrowUp className="w-5 h-5 text-emerald-500" />
+      },
+      {
+        label: "Capture Ratio (Down)",
+        value: captureRatiosDataForShowLastValue?.Down,
+        icon: <ArrowDown className="w-5 h-5 text-red-500" />
+      }
+    ];
+    
   return (
     <>
       <div className="flex flex-col md:flex-row w-full justify-between px-4 sm:px-6 lg:px-28">
         {/* First div with 70% width on medium and larger screens */}
         <div className="w-full md:w-[95%] flex flex-wrap gap-4 justify-between">
-          <div className="w-full md:w-[100%] flex flex-wrap gap-4 justify-between">
-            {metrics.map((metric, index) => (
-              <div
-                key={index}
-                className="relative flex-1 min-w-[160px] max-w-[275px] bg-white border border-[#D9D9D9] rounded-lg p-3 h-[100px] sm:h-[110px] md:h-[120px] hover:shadow-lg transition-shadow duration-200"
-              >
-                {/* Row 1 - Icon and Label */}
-                <div className="flex items-center mb-3">
-                  {metric.icon}
-                  <p className="text-xs sm:text-sm font-medium text-[#6E7499] ml-2">
-                    {metric.label}
-                  </p>
-                </div>
-
-                {/* Row 2 - Value */}
-                <div className="mb-3">
-                  <p className="text-lg sm:text-xl md:text-2xl font-semibold text-[#2B2B2B]">
-                    {metric.value}
-                  </p>
-                </div>
-              </div>
-            ))}
+        <div className="w-full md:w-[100%] flex flex-wrap gap-4 justify-between">
+        {metrics.map((metric, index) => (
+          <div 
+            key={index}
+            className="relative flex-1 min-w-[160px] max-w-[275px] bg-white border border-[#D9D9D9] rounded-lg p-3 h-[100px] sm:h-[110px] md:h-[120px] hover:shadow-lg transition-shadow duration-200"
+          >
+            {/* Row 1 - Icon and Label */}
+            <div className="flex items-center mb-3">
+              {metric.icon}
+              <p className="text-xs sm:text-sm font-medium text-[#6E7499] ml-2">
+                {metric.label}
+              </p>
+            </div>
+  
+            {/* Row 2 - Value */}
+            <div className="mb-3">
+              <p className="text-lg sm:text-xl md:text-2xl font-semibold text-[#2B2B2B]">
+                {metric.value}
+              </p>
+            </div>
           </div>
+        ))}
+      </div>
           <div className="w-full flex flex-wrap gap-4 justify-between">
             {/* Card 1 */}
             <div className="relative flex-1 w-1/2 bg-white border border-[#D9D9D9] rounded-xl p-4 z-10">
@@ -659,20 +665,22 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
                 <div className="flex space-x-4">
                   <button
                     onClick={() => setActiveButton("risk")}
-                    className={`text-[#9FA8C7] px-4 py-2 rounded-2xl border text-sm ${activeButton === "risk"
+                    className={`text-[#9FA8C7] px-4 py-2 rounded-2xl border text-sm ${
+                      activeButton === "risk"
                         ? "bg-[#ECEFF9] border-[#E5EBEF] text-[#3F4765] font-medium"
                         : "border-[#E5EBEF]"
-                      }`}
+                    }`}
                   >
                     Risk Ratio
                   </button>
 
                   <button
                     onClick={() => setActiveButton("capture")}
-                    className={`text-[#9FA8C7] px-4 py-2 rounded-2xl border text-sm ${activeButton === "capture"
+                    className={`text-[#9FA8C7] px-4 py-2 rounded-2xl border text-sm ${
+                      activeButton === "capture"
                         ? "bg-[#ECEFF9] border-[#E5EBEF] text-[#3F4765] font-medium"
                         : "border-[#E5EBEF]"
-                      }`}
+                    }`}
                   >
                     Capture Ratio
                   </button>

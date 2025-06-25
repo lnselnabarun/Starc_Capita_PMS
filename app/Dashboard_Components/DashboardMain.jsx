@@ -49,35 +49,100 @@ export default function DashboardMain() {
   const [PortfolioData, setPortfolioData] = useState([]);
   const [balanceData, setBalanceData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [RecentTransactions, setRecentTransactions] = useState([]);
+  const [NewsData, SetNewsData] = useState([]);
+  const [systematicTransactions, setSystematicTransactions] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const fetchBalanceData = async () => {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const [formData, setFormData] = useState({
+    fundName: "",
+    transactionType: "",
+    sipStartDate: "",
+    installments: "",
+    frequency: "",
+    amount: "",
+    isin: "",
+    selectedFundData: null, // Add this to store complete fund data
+  });
+
+  const fetchSearchResults = async (query) => {
+    if (!query || query.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    setIsSearchLoading(true);
     try {
-      setLoading(true);
-      setError(null);
-      
-      // Get user ID from localStorage
-      const userId = localStorage.getItem("UserId");
-      
-      if (!userId) {
-        throw new Error("User ID not found in localStorage");
-      }
-
-      const response = await fetch("https://dev.netrumusa.com/starkcapital/api-backend/my-balance", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_reg_id: userId
-        }),
-      });
+      const response = await fetch(
+        "https://dev.netrumusa.com/starkcapital/api-backend/get-combineddata-withkeyword",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ FSCBI_LegalName: query.toString() }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      
+
+      console.log(data?.data, "formattedResultsformattedResults");
+      if (data?.status === "success") {
+        setSearchResults(data?.data);
+      } else {
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.error("Search API Error:", error);
+      setSearchResults([]);
+    } finally {
+      setIsSearchLoading(false);
+    }
+  };
+
+  const fetchBalanceData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Get user ID from localStorage
+      const userId = localStorage.getItem("UserId");
+
+      if (!userId) {
+        throw new Error("User ID not found in localStorage");
+      }
+
+      const response = await fetch(
+        "https://dev.netrumusa.com/starkcapital/api-backend/my-balance",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_reg_id: userId,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
       if (data.status === "success") {
         setBalanceData(data?.data);
       } else {
@@ -89,6 +154,145 @@ export default function DashboardMain() {
     } finally {
       setLoading(false);
     }
+  };
+
+  async function GetNewsData() {
+    try {
+      const response = await axios({
+        method: "get",
+        url: "https://gnews.io/api/v4/search?q=finance&lang=en&country=in&max=5&apikey=17c29ee48fb5efc174029fd665646b59",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      SetNewsData(response?.data?.articles);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const fetchSystematicTransactions = async () => {
+    try {
+      const userId = localStorage.getItem("UserId");
+
+      if (!userId) {
+        console.error("User ID not found in localStorage");
+        return;
+      }
+
+      const response = await fetch(
+        "https://dev.netrumusa.com/starkcapital/api-backend/userlist-portfoliosip",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_reg_id: userId,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.status === "success") {
+        setSystematicTransactions(data.data);
+      } else {
+        console.error("Failed to fetch systematic transactions:", data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching systematic transactions:", error);
+    }
+  };
+
+  // Add this useEffect to fetch data on component mount
+  useEffect(() => {
+    fetchSystematicTransactions();
+  }, []);
+  const handleSaveSystematicTransaction = async () => {
+    try {
+      setIsSaving(true);
+
+      // Get user ID from localStorage
+      const userId = localStorage.getItem("UserId");
+
+      if (!userId) {
+        alert("User ID not found. Please login again.");
+        return;
+      }
+
+      // Prepare the request body
+      const requestBody = {
+        user_reg_id: userId,
+        fund_name: formData.fundName,
+        isin: formData?.isin,
+        sip_start_date: formData.sipStartDate,
+        sip_end_date: "",
+        number_of_installments: formData.installments,
+        frequency: formData.frequency,
+        amount: formData.amount,
+        transaction_type: formData?.transactionType,
+      };
+
+      console.log("Sending data:", requestBody);
+
+      const response = await fetch(
+        "https://dev.netrumusa.com/starkcapital/api-backend/add-user-portfoliosip",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      console.log(data, "datadata");
+
+      if (data.status === "success") {
+        alert("Systematic transaction added successfully!");
+
+        // Reset form and close modal
+        setFormData({
+          fundName: "",
+          transactionType: "",
+          sipStartDate: "",
+          installments: "",
+          frequency: "",
+          amount: "",
+          isin: "",
+          selectedFundData: null,
+        });
+        setSearchResults([]);
+        setIsModalOpen(false);
+
+        // Refresh the systematic transactions list
+        fetchSystematicTransactions();
+      } else {
+        alert(data.message || "Failed to add systematic transaction");
+      }
+    } catch (error) {
+      console.error("Error saving systematic transaction:", error);
+      alert("Error saving systematic transaction. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const formatDates = (dateString) => {
+    if (!dateString || dateString === "0000-00-00") return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-IN");
   };
 
   useEffect(() => {
@@ -103,7 +307,9 @@ export default function DashboardMain() {
         }
 
         await GetDashboardData(JSON.parse(token)).then(() => {
-          fetchFundDetails(JSON.parse(userId));
+          fetchFundDetails(JSON.parse(userId)).then(() =>
+            GetRecentTrans(JSON.parse(token), JSON.parse(userId))
+          );
         });
       } catch (err) {
         setError(err.message);
@@ -113,6 +319,10 @@ export default function DashboardMain() {
     };
 
     initializeData();
+  }, []);
+
+  useEffect(() => {
+    GetNewsData();
   }, []);
 
   async function GetDashboardData(token) {
@@ -138,6 +348,35 @@ export default function DashboardMain() {
       throw error;
     }
   }
+
+  const GetRecentTrans = async (token, userId) => {
+    console.log(
+      JSON.stringify({ user_id: userId.toString() }),
+      token,
+      "GetRecentTrans"
+    );
+    try {
+      setLoading(true);
+      const response = await fetch(
+        "https://dev.netrumusa.com/starkcapital/api-backend/last-transaction-list",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ user_id: userId }),
+        }
+      );
+      const data = response.json().then((data) => {
+        console.log(data?.data, "0000000"), setRecentTransactions(data?.data);
+      });
+    } catch (err) {
+      setError(err.message);
+      console.error("Error fetching balance data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchFundDetails = async (fundId) => {
     try {
@@ -174,7 +413,148 @@ export default function DashboardMain() {
         setPortfolioData(processedData);
       } else {
       }
+    } catch (error) {}
+  };
+
+  const handleDeleteTransaction = async (transactionId) => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this systematic transaction?"
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      const userId = localStorage.getItem("UserId");
+
+      if (!userId) {
+        alert("User ID not found. Please login again.");
+        return;
+      }
+
+      const response = await fetch(
+        "https://dev.netrumusa.com/starkcapital/api-backend/delete-user-portfoliosip",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: transactionId.toString(),
+            user_reg_id: userId,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.status === "success") {
+        alert("Systematic transaction deleted successfully!");
+        // Refresh the systematic transactions list
+        fetchSystematicTransactions();
+      } else {
+        alert(data.message || "Failed to delete systematic transaction");
+      }
     } catch (error) {
+      console.error("Error deleting systematic transaction:", error);
+      alert("Error deleting systematic transaction. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleEditTransaction = (transaction) => {
+    setEditingTransaction(transaction);
+    setFormData({
+      fundName: transaction.fund_name || "",
+      transactionType: transaction.transaction_type || "",
+      sipStartDate: transaction.sip_start_date || "",
+      installments: transaction.number_of_installments || "",
+      frequency: transaction.frequency || "",
+      amount: transaction.amount || "",
+      isin: transaction.isin || "",
+      selectedFundData: null,
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateSystematicTransaction = async () => {
+    try {
+      setIsUpdating(true);
+
+      const userId = localStorage.getItem("UserId");
+
+      if (!userId) {
+        alert("User ID not found. Please login again.");
+        return;
+      }
+
+      const requestBody = {
+        id: editingTransaction.id,
+        user_reg_id: userId,
+        fund_name: formData.fundName,
+        isin: formData?.isin,
+        sip_start_date: formData.sipStartDate,
+        sip_end_date: "",
+        number_of_installments: formData.installments,
+        frequency: formData.frequency,
+        amount: formData.amount,
+        transaction_type: formData?.transactionType,
+      };
+
+      console.log("Updating data:", requestBody);
+
+      const response = await fetch(
+        "https://dev.netrumusa.com/starkcapital/api-backend/update-user-portfoliosip",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.status === "success") {
+        alert("Systematic transaction updated successfully!");
+
+        // Reset form and close modal
+        setFormData({
+          fundName: "",
+          transactionType: "",
+          sipStartDate: "",
+          installments: "",
+          frequency: "",
+          amount: "",
+          isin: "",
+          selectedFundData: null,
+        });
+        setSearchResults([]);
+        setIsEditModalOpen(false);
+        setEditingTransaction(null);
+
+        // Refresh the systematic transactions list
+        fetchSystematicTransactions();
+      } else {
+        alert(data.message || "Failed to update systematic transaction");
+      }
+    } catch (error) {
+      console.error("Error updating systematic transaction:", error);
+      alert("Error updating systematic transaction. Please try again.");
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -247,7 +627,10 @@ export default function DashboardMain() {
   }, []);
   const formatCurrency = (amount) => {
     if (amount === null || amount === undefined) return "₹0";
-    return `₹${Math.abs(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `₹${Math.abs(amount).toLocaleString("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
   };
   return (
     <>
@@ -279,8 +662,7 @@ export default function DashboardMain() {
             </div>
 
             {/* Row 3 */}
-            <div>
-            </div>
+            <div></div>
           </div>
 
           {/* Card 2 */}
@@ -331,8 +713,6 @@ export default function DashboardMain() {
                 )}`}
               </p>
             </div>
-
-            
           </div>
           {/* {chart section} */}
           <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg border-[1.5px] border-[#D9D9D9] ">
@@ -354,7 +734,7 @@ export default function DashboardMain() {
                       : "border-[#E5EBEF]"
                   }`}
                 >
-                 Investment
+                  Investment
                 </button>
 
                 <button
@@ -369,8 +749,10 @@ export default function DashboardMain() {
                 </button>
               </div>
             </div>
-            
-            <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg"> <div className="w-full h-96">
+
+            <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg">
+              {" "}
+              <div className="w-full h-96">
                 {isLoading ? (
                   <div className="w-full h-full flex items-center justify-center">
                     <p>Loading chart data...</p>
@@ -544,90 +926,55 @@ export default function DashboardMain() {
                 Recent Transactions
               </div>
             </div>
-
-            {/* Second Content: Four Pressable Divs */}
-            <div className="flex gap-4">
-              <select className="border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700">
-                <option className="bg-white text-black">USD</option>
-                <option className="bg-white text-black">USD</option>
-                <option className="bg-white text-black">USD</option>
-              </select>
-
-              <select className="border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700">
-                <option className="bg-white text-black">24 Hours</option>
-                <option className="bg-white text-black">24 Hours</option>
-                <option className="bg-white text-black">24 Hours</option>
-              </select>
-
-              <div
-                onClick={() => router.push("/RecentTransactions")}
-                className="border bg-gray-100 text-gray-700 rounded-3xl text-xs sm:text-sm lg:text-base px-4 py-2 focus:outline-none focus:ring-2 focus:ring-fuchsia-700 hover:bg-gray-200 flex justify-center items-center cursor-pointer"
-              >
-                See All
-              </div>
-            </div>
           </div>
 
           <div className="container mx-auto px-4 py-6">
             {/* Table Header */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 text-left p-3 bg-[#F5F5F5] rounded-lg">
-              <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9] ">
-                {/* Added padding-right */}
-                CURRENCY NAME
+            <div className="grid grid-cols-6 text-left p-3 bg-[#F5F5F5] rounded-lg gap-2">
+              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                DATE
               </div>
-              <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9] ml-4">
-                {/* Added padding-right */}
-                PRICE
+              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                FUND NAME
               </div>
-              <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9]">
-                CAGR/MONTH
+              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                UNIT
               </div>
-              <div className="hidden md:block text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9]">
-                STATISTIC
+              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                NAV
               </div>
-              <div className="hidden md:block text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9]">
-                EXCHANGE
+              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                TYPE
+              </div>
+              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                AMOUNT (₹)
               </div>
             </div>
 
             {/* Table Body */}
-            {tableData.map((row, index) => (
+            {RecentTransactions.map((row, index) => (
               <div
                 key={index}
-                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 bg-[#F5F5F5] text-left p-2 my-2 justify-center items-center rounded-lg"
+                className="grid grid-cols-6 bg-[#F5F5F5] text-left p-2 my-2 items-center rounded-lg gap-2"
               >
-                <div className="flex items-center space-x-4">
-                  {/* Increased space between image and currency */}
-                  <Image
-                    src={row?.coin}
-                    alt="Currency Image"
-                    width={32}
-                    height={32}
-                    className="h-8 w-8"
-                  />
-                  <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765]">
-                    {row.currency}
-                  </div>
+                <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
+                  {row?.transaction_date}
                 </div>
-                <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765] pl-4">
-                  {/* Added padding to price column */}
-                  {row.price}
+                <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
+                  {row.scheme}
                 </div>
-                <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765]">
-                  {row.cagr}
+                <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
+                  {row.units}
                 </div>
-                <div className="hidden md:flex items-center">
-                  <Image
-                    src={row.statistic}
-                    alt="Statistic"
-                    width={60}
-                    height={20}
-                    className="h-auto w-auto max-w-full"
-                  />
+                <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
+                  {row.nav_value}
                 </div>
-                <button className="hidden md:block text-[#35B26B] border border-[#35B26B] rounded-md px-3 py-1 hover:bg-[#e8f5eb] text-sm">
-                  Transfer now
-                </button>
+                <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
+                  {row.transaction_type}
+                </div>
+                <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
+                  {row.amount}
+                </div>
               </div>
             ))}
           </div>
@@ -639,91 +986,95 @@ export default function DashboardMain() {
               </div>
             </div>
 
-            {/* Second Content: Four Pressable Divs */}
             <div className="flex gap-4">
-              <select className="border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700">
-                <option className="bg-white text-black">USD</option>
-                <option className="bg-white text-black">USD</option>
-                <option className="bg-white text-black">USD</option>
-              </select>
-
-              <select className="border bg-gray-100 text-gray-700 rounded-3xl px-2 py-1 text-xs sm:text-xs lg:text-xs  focus:outline-none focus:ring-2 focus:ring-fuchsia-700">
-                <option className="bg-white text-black">24 Hours</option>
-                <option className="bg-white text-black">24 Hours</option>
-                <option className="bg-white text-black">24 Hours</option>
-              </select>
-
               <div
-                onClick={() => router.push("/SystematicTransactions")}
+                onClick={() => setIsModalOpen(true)}
                 className="border bg-gray-100 text-gray-700 rounded-3xl text-xs sm:text-sm lg:text-base px-4 py-2 focus:outline-none focus:ring-2 focus:ring-fuchsia-700 hover:bg-gray-200 flex justify-center items-center cursor-pointer"
               >
-                See All
+                Add New
               </div>
             </div>
           </div>
 
           <div className="container mx-auto px-4 py-6">
             {/* Table Header */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 text-left p-3 bg-[#F5F5F5] rounded-lg">
-              <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9] ">
-                {/* Added padding-right */}
-                CURRENCY NAME
+
+            {systematicTransactions.length > 0 ? <div className="grid grid-cols-7 text-left p-3 bg-[#F5F5F5] rounded-lg gap-2">
+              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                FUND NAME
               </div>
-              <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9] ml-4">
-                {/* Added padding-right */}
-                PRICE
+              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                TRANSACTION TYPE
               </div>
-              <div className="text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9]">
-                CAGR/MONTH
+              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                SIP START DATE
               </div>
-              <div className="hidden md:block text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9]">
-                STATISTIC
+              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                NO INSTALLMENT
               </div>
-              <div className="hidden md:block text-xs sm:text-xs md:text-xs font-normal leading-6 text-left text-[#848CA9]">
-                EXCHANGE
+              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                FREQUENCY
               </div>
-            </div>
+              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                AMOUNT (₹)
+              </div>
+              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                ACTION
+              </div>
+            </div>:null}
+            
 
             {/* Table Body */}
-            {tableData.map((row, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 bg-[#F5F5F5] text-left p-2 my-2 justify-center items-center rounded-lg"
-              >
-                <div className="flex items-center space-x-4">
-                  {/* Increased space between image and currency */}
-                  <Image
-                    src={row?.coin}
-                    alt="Currency Image"
-                    width={32}
-                    height={32}
-                    className="h-8 w-8"
-                  />
-                  <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765]">
-                    {row.currency}
+            {systematicTransactions.length > 0 ? (
+              systematicTransactions.map((row, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-7 bg-[#F5F5F5] text-left p-2 my-2 items-center rounded-lg gap-2"
+                >
+                  <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
+                    {row.fund_name}
+                  </div>
+                  <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
+                    {row.transaction_type || "N/A"}
+                  </div>
+                  <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
+                    {formatDate(row.sip_start_date)}
+                  </div>
+                  <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
+                    {row.number_of_installments}
+                  </div>
+                  <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
+                    {row.frequency}
+                  </div>
+                  <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
+                    ₹{row.amount.toLocaleString("en-IN")}
+                  </div>
+                  <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEditTransaction(row)}
+                        className="text-[#35B26B] border border-[#35B26B] rounded-md px-3 py-1 hover:bg-[#e8f5eb] text-sm"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteTransaction(row.id)}
+                        disabled={isDeleting}
+                        className={`text-[#dc2626] border border-[#dc2626] rounded-md px-3 py-1 hover:bg-[#fef2f2] text-sm ${
+                          isDeleting ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                      >
+                        {isDeleting ? "Deleting..." : "Delete"}
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765] pl-4">
-                  {/* Added padding to price column */}
-                  {row.price}
-                </div>
-                <div className="font-poppins text-base sm:text-sm md:text-base font-medium leading-6 text-left text-[#3F4765]">
-                  {row.cagr}
-                </div>
-                <div className="hidden md:flex items-center">
-                  <Image
-                    src={row.statistic}
-                    alt="Statistic"
-                    width={60}
-                    height={20}
-                    className="h-auto w-auto max-w-full"
-                  />
-                </div>
-                <button className="hidden md:block text-[#35B26B] border border-[#35B26B] rounded-md px-3 py-1 hover:bg-[#e8f5eb] text-sm">
-                  Transfer now
-                </button>
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                No systematic transactions found
               </div>
-            ))}
+            )}
           </div>
         </div>
 
@@ -753,7 +1104,7 @@ export default function DashboardMain() {
                   {`Gain`}
                 </div> */}
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                {`Today's ${getGainLossText()}`}
+                  {`Today's ${getGainLossText()}`}
                 </div>
               </div>
 
@@ -763,7 +1114,7 @@ export default function DashboardMain() {
               {/* <!-- Third Text and Image in Column --> */}
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                {balanceData ? formatCurrency(balanceData?.todaysGain) : "₹0"}
+                  {balanceData ? formatCurrency(balanceData?.todaysGain) : "₹0"}
                 </div>
                 <div className="w-6 h-6 sm:w-8 sm:h-8">
                   <Image
@@ -807,7 +1158,9 @@ export default function DashboardMain() {
               {/* <!-- Third Text and Image in Column --> */}
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                {balanceData ? formatCurrency(balanceData.weightedExpenseRatio) : "₹0"}
+                  {balanceData
+                    ? formatCurrency(balanceData.weightedExpenseRatio)
+                    : "₹0"}
                 </div>
                 <div className="w-6 h-6 sm:w-8 sm:h-8">
                   <Image
@@ -936,31 +1289,415 @@ export default function DashboardMain() {
               See All
             </div>
           </div>
-          {tableData?.map((item) => {
+          {NewsData?.map((item) => {
             return (
               <div
                 key={item}
-                className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-4"
+                className="flex justify-between items-start flex-row mt-4"
               >
                 {/* First Section: Image and Text in one row */}
                 <div className="flex items-center space-x-4 w-[70%]">
                   <div className="flex flex-col">
-                    <p className="text-sm font-medium text-[#3F4765] ">
-                      Bitcoin, Ethereum, Crypto News and Price Data
+                    <p className="text-sm font-medium text-[#3F4765] line-clamp-3 leading-5">
+                      {item?.content}
                     </p>
-                    <p className="text-xs font-light text-[#A2A9C7]">
-                      News Media 1h ago
+                    <p className="text-xs font-light text-[#A2A9C7] mt-1">
+                      {item?.source?.name}
                     </p>
                   </div>
                 </div>
 
-                {/* Second Section: Two text elements column-wise */}
-                <div className="flex flex-col  h-10 w-10 bg-[#C4C4C4] border border-gray-300 rounded-md md:h-16 md:w-16"></div>
+                {/* Second Section: Image */}
+                <div className="flex-shrink-0">
+                  <img
+                    src={item?.image}
+                    alt="News thumbnail"
+                    className="h-10 w-10 md:h-16 md:w-16 bg-[#C4C4C4] border border-gray-300 rounded-md object-cover"
+                  />
+                </div>
               </div>
             );
           })}
         </div>
       </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-[#3F4765]">
+                Add New Systematic Transaction
+              </h2>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form className="space-y-4">
+              {/* Fund Name - Searchable Input */}
+              <div>
+                <label className="block text-sm font-medium text-[#3F4765] mb-1">
+                  Fund Name
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={formData.fundName}
+                    onChange={(e) => {
+                      setFormData({ ...formData, fundName: e.target.value });
+                      fetchSearchResults(e.target.value);
+                    }}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Search fund name..."
+                  />
+                  {isSearchLoading && (
+                    <div className="absolute right-2 top-2">
+                      <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                    </div>
+                  )}
+                  {searchResults.length > 0 && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                      {searchResults.map((result, index) => (
+                        <div>
+                          {result?.FSCBI_ISIN !== null ? (
+                            <div
+                              key={index}
+                              onClick={() => {
+                                setFormData({
+                                  ...formData,
+                                  fundName: result.FSCBI_LegalName,
+                                  isin: result?.FSCBI_ISIN,
+                                  selectedFundData: result, // Store complete fund data
+                                });
+                                setSearchResults([]);
+                              }}
+                              className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
+                            >
+                              {result.FSCBI_LegalName}
+                            </div>
+                          ) : null}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Transaction Type */}
+              <div>
+                <label className="block text-sm font-medium text-[#3F4765] mb-1">
+                  Transaction Type
+                </label>
+                <select
+                  value={formData.transactionType}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      transactionType: e.target.value,
+                    })
+                  }
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Select Type</option>
+                  <option value="SIP">SIP</option>
+                  <option value="STP">STP</option>
+                  <option value="SWP">SWP</option>
+                </select>
+              </div>
+
+              {/* SIP Start Date */}
+              <div>
+                <label className="block text-sm font-medium text-[#3F4765] mb-1">
+                  SIP Start Date
+                </label>
+                <input
+                  type="date"
+                  value={formData.sipStartDate}
+                  onChange={(e) =>
+                    setFormData({ ...formData, sipStartDate: e.target.value })
+                  }
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              {/* No. of Installments */}
+              <div>
+                <label className="block text-sm font-medium text-[#3F4765] mb-1">
+                  No. of Installments
+                </label>
+                <input
+                  type="number"
+                  value={formData.installments}
+                  onChange={(e) =>
+                    setFormData({ ...formData, installments: e.target.value })
+                  }
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter number of installments"
+                  min="1"
+                />
+              </div>
+
+              {/* Frequency */}
+              <div>
+                <label className="block text-sm font-medium text-[#3F4765] mb-1">
+                  Frequency
+                </label>
+                <select
+                  value={formData.frequency}
+                  onChange={(e) =>
+                    setFormData({ ...formData, frequency: e.target.value })
+                  }
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Select Frequency</option>
+                  <option value="Daily">Daily</option>
+                  <option value="Once a week">Once a week</option>
+                  <option value="Once a Month">Once a Month</option>
+                  <option value="Once a Year">Once a Year</option>
+                </select>
+              </div>
+
+              {/* Amount */}
+              <div>
+                <label className="block text-sm font-medium text-[#3F4765] mb-1">
+                  Amount (₹)
+                </label>
+                <input
+                  type="number"
+                  value={formData.amount}
+                  onChange={(e) =>
+                    setFormData({ ...formData, amount: e.target.value })
+                  }
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter amount"
+                  min="1"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveSystematicTransaction}
+                  disabled={isSaving}
+                  className={`flex-1 px-4 py-2 rounded-md ${
+                    isSaving
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700"
+                  } text-white`}
+                >
+                  {isSaving ? "Saving..." : "Save"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+{isEditModalOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold text-[#3F4765]">Edit Systematic Transaction</h2>
+        <button
+          onClick={() => {
+            setIsEditModalOpen(false);
+            setEditingTransaction(null);
+            setFormData({
+              fundName: '',
+              transactionType: '',
+              sipStartDate: '',
+              installments: '',
+              frequency: '',
+              amount: '',
+              isin: "",
+              selectedFundData: null
+            });
+            setSearchResults([]);
+          }}
+          className="text-gray-400 hover:text-gray-600"
+        >
+          ✕
+        </button>
+      </div>
+
+      <form className="space-y-4">
+        {/* Fund Name - Searchable Input */}
+        <div>
+          <label className="block text-sm font-medium text-[#3F4765] mb-1">
+            Fund Name
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              value={formData.fundName}
+              onChange={(e) => {
+                setFormData({ ...formData, fundName: e.target.value });
+                fetchSearchResults(e.target.value);
+              }}
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Search fund name..."
+            />
+            {isSearchLoading && (
+              <div className="absolute right-2 top-2">
+                <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+              </div>
+            )}
+            {searchResults.length > 0 && (
+              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                {searchResults.map((result, index) => (
+                  <div key={index}>
+                    {result?.FSCBI_ISIN !== null ? (
+                      <div
+                        onClick={() => {
+                          setFormData({
+                            ...formData,
+                            fundName: result.FSCBI_LegalName,
+                            isin: result?.FSCBI_ISIN,
+                            selectedFundData: result
+                          });
+                          setSearchResults([]);
+                        }}
+                        className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
+                      >
+                        {result.FSCBI_LegalName}
+                      </div>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Transaction Type */}
+        <div>
+          <label className="block text-sm font-medium text-[#3F4765] mb-1">
+            Transaction Type
+          </label>
+          <select
+            value={formData.transactionType}
+            onChange={(e) => setFormData({ ...formData, transactionType: e.target.value })}
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">Select Type</option>
+            <option value="SIP">SIP</option>
+            <option value="STP">STP</option>
+            <option value="SWP">SWP</option>
+          </select>
+        </div>
+
+        {/* SIP Start Date */}
+        <div>
+          <label className="block text-sm font-medium text-[#3F4765] mb-1">
+            SIP Start Date
+          </label>
+          <input
+            type="date"
+            value={formData.sipStartDate}
+            onChange={(e) => setFormData({ ...formData, sipStartDate: e.target.value })}
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        {/* No. of Installments */}
+        <div>
+          <label className="block text-sm font-medium text-[#3F4765] mb-1">
+            No. of Installments
+          </label>
+          <input
+            type="number"
+            value={formData.installments}
+            onChange={(e) => setFormData({ ...formData, installments: e.target.value })}
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Enter number of installments"
+            min="1"
+          />
+        </div>
+
+        {/* Frequency */}
+        <div>
+          <label className="block text-sm font-medium text-[#3F4765] mb-1">
+            Frequency
+          </label>
+          <select
+            value={formData.frequency}
+            onChange={(e) => setFormData({ ...formData, frequency: e.target.value })}
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">Select Frequency</option>
+            <option value="Daily">Daily</option>
+            <option value="Once a week">Once a week</option>
+            <option value="Once a Month">Once a Month</option>
+            <option value="Once a Year">Once a Year</option>
+          </select>
+        </div>
+
+        {/* Amount */}
+        <div>
+          <label className="block text-sm font-medium text-[#3F4765] mb-1">
+            Amount (₹)
+          </label>
+          <input
+            type="number"
+            value={formData.amount}
+            onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Enter amount"
+            min="1"
+          />
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-3 pt-4">
+          <button
+            type="button"
+            onClick={() => {
+              setIsEditModalOpen(false);
+              setEditingTransaction(null);
+              setFormData({
+                fundName: '',
+                transactionType: '',
+                sipStartDate: '',
+                installments: '',
+                frequency: '',
+                amount: '',
+                isin: "",
+                selectedFundData: null
+              });
+              setSearchResults([]);
+            }}
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleUpdateSystematicTransaction}
+            disabled={isUpdating}
+            className={`flex-1 px-4 py-2 rounded-md ${
+              isUpdating
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-blue-600 hover:bg-blue-700'
+            } text-white`}
+          >
+            {isUpdating ? 'Updating...' : 'Update'}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
     </>
   );
 }
