@@ -55,6 +55,8 @@ const CreateFamilyForm = () => {
       route.back();
 
     } catch (error) {
+      // localStorage.clear();
+      //     route.push("/");
       setError("Failed to submit the form. Please try again later.");
       setAlert({
         show: true,

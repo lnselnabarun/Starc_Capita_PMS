@@ -106,6 +106,8 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
         );
         router.push("/Dashboard");
       } else {
+        // localStorage.clear();
+        //   router.push("/");
         setError(
           response.data?.message || "Registration failed. Please try again."
         );
@@ -176,6 +178,8 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
         // You might want to show a success message
         setShowModal(false);
       } else {
+        // localStorage.clear();
+        //   router.push("/");
         setError(
           response.data?.message || "Password change failed. Please try again."
         );
@@ -222,6 +226,8 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
           showForgotPasswordOtp: true,
         }));
       } else {
+        // localStorage.clear();
+        //   router.push("/");
         setError(
           response?.data?.message || "Registration failed. Please try again."
         );
@@ -258,6 +264,8 @@ const Modal = ({ showModal, setShowModal, handleChange, formData }) => {
           showResetPassword: true,
         }));
       } else {
+        // localStorage.clear();
+        //   router.push("/");
         setError(
           response.data?.message || "Registration failed. Please try again."
         );

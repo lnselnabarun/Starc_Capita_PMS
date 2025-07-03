@@ -22,6 +22,9 @@ const AMCDetails = ({ params }) => {
     "Name",
     "Category",
     "ISIN",
+    "Current Cost (₹)",
+    "Current XIRR",
+    "Current VALUE (₹)",
     "Expense Ratio",
     "Exit Load",
     "LargeCap %",
@@ -52,6 +55,13 @@ const AMCDetails = ({ params }) => {
   const handleBack = () => {
     route.back();
   };
+
+  function formatMoney(amount) {
+    return new Intl.NumberFormat("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  }
 
   // useEffect(() => {
   //   const options = {
@@ -113,6 +123,8 @@ const AMCDetails = ({ params }) => {
         if (response.data?.status === "success") {
           setDetailsData(response?.data?.data?.funds || []);
         } else {
+          localStorage.clear();
+          route.push("/");
           throw new Error(
             response.data?.message || "Failed to fetch mutual fund data"
           );
@@ -240,7 +252,38 @@ const AMCDetails = ({ params }) => {
                             {items?.["FSCBI-ISIN"]}
                           </div>
                         </td>
-                        {/* Current Cost */}
+
+                        <td
+                          className="px-6 py-4 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                            {items?.valuation_cost
+                              ? `₹${formatMoney(items.valuation_cost)}`
+                              : "N/A"}
+                          </div>
+                        </td>
+                        {/* Current XIRR */}
+                        <td
+                          className="px-6 py-4 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                            {items?.currentXIRR ? `${items.currentXIRR}%` : "0%"}
+                          </div>
+                        </td>
+                        {/* Current Value */}
+                        <td
+                          className="px-6 py-4 whitespace-nowrap"
+                          style={{ minWidth: "150px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                            {items?.currentValue
+                              ? `₹${formatMoney(items.currentValue)}`
+                              : "N/A"}
+                          </div>
+                        </td>
+
                         <td
                           className="px-6 py-4 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
@@ -390,53 +433,64 @@ const AMCDetails = ({ params }) => {
                           className="px-6 py-4 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
-                          <div className="text-sm text-gray-900"> {items?.[
-                                              "Rolling Return Avg 0.08333333333333333YR"
-                                            ] || "N/A"}</div>
+                          <div className="text-sm text-gray-900">
+                            {" "}
+                            {items?.[
+                              "Rolling Return Avg 0.08333333333333333YR"
+                            ] || "N/A"}
+                          </div>
                         </td>
                         <td
                           className="px-6 py-4 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
-                          <div className="text-sm text-gray-900"> {items?.[
-                                              "Rolling Return Min 0.08333333333333333YR"
-                                            ] || "N/A"}</div>
+                          <div className="text-sm text-gray-900">
+                            {" "}
+                            {items?.[
+                              "Rolling Return Min 0.08333333333333333YR"
+                            ] || "N/A"}
+                          </div>
                         </td>
                         <td
                           className="px-6 py-4 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
-                          <div className="text-sm text-gray-900">{items?.[
-                                              "Rolling Return Max 0.25YR"
-                                            ] || "N/A"}</div>
+                          <div className="text-sm text-gray-900">
+                            {items?.["Rolling Return Max 0.25YR"] || "N/A"}
+                          </div>
                         </td>
                         <td
                           className="px-6 py-4 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
-                          <div className="text-sm text-gray-900">{items?.[
-                                              "Rolling Return Avg 0.25YR"
-                                            ] || "N/A"}</div>
+                          <div className="text-sm text-gray-900">
+                            {items?.["Rolling Return Avg 0.25YR"] || "N/A"}
+                          </div>
                         </td>
                         <td
                           className="px-6 py-4 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
-                          <div className="text-sm text-gray-900">{items?.[
-                                              "Rolling Return Min 0.25YR"
-                                            ] || "N/A"}</div>
+                          <div className="text-sm text-gray-900">
+                            {items?.["Rolling Return Min 0.25YR"] || "N/A"}
+                          </div>
                         </td>
                         <td
                           className="px-6 py-4 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
-                          <div className="text-sm text-gray-900"> {items?.["DP-Return1Yr"] || "N/A"}</div>
+                          <div className="text-sm text-gray-900">
+                            {" "}
+                            {items?.["DP-Return1Yr"] || "N/A"}
+                          </div>
                         </td>
                         <td
                           className="px-6 py-4 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
-                          <div className="text-sm text-gray-900">{items?.["DP-Return3Yr"] || "N/A"}</div>
+                          <div className="text-sm text-gray-900">
+                            {items?.["DP-Return3Yr"] || "N/A"}
+                          </div>
                         </td>
                         {/* <td
                           className="px-6 py-4 whitespace-nowrap"

@@ -70,7 +70,7 @@ const UserProfile = () => {
         // // Save the filtered data
         // setFamilyData(uniqueData);
       } else {
-        throw new Error(response.data?.message || "Failed to fetch mutual fund data");
+        handleLogout();
       }
     } catch (error) {
       throw error;

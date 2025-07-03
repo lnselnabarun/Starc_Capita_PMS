@@ -16,32 +16,7 @@ import axios from "axios";
 
 export default function DashboardMain() {
   const router = useRouter();
-  const tableData = [
-    {
-      currency: "Bitcoin / BTC",
-      price: "₹50,000",
-      cagr: "2%",
-      statistic: require("../assets/logo/Graph.png"),
-      exchange: "Binance",
-      coin: require("../assets/logo/Bitcoin.png"),
-    },
-    {
-      currency: "Ethereum / ETH",
-      price: "₹4,000",
-      cagr: "3%",
-      statistic: require("../assets/logo/Graph1.png"),
-      exchange: "Coinbase",
-      coin: require("../assets/logo/Icon1.png"),
-    },
-    {
-      currency: "Algorand / ALG",
-      price: "₹1.50",
-      cagr: "1.5%",
-      statistic: require("../assets/logo/Graph2.png"),
-      exchange: "Kraken",
-      coin: require("../assets/logo/Icon2.png"),
-    },
-  ];
+  
   const [chartView, setChartView] = useState("investment"); // "investment" or "xirr"
   const [DashboardData, SetDashboardData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -146,7 +121,9 @@ export default function DashboardMain() {
       if (data.status === "success") {
         setBalanceData(data?.data);
       } else {
-        throw new Error(data.message || "Failed to fetch balance data");
+      //   localStorage.clear();
+      // router.push("/");
+       
       }
     } catch (err) {
       setError(err.message);
@@ -202,7 +179,8 @@ export default function DashboardMain() {
       if (data.status === "success") {
         setSystematicTransactions(data.data);
       } else {
-        console.error("Failed to fetch systematic transactions:", data.message);
+        // localStorage.clear();
+        // router.push("/");
       }
     } catch (error) {
       console.error("Error fetching systematic transactions:", error);
@@ -279,7 +257,8 @@ export default function DashboardMain() {
         // Refresh the systematic transactions list
         fetchSystematicTransactions();
       } else {
-        alert(data.message || "Failed to add systematic transaction");
+      //   localStorage.clear();
+      // router.push("/");
       }
     } catch (error) {
       console.error("Error saving systematic transaction:", error);
@@ -321,6 +300,9 @@ export default function DashboardMain() {
     initializeData();
   }, []);
 
+
+  console.log(PortfolioData,"PortfolioDataPortfolioData")
+
   useEffect(() => {
     GetNewsData();
   }, []);
@@ -340,9 +322,8 @@ export default function DashboardMain() {
       if (response.data?.status === "success") {
         SetDashboardData(response.data?.data);
       } else {
-        throw new Error(
-          response.data?.message || "Failed to fetch mutual fund data"
-        );
+      //   localStorage.clear();
+      // router.push("/");
       }
     } catch (error) {
       throw error;
@@ -371,8 +352,8 @@ export default function DashboardMain() {
         console.log(data?.data, "0000000"), setRecentTransactions(data?.data);
       });
     } catch (err) {
-      setError(err.message);
-      console.error("Error fetching balance data:", err);
+      // localStorage.clear();
+      // router.push("/");
     } finally {
       setLoading(false);
     }
@@ -413,7 +394,10 @@ export default function DashboardMain() {
         setPortfolioData(processedData);
       } else {
       }
-    } catch (error) {}
+    } catch (error) {
+      // localStorage.clear();
+      // router.push("/");
+    }
   };
 
   const handleDeleteTransaction = async (transactionId) => {
@@ -462,8 +446,8 @@ export default function DashboardMain() {
         alert(data.message || "Failed to delete systematic transaction");
       }
     } catch (error) {
-      console.error("Error deleting systematic transaction:", error);
-      alert("Error deleting systematic transaction. Please try again.");
+      // localStorage.clear();
+      // router.push("/");
     } finally {
       setIsDeleting(false);
     }
@@ -609,14 +593,29 @@ export default function DashboardMain() {
     return value;
   };
 
+  const getTypeColor = (type) => {
+    switch (type.toLowerCase()) {
+      case "purchase":
+        return "bg-green-100 text-green-700";
+      case "redemption":
+        return "bg-red-100 text-red-700";
+      case "sip":
+        return "bg-blue-100 text-blue-700";
+      default:
+        return "bg-gray-100 text-gray-700";
+    }
+  };
+
   // Format date for x-axis
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
     const date = new Date(dateStr);
-    return date.toLocaleDateString("en-IN", {
-      month: "short",
-      day: "numeric",
-    });
+    
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // +1 because getMonth() is 0-indexed
+    const year = date.getFullYear();
+    
+    return `${day}-${month}-${year}`;
   };
   const getGainLossText = () => {
     if (!balanceData) return "Gain";
@@ -632,6 +631,8 @@ export default function DashboardMain() {
       maximumFractionDigits: 2,
     })}`;
   };
+
+  console.log(systematicTransactions,"systematicTransactionssystematicTransactions")
   return (
     <>
       <div className="flex flex-col md:flex-row w-full justify-between px-4 sm:px-6 lg:px-28">
@@ -920,63 +921,145 @@ export default function DashboardMain() {
             </div>
           </div>
 
-          <div className="justify-between w-full flex flex-wrap gap-4 h-auto mb-2">
+          {/* <div className="justify-between w-full flex flex-wrap gap-4 h-auto mb-2">
             <div className="flex flex-col items-start space-y-2">
               <div className="font-medium text-lg sm:text-xl md:text-2xl text-[#3F4765] font-sans">
                 Recent Transactions
               </div>
             </div>
-          </div>
+          </div> */}
 
-          <div className="container mx-auto px-4 py-6">
-            {/* Table Header */}
-            <div className="grid grid-cols-6 text-left p-3 bg-[#F5F5F5] rounded-lg gap-2">
-              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                DATE
+          <div className="container mx-auto px-4 py-6 max-w-6xl">
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-slate-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+                <h2 className="text-xl font-semibold text-gray-800">
+                  Recent Transactions
+                </h2>
               </div>
-              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                FUND NAME
+
+              {/* Desktop Table */}
+              <div className="hidden md:block">
+                {/* Table Header */}
+                <div className="grid grid-cols-4 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-200 items-center">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-gray-600">
+                    Date
+                  </div>
+                  <div className="text-xs font-semibold uppercase tracking-wide text-gray-600">
+                    Fund Name
+                  </div>
+                  <div className="text-xs font-semibold uppercase tracking-wide text-gray-600">
+                    Type
+                  </div>
+                  <div className="text-xs font-semibold uppercase tracking-wide text-gray-600 text-right">
+                    Amount
+                  </div>
+                </div>
+
+                {/* Table Body */}
+                <div className="divide-y divide-gray-200">
+                  {RecentTransactions.map((row, index) => (
+                    <div
+                      key={index}
+                      className="grid grid-cols-4 gap-4 px-6 py-4 hover:bg-gray-50 transition-colors duration-150 items-center"
+                    >
+                      <div className="text-sm font-medium text-gray-900">
+                        {new Date(row.transaction_date).toLocaleDateString(
+                          "en-IN",
+                          {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          }
+                        )}
+                      </div>
+                      <div className="text-sm text-gray-700">
+                        <div
+                          className="font-medium truncate"
+                          title={row.scheme}
+                        >
+                          {row.scheme}
+                        </div>
+                      </div>
+                      <div>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTypeColor(
+                            row.transaction_type
+                          )}`}
+                        >
+                          {row.transaction_type}
+                        </span>
+                      </div>
+                      <div className="text-sm font-semibold text-gray-900 text-right">
+                        {row.amount}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                UNIT
+
+              {/* Mobile Cards */}
+              <div className="md:hidden">
+                <div className="divide-y divide-gray-200">
+                  {RecentTransactions.map((row, index) => (
+                    <div
+                      key={index}
+                      className="p-4 hover:bg-gray-50 transition-colors duration-150"
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="text-sm font-medium text-gray-900">
+                          {new Date(row.transaction_date).toLocaleDateString(
+                            "en-IN",
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            }
+                          )}
+                        </div>
+                        <span
+                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(
+                            row.transaction_type
+                          )}`}
+                        >
+                          {row.transaction_type}
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-700 mb-2 line-clamp-2">
+                        {row.scheme}
+                      </div>
+                      <div className="text-right">
+                        <span className="text-lg font-semibold text-gray-900">
+                          {row.amount}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                NAV
-              </div>
-              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                TYPE
-              </div>
-              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                AMOUNT (₹)
-              </div>
+
+              {/* Empty State */}
+              {RecentTransactions.length === 0 && (
+                <div className="text-center py-12">
+                  <div className="text-gray-400 mb-2">
+                    <svg
+                      className="mx-auto h-12 w-12"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                  </div>
+                  <p className="text-gray-500 text-sm">No transactions found</p>
+                </div>
+              )}
             </div>
-
-            {/* Table Body */}
-            {RecentTransactions.map((row, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-6 bg-[#F5F5F5] text-left p-2 my-2 items-center rounded-lg gap-2"
-              >
-                <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
-                  {row?.transaction_date}
-                </div>
-                <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
-                  {row.scheme}
-                </div>
-                <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
-                  {row.units}
-                </div>
-                <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
-                  {row.nav_value}
-                </div>
-                <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
-                  {row.transaction_type}
-                </div>
-                <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
-                  {row.amount}
-                </div>
-              </div>
-            ))}
           </div>
 
           <div className="justify-between w-full flex flex-wrap gap-4 h-auto mb-2">
@@ -999,30 +1082,31 @@ export default function DashboardMain() {
           <div className="container mx-auto px-4 py-6">
             {/* Table Header */}
 
-            {systematicTransactions.length > 0 ? <div className="grid grid-cols-7 text-left p-3 bg-[#F5F5F5] rounded-lg gap-2">
-              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                FUND NAME
+            {systematicTransactions.length > 0 ? (
+              <div className="grid grid-cols-7 text-left p-3 bg-[#F5F5F5] rounded-lg gap-2">
+                <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                  FUND NAME
+                </div>
+                <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                  SIP TYPE
+                </div>
+                <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                  SIP START DATE
+                </div>
+                <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                  NO OF SIP
+                </div>
+                <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                  FREQUENCY
+                </div>
+                <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                  AMOUNT (₹)
+                </div>
+                <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
+                  ACTION
+                </div>
               </div>
-              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                TRANSACTION TYPE
-              </div>
-              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                SIP START DATE
-              </div>
-              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                NO INSTALLMENT
-              </div>
-              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                FREQUENCY
-              </div>
-              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                AMOUNT (₹)
-              </div>
-              <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                ACTION
-              </div>
-            </div>:null}
-            
+            ) : null}
 
             {/* Table Body */}
             {systematicTransactions.length > 0 ? (
@@ -1049,22 +1133,78 @@ export default function DashboardMain() {
                   <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
                     ₹{row.amount.toLocaleString("en-IN")}
                   </div>
-                  <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
+                  <div className="font-poppins text-sm font-medium text-[#3F4765] truncate flex">
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleEditTransaction(row)}
-                        className="text-[#35B26B] border border-[#35B26B] rounded-md px-3 py-1 hover:bg-[#e8f5eb] text-sm"
+                        className="text-[#35B26B] border border-[#35B26B] rounded-md p-2 hover:bg-[#e8f5eb] transition-colors"
+                        title="Edit"
                       >
-                        Edit
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
                       </button>
                       <button
                         onClick={() => handleDeleteTransaction(row.id)}
                         disabled={isDeleting}
-                        className={`text-[#dc2626] border border-[#dc2626] rounded-md px-3 py-1 hover:bg-[#fef2f2] text-sm ${
+                        className={`text-[#dc2626] border border-[#dc2626] rounded-md p-2 hover:bg-[#fef2f2] transition-colors ${
                           isDeleting ? "opacity-50 cursor-not-allowed" : ""
                         }`}
+                        title={isDeleting ? "Deleting..." : "Delete"}
                       >
-                        {isDeleting ? "Deleting..." : "Delete"}
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="m3 6 3 0"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                          <path
+                            d="m21 6-3 0"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                          <path
+                            d="m18 6-.84 12.63a1 1 0 0 1-1 .84H7.89a1 1 0 0 1-1-.84L6 6"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="m8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
                       </button>
                     </div>
                   </div>
@@ -1504,200 +1644,215 @@ export default function DashboardMain() {
         </div>
       )}
 
-{isEditModalOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-[#3F4765]">Edit Systematic Transaction</h2>
-        <button
-          onClick={() => {
-            setIsEditModalOpen(false);
-            setEditingTransaction(null);
-            setFormData({
-              fundName: '',
-              transactionType: '',
-              sipStartDate: '',
-              installments: '',
-              frequency: '',
-              amount: '',
-              isin: "",
-              selectedFundData: null
-            });
-            setSearchResults([]);
-          }}
-          className="text-gray-400 hover:text-gray-600"
-        >
-          ✕
-        </button>
-      </div>
+      {isEditModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-[#3F4765]">
+                Edit Systematic Transaction
+              </h2>
+              <button
+                onClick={() => {
+                  setIsEditModalOpen(false);
+                  setEditingTransaction(null);
+                  setFormData({
+                    fundName: "",
+                    transactionType: "",
+                    sipStartDate: "",
+                    installments: "",
+                    frequency: "",
+                    amount: "",
+                    isin: "",
+                    selectedFundData: null,
+                  });
+                  setSearchResults([]);
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            </div>
 
-      <form className="space-y-4">
-        {/* Fund Name - Searchable Input */}
-        <div>
-          <label className="block text-sm font-medium text-[#3F4765] mb-1">
-            Fund Name
-          </label>
-          <div className="relative">
-            <input
-              type="text"
-              value={formData.fundName}
-              onChange={(e) => {
-                setFormData({ ...formData, fundName: e.target.value });
-                fetchSearchResults(e.target.value);
-              }}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Search fund name..."
-            />
-            {isSearchLoading && (
-              <div className="absolute right-2 top-2">
-                <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+            <form className="space-y-4">
+              {/* Fund Name - Searchable Input */}
+              <div>
+                <label className="block text-sm font-medium text-[#3F4765] mb-1">
+                  Fund Name
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={formData.fundName}
+                    onChange={(e) => {
+                      setFormData({ ...formData, fundName: e.target.value });
+                      fetchSearchResults(e.target.value);
+                    }}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Search fund name..."
+                  />
+                  {isSearchLoading && (
+                    <div className="absolute right-2 top-2">
+                      <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                    </div>
+                  )}
+                  {searchResults.length > 0 && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                      {searchResults.map((result, index) => (
+                        <div key={index}>
+                          {result?.FSCBI_ISIN !== null ? (
+                            <div
+                              onClick={() => {
+                                setFormData({
+                                  ...formData,
+                                  fundName: result.FSCBI_LegalName,
+                                  isin: result?.FSCBI_ISIN,
+                                  selectedFundData: result,
+                                });
+                                setSearchResults([]);
+                              }}
+                              className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
+                            >
+                              {result.FSCBI_LegalName}
+                            </div>
+                          ) : null}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
-            {searchResults.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
-                {searchResults.map((result, index) => (
-                  <div key={index}>
-                    {result?.FSCBI_ISIN !== null ? (
-                      <div
-                        onClick={() => {
-                          setFormData({
-                            ...formData,
-                            fundName: result.FSCBI_LegalName,
-                            isin: result?.FSCBI_ISIN,
-                            selectedFundData: result
-                          });
-                          setSearchResults([]);
-                        }}
-                        className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
-                      >
-                        {result.FSCBI_LegalName}
-                      </div>
-                    ) : null}
-                  </div>
-                ))}
+
+              {/* Transaction Type */}
+              <div>
+                <label className="block text-sm font-medium text-[#3F4765] mb-1">
+                  Transaction Type
+                </label>
+                <select
+                  value={formData.transactionType}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      transactionType: e.target.value,
+                    })
+                  }
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Select Type</option>
+                  <option value="SIP">SIP</option>
+                  <option value="STP">STP</option>
+                  <option value="SWP">SWP</option>
+                </select>
               </div>
-            )}
+
+              {/* SIP Start Date */}
+              <div>
+                <label className="block text-sm font-medium text-[#3F4765] mb-1">
+                  SIP Start Date
+                </label>
+                <input
+                  type="date"
+                  value={formData.sipStartDate}
+                  onChange={(e) =>
+                    setFormData({ ...formData, sipStartDate: e.target.value })
+                  }
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              {/* No. of Installments */}
+              <div>
+                <label className="block text-sm font-medium text-[#3F4765] mb-1">
+                  No. of Installments
+                </label>
+                <input
+                  type="number"
+                  value={formData.installments}
+                  onChange={(e) =>
+                    setFormData({ ...formData, installments: e.target.value })
+                  }
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter number of installments"
+                  min="1"
+                />
+              </div>
+
+              {/* Frequency */}
+              <div>
+                <label className="block text-sm font-medium text-[#3F4765] mb-1">
+                  Frequency
+                </label>
+                <select
+                  value={formData.frequency}
+                  onChange={(e) =>
+                    setFormData({ ...formData, frequency: e.target.value })
+                  }
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Select Frequency</option>
+                  <option value="Daily">Daily</option>
+                  <option value="Once a week">Once a week</option>
+                  <option value="Once a Month">Once a Month</option>
+                  <option value="Once a Year">Once a Year</option>
+                </select>
+              </div>
+
+              {/* Amount */}
+              <div>
+                <label className="block text-sm font-medium text-[#3F4765] mb-1">
+                  Amount (₹)
+                </label>
+                <input
+                  type="number"
+                  value={formData.amount}
+                  onChange={(e) =>
+                    setFormData({ ...formData, amount: e.target.value })
+                  }
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter amount"
+                  min="1"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEditModalOpen(false);
+                    setEditingTransaction(null);
+                    setFormData({
+                      fundName: "",
+                      transactionType: "",
+                      sipStartDate: "",
+                      installments: "",
+                      frequency: "",
+                      amount: "",
+                      isin: "",
+                      selectedFundData: null,
+                    });
+                    setSearchResults([]);
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleUpdateSystematicTransaction}
+                  disabled={isUpdating}
+                  className={`flex-1 px-4 py-2 rounded-md ${
+                    isUpdating
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700"
+                  } text-white`}
+                >
+                  {isUpdating ? "Updating..." : "Update"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-
-        {/* Transaction Type */}
-        <div>
-          <label className="block text-sm font-medium text-[#3F4765] mb-1">
-            Transaction Type
-          </label>
-          <select
-            value={formData.transactionType}
-            onChange={(e) => setFormData({ ...formData, transactionType: e.target.value })}
-            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">Select Type</option>
-            <option value="SIP">SIP</option>
-            <option value="STP">STP</option>
-            <option value="SWP">SWP</option>
-          </select>
-        </div>
-
-        {/* SIP Start Date */}
-        <div>
-          <label className="block text-sm font-medium text-[#3F4765] mb-1">
-            SIP Start Date
-          </label>
-          <input
-            type="date"
-            value={formData.sipStartDate}
-            onChange={(e) => setFormData({ ...formData, sipStartDate: e.target.value })}
-            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-
-        {/* No. of Installments */}
-        <div>
-          <label className="block text-sm font-medium text-[#3F4765] mb-1">
-            No. of Installments
-          </label>
-          <input
-            type="number"
-            value={formData.installments}
-            onChange={(e) => setFormData({ ...formData, installments: e.target.value })}
-            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Enter number of installments"
-            min="1"
-          />
-        </div>
-
-        {/* Frequency */}
-        <div>
-          <label className="block text-sm font-medium text-[#3F4765] mb-1">
-            Frequency
-          </label>
-          <select
-            value={formData.frequency}
-            onChange={(e) => setFormData({ ...formData, frequency: e.target.value })}
-            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">Select Frequency</option>
-            <option value="Daily">Daily</option>
-            <option value="Once a week">Once a week</option>
-            <option value="Once a Month">Once a Month</option>
-            <option value="Once a Year">Once a Year</option>
-          </select>
-        </div>
-
-        {/* Amount */}
-        <div>
-          <label className="block text-sm font-medium text-[#3F4765] mb-1">
-            Amount (₹)
-          </label>
-          <input
-            type="number"
-            value={formData.amount}
-            onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Enter amount"
-            min="1"
-          />
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex gap-3 pt-4">
-          <button
-            type="button"
-            onClick={() => {
-              setIsEditModalOpen(false);
-              setEditingTransaction(null);
-              setFormData({
-                fundName: '',
-                transactionType: '',
-                sipStartDate: '',
-                installments: '',
-                frequency: '',
-                amount: '',
-                isin: "",
-                selectedFundData: null
-              });
-              setSearchResults([]);
-            }}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={handleUpdateSystematicTransaction}
-            disabled={isUpdating}
-            className={`flex-1 px-4 py-2 rounded-md ${
-              isUpdating
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-blue-600 hover:bg-blue-700'
-            } text-white`}
-          >
-            {isUpdating ? 'Updating...' : 'Update'}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
+      )}
     </>
   );
 }

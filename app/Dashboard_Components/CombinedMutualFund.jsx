@@ -171,6 +171,8 @@ export default function CombinedMutualFund() {
           setFamilyData([rawData]);
         }
       } else {
+        // localStorage.clear();
+        // router.push("/");
         throw new Error(
           response.data?.message || "API returned unsuccessful status"
         );
@@ -189,6 +191,7 @@ export default function CombinedMutualFund() {
       } else {
         throw new Error(`Request Error: ${error.message}`);
       }
+   
     }
   }
 

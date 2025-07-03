@@ -9,9 +9,15 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-
 } from "recharts";
-import { Activity, TrendingUp, BarChart3, Target, ArrowUp, ArrowDown } from 'lucide-react';
+import {
+  Activity,
+  TrendingUp,
+  BarChart3,
+  Target,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
 import Image from "next/image";
 import { Chart } from "react-google-charts";
 import { useRouter } from "next/navigation";
@@ -23,12 +29,16 @@ export default function AnalysisMain() {
     PortfolioMarketCapDistributionData,
     setPortfolioMarketCapDistributionData,
   ] = useState([]);
-const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([]);
+  const [AMC_Distribution_data, setAMC_Distribution_data] = useState([]);
   const [Category_Distribution, setCategory_Distribution] = useState([]);
   const [captureRatiosData, setCaptureRatiosData] = useState([]);
-  const [captureRatiosDataForShowLastValue, setCaptureRatiosDataForShowLastValue] = useState(); // New state for last capture ratio values
+  const [
+    captureRatiosDataForShowLastValue,
+    setCaptureRatiosDataForShowLastValue,
+  ] = useState(); // New state for last capture ratio values
   const [riskRatiosData, setRiskRatiosData] = useState([]);
-  const [riskRatiosDataForShowLastValue, setriskRatiosDataForShowLastValue] = useState();
+  const [riskRatiosDataForShowLastValue, setriskRatiosDataForShowLastValue] =
+    useState();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
@@ -257,7 +267,7 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
     },
     is3D: true,
     pieHole: 0.4, // Creates a donut chart
-    colors: ["#5C6BC0", "#EC407A"], // More professional color scheme
+    colors: ["#DC2626", "#F97316", "#FBBF24", "#FEF3C7"], // Red to yellow gradient palette
     backgroundColor: "transparent",
     legend: {
       position: "right",
@@ -357,10 +367,12 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
         // Add a check to ensure details property exists
         setPortFolioAssetAllocation(data?.data);
       } else {
-        return null;
+        // localStorage.clear();
+        // router.push("/");
       }
     } catch (error) {
-      return null;
+      // localStorage.clear();
+      // router.push("/");
     }
   };
 
@@ -372,7 +384,7 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ user_id: fundId.toString() }),
         }
@@ -383,7 +395,7 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
       }
 
       const data = await response.json();
-      console.log(data, "setPortfolioMarketCapDistributionData")
+      console.log(data, "setPortfolioMarketCapDistributionData");
 
       if (data?.status === "success") {
         // Transform the data into the required format for Google Charts
@@ -403,10 +415,12 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
 
         setPortfolioMarketCapDistributionData(data?.summary);
       } else {
-        return null;
+        // localStorage.clear();
+        // router.push("/");
       }
     } catch (error) {
-      return null;
+      // localStorage.clear();
+      // router.push("/");
     }
   };
 
@@ -445,6 +459,8 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
       } else {
       }
     } catch (error) {
+      // localStorage.clear();
+      // router.push("/");
     }
   };
 
@@ -474,7 +490,7 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
           .filter((item) => item?.currentValue > 0) // Only include records with values
           .map((item) => ({
             date: item.date, // Use date as is
-            "Current Value": item?.currentValue,
+            // "Current Value": item?.currentValue,
             Sharpe: item?.weightedSharpeRatio,
             Alpha: item?.weightedAlpha,
             Beta: item?.weightedBeta,
@@ -482,10 +498,16 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
           }));
 
         setRiskRatiosData(formattedData);
-        setriskRatiosDataForShowLastValue(data.summaries?.[data?.summaries?.length - 1])
+        setriskRatiosDataForShowLastValue(
+          data.summaries?.[data?.summaries?.length - 1]
+        );
       } else {
+        // localStorage.clear();
+        // router.push("/");
       }
     } catch (error) {
+      // localStorage.clear();
+      // router.push("/");
     }
   };
 
@@ -511,7 +533,11 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
       if (data?.status === "success") {
         // Format the API response data for the chart
         const formattedData = data?.summaries
-          .filter((item) => item?.weightedCaptureRatioUpside1Yr !== null && item?.weightedCaptureRatioDownside1Yr !== null) // Only include records with values
+          .filter(
+            (item) =>
+              item?.weightedCaptureRatioUpside1Yr !== null &&
+              item?.weightedCaptureRatioDownside1Yr !== null
+          ) // Only include records with values
           .map((item) => ({
             date: item.date, // Use date as is
             Up: parseFloat(item?.weightedCaptureRatioUpside1Yr) || 0,
@@ -519,10 +545,16 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
           }));
 
         setCaptureRatiosData(formattedData);
-        setCaptureRatiosDataForShowLastValue(formattedData?.[formattedData?.length - 1]);
+        setCaptureRatiosDataForShowLastValue(
+          formattedData?.[formattedData?.length - 1]
+        );
       } else {
+        // localStorage.clear();
+        // router.push("/");
       }
     } catch (error) {
+      // localStorage.clear();
+      // router.push("/");
     }
   };
 
@@ -546,7 +578,8 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
           GetPortfolioMarketCapDistributionData(parsedUserId, tokenParse),
           fetchRiskRatiosData(parsedUserId),
           fetchCategoryDistribution(parsedUserId),
-          fetchCaptureRatiosData(parsedUserId)
+          fetchCaptureRatiosData(parsedUserId),
+          fetch_AMC_Distribution(parsedUserId, tokenParse),
         ]);
       } catch (err) {
         setError(err.message);
@@ -558,37 +591,81 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
     initializeData();
   }, []);
 
+  const fetch_AMC_Distribution = async (userId, token) => {
+    try {
+      const response = await fetch(
+        "https://dev.netrumusa.com/starkcapital/api-backend/amc-distribution-graph",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ user_id: userId.toString() }),
+        }
+      );
+
+      const data = await response.json();
+
+      console.log(data?.data, "fetch_AMC_Distribution");
+
+      if (data?.status === "success") {
+        // Format the API response data for the chart
+        const formattedData = [["Category", "Percentage"]];
+
+        data?.data?.forEach((item) => {
+          const percentage = parseFloat(item?.percentage?.replace("%", ""));
+
+          // Only include items where percentage is greater than 0
+          if (percentage > 0) {
+            formattedData.push([item?.amc, percentage]);
+          }
+        });
+
+        console.log(formattedData, "Formatted AMC Distribution");
+
+        setAMC_Distribution_data(formattedData);
+      } else{
+        // localStorage.clear();
+        // router.push("/");
+      }
+    } catch (error) {
+      // localStorage.clear();
+      // router.push("/");
+    }
+  };
+
   const metrics = [
     {
       label: "STD. DEV",
       value: riskRatiosDataForShowLastValue?.weightedStdDev,
-      icon: <Activity className="w-5 h-5 text-blue-500" />
+      icon: <Activity className="w-5 h-5 text-blue-500" />,
     },
     {
       label: "Sharpe Ratio",
       value: riskRatiosDataForShowLastValue?.weightedSharpeRatio,
-      icon: <TrendingUp className="w-5 h-5 text-green-500" />
+      icon: <TrendingUp className="w-5 h-5 text-green-500" />,
     },
     {
       label: "Beta",
       value: riskRatiosDataForShowLastValue?.weightedBeta,
-      icon: <BarChart3 className="w-5 h-5 text-purple-500" />
+      icon: <BarChart3 className="w-5 h-5 text-purple-500" />,
     },
     {
       label: "Alpha",
       value: riskRatiosDataForShowLastValue?.weightedAlpha,
-      icon: <Target className="w-5 h-5 text-orange-500" />
+      icon: <Target className="w-5 h-5 text-orange-500" />,
     },
     {
       label: "Capture Ratio (Up)",
       value: captureRatiosDataForShowLastValue?.Up,
-      icon: <ArrowUp className="w-5 h-5 text-emerald-500" />
+      icon: <ArrowUp className="w-5 h-5 text-emerald-500" />,
     },
     {
       label: "Capture Ratio (Down)",
       value: captureRatiosDataForShowLastValue?.Down,
-      icon: <ArrowDown className="w-5 h-5 text-red-500" />
-    }
+      icon: <ArrowDown className="w-5 h-5 text-red-500" />,
+    },
   ];
 
   return (
@@ -659,20 +736,22 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
                 <div className="flex space-x-4">
                   <button
                     onClick={() => setActiveButton("risk")}
-                    className={`text-[#9FA8C7] px-4 py-2 rounded-2xl border text-sm ${activeButton === "risk"
+                    className={`text-[#9FA8C7] px-4 py-2 rounded-2xl border text-sm ${
+                      activeButton === "risk"
                         ? "bg-[#ECEFF9] border-[#E5EBEF] text-[#3F4765] font-medium"
                         : "border-[#E5EBEF]"
-                      }`}
+                    }`}
                   >
                     Risk Ratio
                   </button>
 
                   <button
                     onClick={() => setActiveButton("capture")}
-                    className={`text-[#9FA8C7] px-4 py-2 rounded-2xl border text-sm ${activeButton === "capture"
+                    className={`text-[#9FA8C7] px-4 py-2 rounded-2xl border text-sm ${
+                      activeButton === "capture"
                         ? "bg-[#ECEFF9] border-[#E5EBEF] text-[#3F4765] font-medium"
                         : "border-[#E5EBEF]"
-                      }`}
+                    }`}
                   >
                     Capture Ratio
                   </button>
@@ -740,7 +819,7 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
                         {riskRatiosData?.length > 0 ? (
                           // Use API data when available
                           <>
-                            <Line
+                            {/* <Line
                               type="monotone"
                               dataKey="Current Value"
                               name="Current Value"
@@ -749,7 +828,7 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
                               strokeWidth={2}
                               yAxisId="currentValue"
                               connectNulls={true}
-                            />
+                            /> */}
                             <Line
                               type="monotone"
                               dataKey="Std. Dev."
@@ -923,7 +1002,7 @@ const [portfolio_AMC_Distribution, setportfolio_AMC_Distribution] = useState([])
               <div className="pt-4">
                 <Chart
                   chartType="PieChart"
-                  data={portfolio_AMC_Distribution_data}
+                  data={AMC_Distribution_data}
                   options={portfolio_AMC_Distribution_options}
                   width={"100%"}
                   height={"220px"}

@@ -9,7 +9,7 @@ const Logo = () => {
   // const navigate = useNavigate();
   return (
     <Link href="/" className="p-2 block">
-      <Image src={LogoImage} alt="Logo" width={120} height={120} priority />
+      <Image src={LogoImage} alt="Logo" width={90} height={45} priority />
     </Link>
   );
 };

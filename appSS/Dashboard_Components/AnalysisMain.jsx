@@ -9,9 +9,15 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  
 } from "recharts";
-import { Activity, TrendingUp, BarChart3, Target, ArrowUp, ArrowDown } from 'lucide-react';
+import {
+  Activity,
+  TrendingUp,
+  BarChart3,
+  Target,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
 import Image from "next/image";
 import { Chart } from "react-google-charts";
 import { useRouter } from "next/navigation";
@@ -23,15 +29,21 @@ export default function AnalysisMain() {
     PortfolioMarketCapDistributionData,
     setPortfolioMarketCapDistributionData,
   ] = useState([]);
-
+  const [AMC_Distribution_data, setAMC_Distribution_data] = useState([]);
   const [Category_Distribution, setCategory_Distribution] = useState([]);
   const [captureRatiosData, setCaptureRatiosData] = useState([]);
-  const [captureRatiosDataForShowLastValue, setCaptureRatiosDataForShowLastValue] = useState(); // New state for last capture ratio values
+  const [
+    captureRatiosDataForShowLastValue,
+    setCaptureRatiosDataForShowLastValue,
+  ] = useState(); // New state for last capture ratio values
   const [riskRatiosData, setRiskRatiosData] = useState([]);
-  const [riskRatiosDataForShowLastValue, setriskRatiosDataForShowLastValue] = useState();
+  const [riskRatiosDataForShowLastValue, setriskRatiosDataForShowLastValue] =
+    useState();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
+
+  console.log(AMC_Distribution_data,"AMC_Distribution_data")
 
   // Default data for Risk Ratios chart (will be replaced with API data)
   const riskRatioDatas = [
@@ -242,9 +254,9 @@ export default function AnalysisMain() {
   };
 
   const portfolio_AMC_Distribution_data = [
-    ["Task", "Hours per Day"],
-    ["ICICI", 80.25],
-    ["SBI", 19.75],
+    // ["Task", "Hours per Day"],
+    // ["ICICI", 80.25],
+    // ["SBI", 19.75],
   ];
 
   const portfolio_AMC_Distribution_options = {
@@ -411,7 +423,6 @@ export default function AnalysisMain() {
   };
 
   const fetchCategoryDistribution = async (userId, token) => {
-   
     try {
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/category-distribution-graph",
@@ -446,13 +457,49 @@ export default function AnalysisMain() {
         setCategory_Distribution(formattedData);
       } else {
       }
-    } catch (error) {
-    }
+    } catch (error) {}
+  };
+
+  const fetch_AMC_Distribution = async (userId, token) => {
+    try {
+      const response = await fetch(
+        "https://dev.netrumusa.com/starkcapital/api-backend/amc-distribution-graph",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: `Bearer ${token}`,
+          },
+          // body: JSON.stringify({ user_id: userId.toString() }),
+        }
+      );
+
+   
+
+      const data = await response.json();
+
+      console.log(data,"fetch_AMC_Distribution")
+
+      if (data?.status === "success") {
+        // Format the API response data for the chart
+        // const formattedData = [["Category", "Percentage"]];
+
+        // Map through the received data and format it
+        // data?.data?.forEach((item) => {
+        //   if (item?.percentage > 0) {
+        // Only include categories with percentage > 0
+        //   formattedData?.push([item?.category, item?.percentage]);
+        // }
+        // });
+
+        setAMC_Distribution_data(data?.data);
+      } else {
+      }
+    } catch (error) {}
   };
 
   // New function to fetch risk ratios data
   const fetchRiskRatiosData = async (userId, token) => {
-  
     try {
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/risk-ratios-graph",
@@ -486,11 +533,12 @@ export default function AnalysisMain() {
           }));
 
         setRiskRatiosData(formattedData);
-        setriskRatiosDataForShowLastValue(data.summaries?.[data?.summaries?.length - 1])
+        setriskRatiosDataForShowLastValue(
+          data.summaries?.[data?.summaries?.length - 1]
+        );
       } else {
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const fetchCaptureRatiosData = async (userId, token) => {
@@ -516,7 +564,11 @@ export default function AnalysisMain() {
       if (data?.status === "success") {
         // Format the API response data for the chart
         const formattedData = data?.summaries
-          .filter((item) => item?.weightedCaptureRatioUpside1Yr !== null && item?.weightedCaptureRatioDownside1Yr !== null) // Only include records with values
+          .filter(
+            (item) =>
+              item?.weightedCaptureRatioUpside1Yr !== null &&
+              item?.weightedCaptureRatioDownside1Yr !== null
+          ) // Only include records with values
           .map((item) => ({
             date: item.date, // Use date as is
             Up: parseFloat(item?.weightedCaptureRatioUpside1Yr) || 0,
@@ -524,11 +576,12 @@ export default function AnalysisMain() {
           }));
 
         setCaptureRatiosData(formattedData);
-        setCaptureRatiosDataForShowLastValue(formattedData?.[formattedData?.length - 1]);
+        setCaptureRatiosDataForShowLastValue(
+          formattedData?.[formattedData?.length - 1]
+        );
       } else {
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -552,7 +605,8 @@ export default function AnalysisMain() {
           GetPortfolioMarketCapDistributionData(parsedUserId, parsedUsertoken),
           fetchRiskRatiosData(parsedUserId, parsedUsertoken),
           fetchCategoryDistribution(parsedUserId, parsedUsertoken),
-          fetchCaptureRatiosData(parsedUserId, parsedUsertoken)
+          fetchCaptureRatiosData(parsedUserId, parsedUsertoken),
+          fetch_AMC_Distribution(parsedUserId, parsedUsertoken)
         ]);
       } catch (err) {
         setError(err.message);
@@ -564,67 +618,67 @@ export default function AnalysisMain() {
     initializeData();
   }, []);
 
- const metrics = [
-      {
-        label: "STD. DEV",
-        value: riskRatiosDataForShowLastValue?.weightedStdDev,
-        icon: <Activity className="w-5 h-5 text-blue-500" />
-      },
-      {
-        label: "Sharpe Ratio",
-        value:riskRatiosDataForShowLastValue?.weightedSharpeRatio,
-        icon: <TrendingUp className="w-5 h-5 text-green-500" />
-      },
-      {
-        label: "Beta",
-        value: riskRatiosDataForShowLastValue?.weightedBeta,
-        icon: <BarChart3 className="w-5 h-5 text-purple-500" />
-      },
-      {
-        label: "Alpha",
-        value:riskRatiosDataForShowLastValue?.weightedAlpha,
-        icon: <Target className="w-5 h-5 text-orange-500" />
-      },
-      {
-        label: "Capture Ratio (Up)",
-        value: captureRatiosDataForShowLastValue?.Up,
-        icon: <ArrowUp className="w-5 h-5 text-emerald-500" />
-      },
-      {
-        label: "Capture Ratio (Down)",
-        value: captureRatiosDataForShowLastValue?.Down,
-        icon: <ArrowDown className="w-5 h-5 text-red-500" />
-      }
-    ];
-    
+  const metrics = [
+    {
+      label: "STD. DEV",
+      value: riskRatiosDataForShowLastValue?.weightedStdDev,
+      icon: <Activity className="w-5 h-5 text-blue-500" />,
+    },
+    {
+      label: "Sharpe Ratio",
+      value: riskRatiosDataForShowLastValue?.weightedSharpeRatio,
+      icon: <TrendingUp className="w-5 h-5 text-green-500" />,
+    },
+    {
+      label: "Beta",
+      value: riskRatiosDataForShowLastValue?.weightedBeta,
+      icon: <BarChart3 className="w-5 h-5 text-purple-500" />,
+    },
+    {
+      label: "Alpha",
+      value: riskRatiosDataForShowLastValue?.weightedAlpha,
+      icon: <Target className="w-5 h-5 text-orange-500" />,
+    },
+    {
+      label: "Capture Ratio (Up)",
+      value: captureRatiosDataForShowLastValue?.Up,
+      icon: <ArrowUp className="w-5 h-5 text-emerald-500" />,
+    },
+    {
+      label: "Capture Ratio (Down)",
+      value: captureRatiosDataForShowLastValue?.Down,
+      icon: <ArrowDown className="w-5 h-5 text-red-500" />,
+    },
+  ];
+
   return (
     <>
       <div className="flex flex-col md:flex-row w-full justify-between px-4 sm:px-6 lg:px-28">
         {/* First div with 70% width on medium and larger screens */}
         <div className="w-full md:w-[95%] flex flex-wrap gap-4 justify-between">
-        <div className="w-full md:w-[100%] flex flex-wrap gap-4 justify-between">
-        {metrics.map((metric, index) => (
-          <div 
-            key={index}
-            className="relative flex-1 min-w-[160px] max-w-[275px] bg-white border border-[#D9D9D9] rounded-lg p-3 h-[100px] sm:h-[110px] md:h-[120px] hover:shadow-lg transition-shadow duration-200"
-          >
-            {/* Row 1 - Icon and Label */}
-            <div className="flex items-center mb-3">
-              {metric.icon}
-              <p className="text-xs sm:text-sm font-medium text-[#6E7499] ml-2">
-                {metric.label}
-              </p>
-            </div>
-  
-            {/* Row 2 - Value */}
-            <div className="mb-3">
-              <p className="text-lg sm:text-xl md:text-2xl font-semibold text-[#2B2B2B]">
-                {metric.value}
-              </p>
-            </div>
+          <div className="w-full md:w-[100%] flex flex-wrap gap-4 justify-between">
+            {metrics.map((metric, index) => (
+              <div
+                key={index}
+                className="relative flex-1 min-w-[160px] max-w-[275px] bg-white border border-[#D9D9D9] rounded-lg p-3 h-[100px] sm:h-[110px] md:h-[120px] hover:shadow-lg transition-shadow duration-200"
+              >
+                {/* Row 1 - Icon and Label */}
+                <div className="flex items-center mb-3">
+                  {metric.icon}
+                  <p className="text-xs sm:text-sm font-medium text-[#6E7499] ml-2">
+                    {metric.label}
+                  </p>
+                </div>
+
+                {/* Row 2 - Value */}
+                <div className="mb-3">
+                  <p className="text-lg sm:text-xl md:text-2xl font-semibold text-[#2B2B2B]">
+                    {metric.value}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
           <div className="w-full flex flex-wrap gap-4 justify-between">
             {/* Card 1 */}
             <div className="relative flex-1 w-1/2 bg-white border border-[#D9D9D9] rounded-xl p-4 z-10">
@@ -931,7 +985,7 @@ export default function AnalysisMain() {
               <div className="pt-4">
                 <Chart
                   chartType="PieChart"
-                  data={portfolio_AMC_Distribution_data}
+                  data={AMC_Distribution_data}
                   options={portfolio_AMC_Distribution_options}
                   width={"100%"}
                   height={"220px"}

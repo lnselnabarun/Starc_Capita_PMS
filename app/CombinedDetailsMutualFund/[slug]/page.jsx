@@ -139,6 +139,8 @@ const CombinedDetailsMutualFund = ({ params }) => {
           // Set the fund name if found, otherwise use the scheme name as fallback
           SetcurrentDataName( response?.data?.data?.scheme);
         } else {
+          // localStorage.clear();
+          // route.push("/");
           throw new Error(
             response.data?.message || "Failed to fetch mutual fund data"
           );
@@ -192,6 +194,8 @@ const CombinedDetailsMutualFund = ({ params }) => {
         // Check if we've reached the end of available data
         setHasMore(response.data.data.length === pageSize);
       } else {
+        // localStorage.clear();
+        //   route.push("/");
         throw new Error(
           response.data?.message || "Failed to fetch mutual fund data"
         );

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Search, X, ChevronDown, ChevronUp } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const MutualFundComparison = () => {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFunds, setSelectedFunds] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
@@ -142,11 +144,13 @@ const fetchFundDetails = async (fundId) => {
         currentXIRR: data.data.currentXIRR || null,
       };
     } else {
-      return null;
+      // localStorage.clear();
+      // router.push("/");
     }
   } catch (error) {
     console.error("Error fetching fund details:", error);
-    return null;
+    // localStorage.clear();
+    //     router.push("/");
   }
 };
 
