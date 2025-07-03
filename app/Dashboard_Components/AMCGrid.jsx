@@ -147,6 +147,7 @@ const AMCGrid = () => {
         } else {
           // localStorage.clear();
           // router.push("/");
+          
           setError("No data received from API");
         }
       } catch (err) {
