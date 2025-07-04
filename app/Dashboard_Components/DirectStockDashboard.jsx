@@ -184,7 +184,7 @@ export default function DirectStockDashboard() {
             <div className="font-sans text-lg sm:text-base md:text-lg font-medium leading-5 text-left text-[#3F4765]">
               My Balance
             </div>
-            <div className="flex items-center justify-center bg-white rounded-full h-8 w-8 sm:h-10 sm:w-10">
+            {/* <div className="flex items-center justify-center bg-white rounded-full h-8 w-8 sm:h-10 sm:w-10">
               <Image
                 src={require("../assets/logo/IconPlus.png")}
                 alt="Centered Image"
@@ -192,7 +192,7 @@ export default function DirectStockDashboard() {
                 height={20}
                 className="h-5 w-5"
               />
-            </div>
+            </div> */}
           </div>
 
           <div className="flex flex-col sm:flex-row justify-between space-x-0 sm:space-x-4 mt-3">

@@ -19,13 +19,13 @@ const AMCCard = ({ amc, index }) => {
   const getLogo = () => {
     // Placeholder function to determine logo based on AMC name
     // In a real implementation, you'd map AMC names to their respective logos
-    const amcName = amc.amc?.toLowerCase() || "";
+    const amcName = amc?.amc?.toLowerCase() || "";
 
-    if (amcName.includes("hdfc")) {
+    if (amcName?.includes("hdfc")) {
       return require("../assets/logo/Logo_A.png");
-    } else if (amcName.includes("dsp")) {
+    } else if (amcName?.includes("dsp")) {
       return require("../assets/logo/Logo_A.png");
-    } else if (amcName.includes("canara")) {
+    } else if (amcName?.includes("canara")) {
       return require("../assets/logo/Logo_A.png");
     } else {
       return require("../assets/logo/Logo_A.png");
@@ -55,7 +55,7 @@ const AMCCard = ({ amc, index }) => {
         >
           <Image
             src={getLogo()}
-            alt={`${amc.amc} logo`}
+            alt={`${amc?.amc} logo`}
             fill
             className="object-contain"
           />
@@ -63,7 +63,7 @@ const AMCCard = ({ amc, index }) => {
 
         <div className="text-center">
           <h3 className="font-medium text-gray-800 mt-2 text-sm sm:text-base md:text-lg">
-            {amc.amc}
+            {amc?.amc}
           </h3>
           {/* <p className="text-sm text-gray-600 mt-1 line-clamp-2">
             {amc.scheme}
@@ -147,7 +147,7 @@ const AMCGrid = () => {
         } else {
           // localStorage.clear();
           // router.push("/");
-          
+
           setError("No data received from API");
         }
       } catch (err) {
