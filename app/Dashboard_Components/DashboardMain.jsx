@@ -17,7 +17,7 @@ import moment from "moment";
 
 export default function DashboardMain() {
   const router = useRouter();
-  
+
   const [chartView, setChartView] = useState("investment"); // "investment" or "xirr"
   const [DashboardData, SetDashboardData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -122,9 +122,8 @@ export default function DashboardMain() {
       if (data.status === "success") {
         setBalanceData(data?.data);
       } else {
-      //   localStorage.clear();
-      // router.push("/");
-       
+        //   localStorage.clear();
+        // router.push("/");
       }
     } catch (err) {
       setError(err.message);
@@ -258,8 +257,8 @@ export default function DashboardMain() {
         // Refresh the systematic transactions list
         fetchSystematicTransactions();
       } else {
-      //   localStorage.clear();
-      // router.push("/");
+        //   localStorage.clear();
+        // router.push("/");
       }
     } catch (error) {
       console.error("Error saving systematic transaction:", error);
@@ -301,8 +300,7 @@ export default function DashboardMain() {
     initializeData();
   }, []);
 
-
-  console.log(PortfolioData,"PortfolioDataPortfolioData")
+  console.log(PortfolioData, "PortfolioDataPortfolioData");
 
   useEffect(() => {
     GetNewsData();
@@ -323,8 +321,8 @@ export default function DashboardMain() {
       if (response.data?.status === "success") {
         SetDashboardData(response.data?.data);
       } else {
-      //   localStorage.clear();
-      // router.push("/");
+        //   localStorage.clear();
+        // router.push("/");
       }
     } catch (error) {
       throw error;
@@ -554,8 +552,8 @@ export default function DashboardMain() {
   function formatToYYYYMMDD(dateString) {
     const dateObj = new Date(dateString);
     const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const day = String(dateObj.getDate()).padStart(2, '0');
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   }
 
@@ -619,11 +617,11 @@ export default function DashboardMain() {
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
     const date = new Date(dateStr);
-    
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // +1 because getMonth() is 0-indexed
+
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // +1 because getMonth() is 0-indexed
     const year = date.getFullYear();
-    
+
     return `${day}-${month}-${year}`;
   };
   const getGainLossText = () => {
@@ -641,7 +639,7 @@ export default function DashboardMain() {
     })}`;
   };
 
-  console.log(formData,"formData")
+  console.log(formData, "formData");
   return (
     <>
       <div className="flex flex-col md:flex-row w-full justify-between px-4 sm:px-6 lg:px-28">
@@ -983,11 +981,13 @@ export default function DashboardMain() {
                         )}
                       </div>
                       <div className="text-sm text-gray-700">
-                        <div
-                          className="font-medium truncate"
-                          title={row.scheme}
-                        >
-                          {row.scheme}
+                        <div className="text-sm text-gray-700">
+                          <div
+                            className="font-medium break-words"
+                            title={row.scheme}
+                          >
+                            {row.scheme}
+                          </div>
                         </div>
                       </div>
                       <div>
@@ -1124,9 +1124,17 @@ export default function DashboardMain() {
                   key={index}
                   className="grid grid-cols-7 bg-[#F5F5F5] text-left p-2 my-2 items-center rounded-lg gap-2"
                 >
-                  <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
+                  <div className="text-sm text-gray-700">
+  <div
+    className="font-medium break-words"
+    title={row.fund_name}
+  >
+    {row.fund_name}
+  </div>
+</div>
+                  {/* <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
                     {row.fund_name}
-                  </div>
+                  </div> */}
                   <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
                     {row.transaction_type || "N/A"}
                   </div>

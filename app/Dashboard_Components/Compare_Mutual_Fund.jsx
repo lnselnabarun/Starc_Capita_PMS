@@ -67,55 +67,56 @@ const MutualFundComparison = () => {
     setSelectedFunds(selectedFunds?.filter((fund) => fund?.id !== fundId));
   };
 
-  const transformApiResponseToDetails = (apiData) => {
-    console.log(apiData,"apiDataapiData")
-  const detailsArray = [];
-  
-  // Fund Overview
-  // detailsArray.push({ name: "Category", details: apiData["AT-FundLevelCategoryName"] || "N/A" });
-  detailsArray.push({ name: "Fund Name", details: apiData["FSCBI-FundLegalName"] || "N/A" });
-  detailsArray.push({ name: "AUM (in Rs.)", details: apiData["FNA-AsOfOriginalReported"] || "N/A" });
-  detailsArray.push({ name: "NAV Value", details: apiData["TS-DayEndNAV"] || "N/A" });
-  
-  // Returns
-  detailsArray.push({ name: "Trailing Return 1 Month", details: apiData["TTR-Return1Mth"] || "N/A" });
-  detailsArray.push({ name: "Trailing Return 1 Year", details: apiData["TTR-Return1Yr"] || "N/A" });
-  detailsArray.push({ name: "Trailing Return 3 Year", details: apiData["TTR-Return3Yr"] || "N/A" });
-  detailsArray.push({ name: "Trailing Return 5 Year", details: apiData["TTR-Return5Yr"] || "N/A" });
-  detailsArray.push({ name: "Return Since Inception", details: apiData["TTR-ReturnSinceInception"] || "N/A" });
-  
-  // Rolling Returns (using available data or marking as N/A)
-  // detailsArray.push({ name: "Rolling Return Avg 0.08333333333333333YR", details: "N/A" });
-  // detailsArray.push({ name: "Rolling Return Max 0.08333333333333333YR", details: "N/A" });
-  // detailsArray.push({ name: "Rolling Return Min 0.08333333333333333YR", details: "N/A" });
-  // detailsArray.push({ name: "Rolling Return Avg 0.25YR", details: "N/A" });
-  // detailsArray.push({ name: "Rolling Return Max 0.25YR", details: "N/A" });
-  // detailsArray.push({ name: "Rolling Return Min 0.25YR", details: "N/A" });
-  // detailsArray.push({ name: "Rolling Return Avg 0.4166666666666667YR", details: "N/A" });
-  // detailsArray.push({ name: "Rolling Return Max 0.4166666666666667YR", details: "N/A" });
-  // detailsArray.push({ name: "Rolling Return Min 0.4166666666666667YR", details: "N/A" });
-  
-  // Portfolio Allocation
-  detailsArray.push({ name: "Asset Alloc Bond Net", details: apiData["AABRP-AssetAllocBondNet"] || "N/A" });
-  detailsArray.push({ name: "Asset Alloc Cash Net", details: apiData["AABRP-AssetAllocCashNet"] || "N/A" });
-  detailsArray.push({ name: "Asset Alloc Equity Net", details: apiData["AABRP-AssetAllocEquityNet"] || "N/A" });
-  detailsArray.push({ name: "Other Net", details: "N/A" }); // Not available in new API
-  
-  // Risk Measures
-  detailsArray.push({ name: "Standard Deviation 1 Year", details: apiData["RM-StdDev1Yr"] || "N/A" });
-  detailsArray.push({ name: "Sharpe Ratio 1 Year", details: apiData["RM-SharpeRatio1Yr"] || "N/A" });
-  
-  // Fund Details
-  detailsArray.push({ name: "Expense Ratio", details: apiData["ARF-InterimNetExpenseRatio"] || "N/A" });
-  detailsArray.push({ name: "Exit Load", details: apiData["PF-deferred_load_additional_details"] || "N/A" });
-  detailsArray.push({ name: "ISIN", details: apiData["FSCBI-ISIN"] || "N/A" });
-  detailsArray.push({ name: "AMFI Code", details: apiData["FSCBI-AMFICode"] || "N/A" });
-  
-  return detailsArray;
-};
+  const transformApiResponseToDetails = (apiData, fullData) => {
+    console.log(apiData, "apiDataapiData");
+    console.log(fullData, "fullData with rolling returns");
+    
+    const detailsArray = [];
+    
+    // Fund Overview
+    detailsArray.push({ name: "Fund Name", details: apiData["FSCBI-FundLegalName"] || "N/A" });
+    detailsArray.push({ name: "AUM (in Rs.)", details: apiData["FNA-AsOfOriginalReported"] || "N/A" });
+    detailsArray.push({ name: "NAV Value", details: apiData["TS-DayEndNAV"] || "N/A" });
+    
+    // Returns
+    detailsArray.push({ name: "Trailing Return 1 Month", details: apiData["TTR-Return1Mth"] || "N/A" });
+    detailsArray.push({ name: "Trailing Return 1 Year", details: apiData["TTR-Return1Yr"] || "N/A" });
+    detailsArray.push({ name: "Trailing Return 3 Year", details: apiData["TTR-Return3Yr"] || "N/A" });
+    detailsArray.push({ name: "Trailing Return 5 Year", details: apiData["TTR-Return5Yr"] || "N/A" });
+    detailsArray.push({ name: "Return Since Inception", details: apiData["TTR-ReturnSinceInception"] || "N/A" });
+    
+    // Rolling Returns - Now accessing from fullData instead of apiData
+    detailsArray.push({ name: "Rolling Return Avg 1YR", details: fullData["Rolling Return Avg 1YR"] || "N/A" });
+    detailsArray.push({ name: "Rolling Return Min 1YR", details: fullData["Rolling Return Min 1YR"] || "N/A" });
+    detailsArray.push({ name: "Rolling Return Max 1YR", details: fullData["Rolling Return Max 1YR"] || "N/A" });
+    detailsArray.push({ name: "Rolling Return Avg 3YR", details: fullData["Rolling Return Avg 3YR"] || "N/A" });
+    detailsArray.push({ name: "Rolling Return Min 3YR", details: fullData["Rolling Return Min 3YR"] || "N/A" });
+    detailsArray.push({ name: "Rolling Return Max 3YR", details: fullData["Rolling Return Max 3YR"] || "N/A" });
+    detailsArray.push({ name: "Rolling Return Avg 5YR", details: fullData["Rolling Return Avg 5YR"] || "N/A" });
+    detailsArray.push({ name: "Rolling Return Min 5YR", details: fullData["Rolling Return Min 5YR"] || "N/A" });
+    detailsArray.push({ name: "Rolling Return Max 5YR", details: fullData["Rolling Return Max 5YR"] || "N/A" });
+    
+    // Portfolio Allocation
+    detailsArray.push({ name: "Asset Alloc Bond Net", details: apiData["AABRP-AssetAllocBondNet"] || "N/A" });
+    detailsArray.push({ name: "Asset Alloc Cash Net", details: apiData["AABRP-AssetAllocCashNet"] || "N/A" });
+    detailsArray.push({ name: "Asset Alloc Equity Net", details: apiData["AABRP-AssetAllocEquityNet"] || "N/A" });
+    detailsArray.push({ name: "Other Net", details: "N/A" }); // Not available in new API
+    
+    // Risk Measures
+    detailsArray.push({ name: "Standard Deviation 1 Year", details: apiData["RM-StdDev1Yr"] || "N/A" });
+    detailsArray.push({ name: "Sharpe Ratio 1 Year", details: apiData["RM-SharpeRatio1Yr"] || "N/A" });
+    
+    // Fund Details
+    detailsArray.push({ name: "Expense Ratio", details: apiData["ARF-InterimNetExpenseRatio"] || "N/A" });
+    detailsArray.push({ name: "Exit Load", details: apiData["PF-deferred_load_additional_details"] || "N/A" });
+    detailsArray.push({ name: "ISIN", details: apiData["FSCBI-ISIN"] || "N/A" });
+    detailsArray.push({ name: "AMFI Code", details: apiData["FSCBI-AMFICode"] || "N/A" });
+    
+    return detailsArray;
+  };
 
  // 1. Update the fetchFundDetails function
-const fetchFundDetails = async (fundId) => {
+ const fetchFundDetails = async (fundId) => {
   try {
     const response = await fetch(
       "https://dev.netrumusa.com/starkcapital/api-backend/get-isindetails-forcombinedsreach",
@@ -134,8 +135,8 @@ const fetchFundDetails = async (fundId) => {
 
     const data = await response.json();
     if (data?.status === "success" && data?.data) {
-      // Transform the flat API response into the expected details array format
-      const transformedDetails = transformApiResponseToDetails(data?.data?.api);
+      // Pass both api data and rolling returns data to transform function
+      const transformedDetails = transformApiResponseToDetails(data?.data?.api, data?.data);
       
       return {
         details: transformedDetails,
@@ -232,33 +233,16 @@ const fetchFundDetails = async (fundId) => {
         { key: "Trailing Return 3 Year", label: "3 Year Trailing" },
         { key: "Trailing Return 5 Year", label: "5 Year Trailing" },
         { key: "Return Since Inception", label: "Since Inception" },
-        // {
-        //   key: "Rolling Return Avg 0.08333333333333333YR",
-        //   label: "1 Year Avg Rolling",
-        // },
-        // {
-        //   key: "Rolling Return Max 0.08333333333333333YR",
-        //   label: "1 Year Max Rolling",
-        // },
-        // {
-        //   key: "Rolling Return Min 0.08333333333333333YR",
-        //   label: "1 Year Min Rolling",
-        // },
-        // { key: "Rolling Return Avg 0.25YR", label: "3 Year Avg Rolling" },
-        // { key: "Rolling Return Max 0.25YR", label: "3 Year Max Rolling" },
-        // { key: "Rolling Return Min 0.25YR", label: "3 Year Min Rolling" },
-        // {
-        //   key: "Rolling Return Avg 0.4166666666666667YR",
-        //   label: "5 Year Avg Rolling",
-        // },
-        // {
-        //   key: "Rolling Return Max 0.4166666666666667YR",
-        //   label: "5 Year Max Rolling",
-        // },
-        // {
-        //   key: "Rolling Return Min 0.4166666666666667YR",
-        //   label: "5 Year Min Rolling",
-        // },
+        // Uncomment these to show rolling returns
+        { key: "Rolling Return Avg 1YR", label: "1 Year Avg Rolling" },
+        { key: "Rolling Return Min 1YR", label: "1 Year Min Rolling" },
+        { key: "Rolling Return Max 1YR", label: "1 Year Max Rolling" },
+        { key: "Rolling Return Avg 3YR", label: "3 Year Avg Rolling" },
+        { key: "Rolling Return Min 3YR", label: "3 Year Min Rolling" },
+        { key: "Rolling Return Max 3YR", label: "3 Year Max Rolling" },
+        { key: "Rolling Return Avg 5YR", label: "5 Year Avg Rolling" },
+        { key: "Rolling Return Min 5YR", label: "5 Year Min Rolling" },
+        { key: "Rolling Return Max 5YR", label: "5 Year Max Rolling" },
       ],
     },
     portfolio: {
