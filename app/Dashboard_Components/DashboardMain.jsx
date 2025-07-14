@@ -840,11 +840,17 @@ export default function DashboardMain() {
                       ) : (
                         // Investment view axes and lines
                         <>
-                          <YAxis
+                          {/* <YAxis
                             yAxisId="left"
                             orientation="left"
                             tickFormatter={formatYAxis}
                             domain={["dataMin - 50000", "dataMax + 50000"]}
+                          /> */}
+                          <YAxis
+                            yAxisId="left"
+                            orientation="left"
+                            tickFormatter={formatYAxis}
+                            domain={[1400000, 1800000]}
                           />
                           <Tooltip
                             content={({ active, payload, label }) => {
@@ -1125,13 +1131,13 @@ export default function DashboardMain() {
                   className="grid grid-cols-7 bg-[#F5F5F5] text-left p-2 my-2 items-center rounded-lg gap-2"
                 >
                   <div className="text-sm text-gray-700">
-  <div
-    className="font-medium break-words"
-    title={row.fund_name}
-  >
-    {row.fund_name}
-  </div>
-</div>
+                    <div
+                      className="font-medium break-words"
+                      title={row.fund_name}
+                    >
+                      {row.fund_name}
+                    </div>
+                  </div>
                   {/* <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
                     {row.fund_name}
                   </div> */}

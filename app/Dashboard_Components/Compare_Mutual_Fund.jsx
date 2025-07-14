@@ -13,6 +13,7 @@ const MutualFundComparison = () => {
     overview: true,
     returns: true,
     portfolio: true,
+    marketCap: true,  // ADD THIS LINE
     riskMeasures: true,
     fundDetails: true,
   });
@@ -77,6 +78,7 @@ const MutualFundComparison = () => {
     detailsArray.push({ name: "Fund Name", details: apiData["FSCBI-FundLegalName"] || "N/A" });
     detailsArray.push({ name: "AUM (in Rs.)", details: apiData["FNA-AsOfOriginalReported"] || "N/A" });
     detailsArray.push({ name: "NAV Value", details: apiData["TS-DayEndNAV"] || "N/A" });
+    detailsArray.push({ name: "NAV Date", details: apiData["TS-DayEndNAVDate"] || "N/A" });
     
     // Returns
     detailsArray.push({ name: "Trailing Return 1 Month", details: apiData["TTR-Return1Mth"] || "N/A" });
@@ -102,9 +104,36 @@ const MutualFundComparison = () => {
     detailsArray.push({ name: "Asset Alloc Equity Net", details: apiData["AABRP-AssetAllocEquityNet"] || "N/A" });
     detailsArray.push({ name: "Other Net", details: "N/A" }); // Not available in new API
     
+    // Market Cap Breakdown - ADD THIS NEW SECTION
+    detailsArray.push({ name: "Large Cap Long", details: apiData["IMCBD-IndiaLargeCapLong"] || "N/A" });
+    detailsArray.push({ name: "Large Cap Net", details: apiData["IMCBD-IndiaLargeCapNet"] || "N/A" });
+    detailsArray.push({ name: "Large Cap Short", details: apiData["IMCBD-IndiaLargeCapShort"] || "N/A" });
+    detailsArray.push({ name: "Mid Cap Long", details: apiData["IMCBD-IndiaMidCapLong"] || "N/A" });
+    detailsArray.push({ name: "Mid Cap Net", details: apiData["IMCBD-IndiaMidCapNet"] || "N/A" });
+    detailsArray.push({ name: "Mid Cap Short", details: apiData["IMCBD-IndiaMidCapShort"] || "N/A" });
+    detailsArray.push({ name: "Small Cap Long", details: apiData["IMCBD-IndiaSmallCapLong"] || "N/A" });
+    detailsArray.push({ name: "Small Cap Net", details: apiData["IMCBD-IndiaSmallCapNet"] || "N/A" });
+    detailsArray.push({ name: "Small Cap Short", details: apiData["IMCBD-IndiaSmallCapShort"] || "N/A" });
+    
     // Risk Measures
     detailsArray.push({ name: "Standard Deviation 1 Year", details: apiData["RM-StdDev1Yr"] || "N/A" });
+    detailsArray.push({ name: "Standard Deviation 3 Year", details: apiData["RM-StdDev3Yr"] || "N/A" });
+    detailsArray.push({ name: "Standard Deviation 5 Year", details: apiData["RM-StdDev5Yr"] || "N/A" });
     detailsArray.push({ name: "Sharpe Ratio 1 Year", details: apiData["RM-SharpeRatio1Yr"] || "N/A" });
+    detailsArray.push({ name: "Sharpe Ratio 3 Year", details: apiData["RM-SharpeRatio3Yr"] || "N/A" });
+    detailsArray.push({ name: "Sharpe Ratio 5 Year", details: apiData["RM-SharpeRatio5Yr"] || "N/A" });
+    detailsArray.push({ name: "Capture Ratio Downside 1 Year", details: apiData["RMC-CaptureRatioDownside1Yr"] || "N/A" });
+    detailsArray.push({ name: "Capture Ratio Downside 3 Year", details: apiData["RMC-CaptureRatioDownside3Yr"] || "N/A" });
+    detailsArray.push({ name: "Capture Ratio Downside 5 Year", details: apiData["RMC-CaptureRatioDownside5Yr"] || "N/A" });
+    detailsArray.push({ name: "Capture Ratio Upside 1 Year", details: apiData["RMC-CaptureRatioUpside1Yr"] || "N/A" });
+    detailsArray.push({ name: "Capture Ratio Upside 3 Year", details: apiData["RMC-CaptureRatioUpside3Yr"] || "N/A" });
+    detailsArray.push({ name: "Capture Ratio Upside 5 Year", details: apiData["RMC-CaptureRatioUpside5Yr"] || "N/A" });
+    detailsArray.push({ name: "Alpha 1 Year", details: apiData["RMC-Alpha1Yr"] || "N/A" });
+    detailsArray.push({ name: "Alpha 3 Year", details: apiData["RMC-Alpha3Yr"] || "N/A" });
+    detailsArray.push({ name: "Alpha 5 Year", details: apiData["RMC-Alpha5Yr"] || "N/A" });
+    detailsArray.push({ name: "Beta 1 Year", details: apiData["RMC-Beta1Yr"] || "N/A" });
+    detailsArray.push({ name: "Beta 3 Year", details: apiData["RMC-Beta3Yr"] || "N/A" });
+    detailsArray.push({ name: "Beta 5 Year", details: apiData["RMC-Beta5Yr"] || "N/A" });
     
     // Fund Details
     detailsArray.push({ name: "Expense Ratio", details: apiData["ARF-InterimNetExpenseRatio"] || "N/A" });
@@ -223,6 +252,7 @@ const MutualFundComparison = () => {
         { key: "Fund Name", label: "Fund Name" },
         { key: "AUM (in Rs.)", label: "AUM" },
         { key: "NAV Value", label: "NAV" },
+        { key: "NAV Date", label: "NAV Date" },
       ],
     },
     returns: {
@@ -233,7 +263,6 @@ const MutualFundComparison = () => {
         { key: "Trailing Return 3 Year", label: "3 Year Trailing" },
         { key: "Trailing Return 5 Year", label: "5 Year Trailing" },
         { key: "Return Since Inception", label: "Since Inception" },
-        // Uncomment these to show rolling returns
         { key: "Rolling Return Avg 1YR", label: "1 Year Avg Rolling" },
         { key: "Rolling Return Min 1YR", label: "1 Year Min Rolling" },
         { key: "Rolling Return Max 1YR", label: "1 Year Max Rolling" },
@@ -254,11 +283,42 @@ const MutualFundComparison = () => {
         { key: "Other Net", label: "Others" },
       ],
     },
+    // ADD THIS NEW SECTION
+    marketCap: {
+      title: "Market Cap Breakdown",
+      fields: [
+        { key: "Large Cap Long", label: "Large Cap Long" },
+        { key: "Large Cap Net", label: "Large Cap Net" },
+        { key: "Large Cap Short", label: "Large Cap Short" },
+        { key: "Mid Cap Long", label: "Mid Cap Long" },
+        { key: "Mid Cap Net", label: "Mid Cap Net" },
+        { key: "Mid Cap Short", label: "Mid Cap Short" },
+        { key: "Small Cap Long", label: "Small Cap Long" },
+        { key: "Small Cap Net", label: "Small Cap Net" },
+        { key: "Small Cap Short", label: "Small Cap Short" },
+      ],
+    },
     riskMeasures: {
       title: "Risk Measures",
       fields: [
         { key: "Standard Deviation 1 Year", label: "Standard Deviation (1Y)" },
+        { key: "Standard Deviation 3 Year", label: "Standard Deviation (3Y)" },
+        { key: "Standard Deviation 5 Year", label: "Standard Deviation (5Y)" },
         { key: "Sharpe Ratio 1 Year", label: "Sharpe Ratio (1Y)" },
+        { key: "Sharpe Ratio 3 Year", label: "Sharpe Ratio (3Y)" },
+        { key: "Sharpe Ratio 5 Year", label: "Sharpe Ratio (5Y)" },
+        { key: "Capture Ratio Downside 1 Year", label: "Downside Capture Ratio (1Y)" },
+        { key: "Capture Ratio Downside 3 Year", label: "Downside Capture Ratio (3Y)" },
+        { key: "Capture Ratio Downside 5 Year", label: "Downside Capture Ratio (5Y)" },
+        { key: "Capture Ratio Upside 1 Year", label: "Upside Capture Ratio (1Y)" },
+        { key: "Capture Ratio Upside 3 Year", label: "Upside Capture Ratio (3Y)" },
+        { key: "Capture Ratio Upside 5 Year", label: "Upside Capture Ratio (5Y)" },
+        { key: "Alpha 1 Year", label: "Alpha (1Y)" },
+        { key: "Alpha 3 Year", label: "Alpha (3Y)" },
+        { key: "Alpha 5 Year", label: "Alpha (5Y)" },
+        { key: "Beta 1 Year", label: "Beta (1Y)" },
+        { key: "Beta 3 Year", label: "Beta (3Y)" },
+        { key: "Beta 5 Year", label: "Beta (5Y)" },
       ],
     },
     fundDetails: {
@@ -274,22 +334,29 @@ const MutualFundComparison = () => {
 
   const formatValue = (value, fieldKey) => {
     if (value === "N/A" || value === undefined || value === null) return "N/A";
-
+  
     try {
       const numValue = parseFloat(value);
-
+  
       if (isNaN(numValue)) return value;
-
+  
       if (
         fieldKey.includes("Return") ||
         fieldKey.includes("XIRR") ||
-        fieldKey === "Expense Ratio"
+        fieldKey === "Expense Ratio" ||
+        fieldKey.includes("Cap") ||  // for market cap fields
+        fieldKey.includes("Alpha") ||
+        fieldKey.includes("Capture Ratio")  // for capture ratio fields
       ) {
         return `${numValue.toFixed(2)}%`;
       } else if (fieldKey === "AUM (in Rs.)") {
         return `₹${(numValue / 10000000).toFixed(2)} Cr`;
+      } else if (fieldKey.includes("Standard Deviation")) {
+        return `${numValue.toFixed(3)}`;
+      } else if (fieldKey.includes("Sharpe Ratio") || fieldKey.includes("Beta")) {
+        return `${numValue.toFixed(3)}`;
       }
-
+  
       return value;
     } catch (error) {
       return value;
