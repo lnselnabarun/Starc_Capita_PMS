@@ -300,8 +300,6 @@ export default function DashboardMain() {
     initializeData();
   }, []);
 
-  console.log(PortfolioData, "PortfolioDataPortfolioData");
-
   useEffect(() => {
     GetNewsData();
   }, []);
@@ -491,8 +489,6 @@ export default function DashboardMain() {
         transaction_type: formData?.transactionType,
       };
 
-      console.log("Updating data:", requestBody);
-
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/update-user-portfoliosip",
         {
@@ -584,7 +580,7 @@ export default function DashboardMain() {
                 {Number(payload[1]?.value || 0).toLocaleString("en-IN")}
               </p>
               <p className="text-yellow-600">
-                Sensex: {Number(payload[2]?.value || 0).toLocaleString("en-IN")}
+                BSE500: {Number(payload[2]?.value || 0).toLocaleString("en-IN")}
               </p>
             </>
           )}
@@ -880,7 +876,7 @@ export default function DashboardMain() {
                                       ).toLocaleString("en-IN")}
                                     </p>
                                     <p className="text-yellow-600">
-                                      Sensex:{" "}
+                                      BSE500:{" "}
                                       {Number(
                                         payload[2]?.value || 0
                                       ).toLocaleString("en-IN")}
@@ -918,7 +914,7 @@ export default function DashboardMain() {
                             yAxisId="left"
                             type="monotone"
                             dataKey="sensex"
-                            name="Sensex"
+                            name="BSE500"
                             stroke="#f59e0b"
                             strokeWidth={2}
                             dot={{ r: 3 }}
@@ -954,61 +950,56 @@ export default function DashboardMain() {
               {/* Desktop Table */}
               <div className="hidden md:block">
                 {/* Table Header */}
-                <div className="grid grid-cols-4 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-200 items-center">
-                  <div className="text-xs font-semibold uppercase tracking-wide text-gray-600">
-                    Date
-                  </div>
-                  <div className="text-xs font-semibold uppercase tracking-wide text-gray-600">
-                    Fund Name
-                  </div>
-                  <div className="text-xs font-semibold uppercase tracking-wide text-gray-600">
-                    Type
-                  </div>
-                  <div className="text-xs font-semibold uppercase tracking-wide text-gray-600 text-right">
-                    Amount
-                  </div>
-                </div>
+                <div className="grid grid-cols-12 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-200 items-center">
+  <div className="col-span-2 text-xs font-semibold uppercase tracking-wide text-gray-600">
+    Date
+  </div>
+  <div className="col-span-6 text-xs font-semibold uppercase tracking-wide text-gray-600">
+    Fund Name
+  </div>
+  <div className="col-span-2 text-xs font-semibold uppercase tracking-wide text-gray-600">
+    Type
+  </div>
+  <div className="col-span-2 text-xs font-semibold uppercase tracking-wide text-gray-600 text-right">
+    Amount
+  </div>
+</div>
 
                 {/* Table Body */}
                 <div className="divide-y divide-gray-200">
                   {RecentTransactions.map((row, index) => (
                     <div
-                      key={index}
-                      className="grid grid-cols-4 gap-4 px-6 py-4 hover:bg-gray-50 transition-colors duration-150 items-center"
-                    >
-                      <div className="text-sm font-medium text-gray-900">
-                        {new Date(row.transaction_date).toLocaleDateString(
-                          "en-IN",
-                          {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          }
-                        )}
-                      </div>
-                      <div className="text-sm text-gray-700">
-                        <div className="text-sm text-gray-700">
-                          <div
-                            className="font-medium break-words"
-                            title={row.scheme}
-                          >
-                            {row.scheme}
-                          </div>
-                        </div>
-                      </div>
-                      <div>
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTypeColor(
-                            row.transaction_type
-                          )}`}
-                        >
-                          {row.transaction_type}
-                        </span>
-                      </div>
-                      <div className="text-sm font-semibold text-gray-900 text-right">
-                        {row.amount}
+                    key={index}
+                    className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50 transition-colors duration-150 items-center"
+                  >
+                    <div className="col-span-2 text-sm font-medium text-gray-900">
+                      {new Date(row.transaction_date).toLocaleDateString("en-IN", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </div>
+                    <div className="col-span-6 text-sm text-gray-700">
+                      <div
+                        className="font-medium line-clamp-2"
+                        title={row.scheme}
+                      >
+                        {row.scheme}
                       </div>
                     </div>
+                    <div className="col-span-2">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTypeColor(
+                          row.transaction_type
+                        )}`}
+                      >
+                        {row.transaction_type}
+                      </span>
+                    </div>
+                    <div className="col-span-2 text-sm font-semibold text-gray-900 text-right">
+                      {row.amount}
+                    </div>
+                  </div>
                   ))}
                 </div>
               </div>

@@ -397,7 +397,6 @@ const AMCDetails = ({ params }) => {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                            {" "}
                             {items?.["RMP-CaptureRatioDownside1Yr"] || "N/A"}
                           </div>
                         </td>
@@ -406,7 +405,6 @@ const AMCDetails = ({ params }) => {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                            {" "}
                             {items?.["RMP-Beta1Yr"] || "N/A"}
                           </div>
                         </td>
@@ -415,7 +413,6 @@ const AMCDetails = ({ params }) => {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                            {" "}
                             {items?.["RMP-Alpha1Yr"] || "N/A"}
                           </div>
                         </td>
@@ -434,7 +431,6 @@ const AMCDetails = ({ params }) => {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                            {" "}
                             {items?.[
                               "Rolling Return Avg 0.08333333333333333YR"
                             ] || "N/A"}
@@ -445,7 +441,6 @@ const AMCDetails = ({ params }) => {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                            {" "}
                             {items?.[
                               "Rolling Return Min 0.08333333333333333YR"
                             ] || "N/A"}
@@ -480,7 +475,6 @@ const AMCDetails = ({ params }) => {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                            {" "}
                             {items?.["DP-Return1Yr"] || "N/A"}
                           </div>
                         </td>

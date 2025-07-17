@@ -13,7 +13,7 @@ const MutualFundComparison = () => {
     overview: true,
     returns: true,
     portfolio: true,
-    marketCap: true,  // ADD THIS LINE
+    marketCap: true, // ADD THIS LINE
     riskMeasures: true,
     fundDetails: true,
   });
@@ -25,37 +25,37 @@ const MutualFundComparison = () => {
   };
 
   const handleAddFund = async (fund) => {
-  const isAlreadySelected = selectedFunds?.some(
-    (selectedFund) => selectedFund?.id === fund?.id
-  );
+    const isAlreadySelected = selectedFunds?.some(
+      (selectedFund) => selectedFund?.id === fund?.id
+    );
 
-  if (!isAlreadySelected && selectedFunds?.length < 4) {
-    setIsLoading(true);
+    if (!isAlreadySelected && selectedFunds?.length < 4) {
+      setIsLoading(true);
 
-    try {
-      const fundDetails = await fetchFundDetails(fund);
+      try {
+        const fundDetails = await fetchFundDetails(fund);
 
-      if (fundDetails) {
-        setSelectedFunds((prevFunds) => [
-          ...prevFunds,
-          {
-            ...fund,
-            details: fundDetails.details || [],
-            folio: fundDetails.folio,
-            currentValue: fundDetails.currentValue,
-            currentXIRR: fundDetails.currentXIRR,
-          },
-        ]);
+        if (fundDetails) {
+          setSelectedFunds((prevFunds) => [
+            ...prevFunds,
+            {
+              ...fund,
+              details: fundDetails.details || [],
+              folio: fundDetails.folio,
+              currentValue: fundDetails.currentValue,
+              currentXIRR: fundDetails.currentXIRR,
+            },
+          ]);
+        }
+      } catch (error) {
+        console.error("Error adding fund:", error);
+      } finally {
+        setSearchQuery("");
+        setShowSearchResults(false);
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error adding fund:", error);
-    } finally {
-      setSearchQuery("");
-      setShowSearchResults(false);
-      setIsLoading(false);
     }
-  }
-};
+  };
 
   const findDetailValue = (fund, keyName) => {
     if (!fund || !Array.isArray(fund.details)) return "N/A";
@@ -71,118 +71,277 @@ const MutualFundComparison = () => {
   const transformApiResponseToDetails = (apiData, fullData) => {
     console.log(apiData, "apiDataapiData");
     console.log(fullData, "fullData with rolling returns");
-    
+
     const detailsArray = [];
-    
+
     // Fund Overview
-    detailsArray.push({ name: "Fund Name", details: apiData["FSCBI-FundLegalName"] || "N/A" });
-    detailsArray.push({ name: "AUM (in Rs.)", details: apiData["FNA-AsOfOriginalReported"] || "N/A" });
-    detailsArray.push({ name: "NAV Value", details: apiData["TS-DayEndNAV"] || "N/A" });
-    detailsArray.push({ name: "NAV Date", details: apiData["TS-DayEndNAVDate"] || "N/A" });
-    
+    detailsArray.push({
+      name: "Fund Name",
+      details: apiData["FSCBI-FundLegalName"] || "N/A",
+    });
+    detailsArray.push({
+      name: "AUM (in Rs.)",
+      details: apiData["FNA-AsOfOriginalReported"] || "N/A",
+    });
+    detailsArray.push({
+      name: "NAV Value",
+      details: apiData["TS-DayEndNAV"] || "N/A",
+    });
+    detailsArray.push({
+      name: "NAV Date",
+      details: apiData["TS-DayEndNAVDate"] || "N/A",
+    });
+
     // Returns
-    detailsArray.push({ name: "Trailing Return 1 Month", details: apiData["TTR-Return1Mth"] || "N/A" });
-    detailsArray.push({ name: "Trailing Return 1 Year", details: apiData["TTR-Return1Yr"] || "N/A" });
-    detailsArray.push({ name: "Trailing Return 3 Year", details: apiData["TTR-Return3Yr"] || "N/A" });
-    detailsArray.push({ name: "Trailing Return 5 Year", details: apiData["TTR-Return5Yr"] || "N/A" });
-    detailsArray.push({ name: "Return Since Inception", details: apiData["TTR-ReturnSinceInception"] || "N/A" });
-    
+    detailsArray.push({
+      name: "Trailing Return 1 Month",
+      details: apiData["TTR-Return1Mth"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Trailing Return 1 Year",
+      details: apiData["TTR-Return1Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Trailing Return 3 Year",
+      details: apiData["TTR-Return3Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Trailing Return 5 Year",
+      details: apiData["TTR-Return5Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Return Since Inception",
+      details: apiData["TTR-ReturnSinceInception"] || "N/A",
+    });
+
     // Rolling Returns - Now accessing from fullData instead of apiData
-    detailsArray.push({ name: "Rolling Return Avg 1YR", details: fullData["Rolling Return Avg 1YR"] || "N/A" });
-    detailsArray.push({ name: "Rolling Return Min 1YR", details: fullData["Rolling Return Min 1YR"] || "N/A" });
-    detailsArray.push({ name: "Rolling Return Max 1YR", details: fullData["Rolling Return Max 1YR"] || "N/A" });
-    detailsArray.push({ name: "Rolling Return Avg 3YR", details: fullData["Rolling Return Avg 3YR"] || "N/A" });
-    detailsArray.push({ name: "Rolling Return Min 3YR", details: fullData["Rolling Return Min 3YR"] || "N/A" });
-    detailsArray.push({ name: "Rolling Return Max 3YR", details: fullData["Rolling Return Max 3YR"] || "N/A" });
-    detailsArray.push({ name: "Rolling Return Avg 5YR", details: fullData["Rolling Return Avg 5YR"] || "N/A" });
-    detailsArray.push({ name: "Rolling Return Min 5YR", details: fullData["Rolling Return Min 5YR"] || "N/A" });
-    detailsArray.push({ name: "Rolling Return Max 5YR", details: fullData["Rolling Return Max 5YR"] || "N/A" });
-    
+    detailsArray.push({
+      name: "Rolling Return Avg 1YR",
+      details: fullData["Rolling Return Avg 1YR"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Rolling Return Min 1YR",
+      details: fullData["Rolling Return Min 1YR"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Rolling Return Max 1YR",
+      details: fullData["Rolling Return Max 1YR"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Rolling Return Avg 3YR",
+      details: fullData["Rolling Return Avg 3YR"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Rolling Return Min 3YR",
+      details: fullData["Rolling Return Min 3YR"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Rolling Return Max 3YR",
+      details: fullData["Rolling Return Max 3YR"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Rolling Return Avg 5YR",
+      details: fullData["Rolling Return Avg 5YR"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Rolling Return Min 5YR",
+      details: fullData["Rolling Return Min 5YR"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Rolling Return Max 5YR",
+      details: fullData["Rolling Return Max 5YR"] || "N/A",
+    });
+
     // Portfolio Allocation
-    detailsArray.push({ name: "Asset Alloc Bond Net", details: apiData["AABRP-AssetAllocBondNet"] || "N/A" });
-    detailsArray.push({ name: "Asset Alloc Cash Net", details: apiData["AABRP-AssetAllocCashNet"] || "N/A" });
-    detailsArray.push({ name: "Asset Alloc Equity Net", details: apiData["AABRP-AssetAllocEquityNet"] || "N/A" });
+    detailsArray.push({
+      name: "Asset Alloc Bond Net",
+      details: apiData["AABRP-AssetAllocBondNet"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Asset Alloc Cash Net",
+      details: apiData["AABRP-AssetAllocCashNet"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Asset Alloc Equity Net",
+      details: apiData["AABRP-AssetAllocEquityNet"] || "N/A",
+    });
     detailsArray.push({ name: "Other Net", details: "N/A" }); // Not available in new API
-    
+
     // Market Cap Breakdown - ADD THIS NEW SECTION
-    detailsArray.push({ name: "Large Cap Long", details: apiData["IMCBD-IndiaLargeCapLong"] || "N/A" });
-    detailsArray.push({ name: "Large Cap Net", details: apiData["IMCBD-IndiaLargeCapNet"] || "N/A" });
-    detailsArray.push({ name: "Large Cap Short", details: apiData["IMCBD-IndiaLargeCapShort"] || "N/A" });
-    detailsArray.push({ name: "Mid Cap Long", details: apiData["IMCBD-IndiaMidCapLong"] || "N/A" });
-    detailsArray.push({ name: "Mid Cap Net", details: apiData["IMCBD-IndiaMidCapNet"] || "N/A" });
-    detailsArray.push({ name: "Mid Cap Short", details: apiData["IMCBD-IndiaMidCapShort"] || "N/A" });
-    detailsArray.push({ name: "Small Cap Long", details: apiData["IMCBD-IndiaSmallCapLong"] || "N/A" });
-    detailsArray.push({ name: "Small Cap Net", details: apiData["IMCBD-IndiaSmallCapNet"] || "N/A" });
-    detailsArray.push({ name: "Small Cap Short", details: apiData["IMCBD-IndiaSmallCapShort"] || "N/A" });
-    
+    detailsArray.push({
+      name: "Large Cap Long",
+      details: apiData["IMCBD-IndiaLargeCapLong"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Large Cap Net",
+      details: apiData["IMCBD-IndiaLargeCapNet"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Large Cap Short",
+      details: apiData["IMCBD-IndiaLargeCapShort"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Mid Cap Long",
+      details: apiData["IMCBD-IndiaMidCapLong"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Mid Cap Net",
+      details: apiData["IMCBD-IndiaMidCapNet"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Mid Cap Short",
+      details: apiData["IMCBD-IndiaMidCapShort"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Small Cap Long",
+      details: apiData["IMCBD-IndiaSmallCapLong"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Small Cap Net",
+      details: apiData["IMCBD-IndiaSmallCapNet"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Small Cap Short",
+      details: apiData["IMCBD-IndiaSmallCapShort"] || "N/A",
+    });
+
     // Risk Measures
-    detailsArray.push({ name: "Standard Deviation 1 Year", details: apiData["RM-StdDev1Yr"] || "N/A" });
-    detailsArray.push({ name: "Standard Deviation 3 Year", details: apiData["RM-StdDev3Yr"] || "N/A" });
-    detailsArray.push({ name: "Standard Deviation 5 Year", details: apiData["RM-StdDev5Yr"] || "N/A" });
-    detailsArray.push({ name: "Sharpe Ratio 1 Year", details: apiData["RM-SharpeRatio1Yr"] || "N/A" });
-    detailsArray.push({ name: "Sharpe Ratio 3 Year", details: apiData["RM-SharpeRatio3Yr"] || "N/A" });
-    detailsArray.push({ name: "Sharpe Ratio 5 Year", details: apiData["RM-SharpeRatio5Yr"] || "N/A" });
-    detailsArray.push({ name: "Capture Ratio Downside 1 Year", details: apiData["RMC-CaptureRatioDownside1Yr"] || "N/A" });
-    detailsArray.push({ name: "Capture Ratio Downside 3 Year", details: apiData["RMC-CaptureRatioDownside3Yr"] || "N/A" });
-    detailsArray.push({ name: "Capture Ratio Downside 5 Year", details: apiData["RMC-CaptureRatioDownside5Yr"] || "N/A" });
-    detailsArray.push({ name: "Capture Ratio Upside 1 Year", details: apiData["RMC-CaptureRatioUpside1Yr"] || "N/A" });
-    detailsArray.push({ name: "Capture Ratio Upside 3 Year", details: apiData["RMC-CaptureRatioUpside3Yr"] || "N/A" });
-    detailsArray.push({ name: "Capture Ratio Upside 5 Year", details: apiData["RMC-CaptureRatioUpside5Yr"] || "N/A" });
-    detailsArray.push({ name: "Alpha 1 Year", details: apiData["RMC-Alpha1Yr"] || "N/A" });
-    detailsArray.push({ name: "Alpha 3 Year", details: apiData["RMC-Alpha3Yr"] || "N/A" });
-    detailsArray.push({ name: "Alpha 5 Year", details: apiData["RMC-Alpha5Yr"] || "N/A" });
-    detailsArray.push({ name: "Beta 1 Year", details: apiData["RMC-Beta1Yr"] || "N/A" });
-    detailsArray.push({ name: "Beta 3 Year", details: apiData["RMC-Beta3Yr"] || "N/A" });
-    detailsArray.push({ name: "Beta 5 Year", details: apiData["RMC-Beta5Yr"] || "N/A" });
-    
+    detailsArray.push({
+      name: "Standard Deviation 1 Year",
+      details: apiData["RM-StdDev1Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Standard Deviation 3 Year",
+      details: apiData["RM-StdDev3Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Standard Deviation 5 Year",
+      details: apiData["RM-StdDev5Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Sharpe Ratio 1 Year",
+      details: apiData["RM-SharpeRatio1Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Sharpe Ratio 3 Year",
+      details: apiData["RM-SharpeRatio3Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Sharpe Ratio 5 Year",
+      details: apiData["RM-SharpeRatio5Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Capture Ratio Downside 1 Year",
+      details: apiData["RMC-CaptureRatioDownside1Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Capture Ratio Downside 3 Year",
+      details: apiData["RMC-CaptureRatioDownside3Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Capture Ratio Downside 5 Year",
+      details: apiData["RMC-CaptureRatioDownside5Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Capture Ratio Upside 1 Year",
+      details: apiData["RMC-CaptureRatioUpside1Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Capture Ratio Upside 3 Year",
+      details: apiData["RMC-CaptureRatioUpside3Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Capture Ratio Upside 5 Year",
+      details: apiData["RMC-CaptureRatioUpside5Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Alpha 1 Year",
+      details: apiData["RMC-Alpha1Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Alpha 3 Year",
+      details: apiData["RMC-Alpha3Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Alpha 5 Year",
+      details: apiData["RMC-Alpha5Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Beta 1 Year",
+      details: apiData["RMC-Beta1Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Beta 3 Year",
+      details: apiData["RMC-Beta3Yr"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Beta 5 Year",
+      details: apiData["RMC-Beta5Yr"] || "N/A",
+    });
+
     // Fund Details
-    detailsArray.push({ name: "Expense Ratio", details: apiData["ARF-InterimNetExpenseRatio"] || "N/A" });
-    detailsArray.push({ name: "Exit Load", details: apiData["PF-deferred_load_additional_details"] || "N/A" });
-    detailsArray.push({ name: "ISIN", details: apiData["FSCBI-ISIN"] || "N/A" });
-    detailsArray.push({ name: "AMFI Code", details: apiData["FSCBI-AMFICode"] || "N/A" });
-    
+    detailsArray.push({
+      name: "Expense Ratio",
+      details: apiData["ARF-InterimNetExpenseRatio"] || "N/A",
+    });
+    detailsArray.push({
+      name: "Exit Load",
+      details: apiData["PF-deferred_load_additional_details"] || "N/A",
+    });
+    detailsArray.push({
+      name: "ISIN",
+      details: apiData["FSCBI-ISIN"] || "N/A",
+    });
+    detailsArray.push({
+      name: "AMFI Code",
+      details: apiData["FSCBI-AMFICode"] || "N/A",
+    });
+
     return detailsArray;
   };
 
- // 1. Update the fetchFundDetails function
- const fetchFundDetails = async (fundId) => {
-  try {
-    const response = await fetch(
-      "https://dev.netrumusa.com/starkcapital/api-backend/get-isindetails-forcombinedsreach",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ isin: fundId?.FSCBI_ISIN.toString() }),
+  // 1. Update the fetchFundDetails function
+  const fetchFundDetails = async (fundId) => {
+    try {
+      const response = await fetch(
+        "https://dev.netrumusa.com/starkcapital/api-backend/get-isindetails-forcombinedsreach",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ isin: fundId?.FSCBI_ISIN.toString() }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    );
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+      const data = await response.json();
+      if (data?.status === "success" && data?.data) {
+        // Pass both api data and rolling returns data to transform function
+        const transformedDetails = transformApiResponseToDetails(
+          data?.data?.api,
+          data?.data
+        );
 
-    const data = await response.json();
-    if (data?.status === "success" && data?.data) {
-      // Pass both api data and rolling returns data to transform function
-      const transformedDetails = transformApiResponseToDetails(data?.data?.api, data?.data);
-      
-      return {
-        details: transformedDetails,
-        folio: data.data.folio || null,
-        currentValue: data.data.currentValue || null,
-        currentXIRR: data.data.currentXIRR || null,
-      };
-    } else {
+        return {
+          details: transformedDetails,
+          folio: data.data.folio || null,
+          currentValue: data.data.currentValue || null,
+          currentXIRR: data.data.currentXIRR || null,
+        };
+      } else {
+        // localStorage.clear();
+        // router.push("/");
+      }
+    } catch (error) {
+      console.error("Error fetching fund details:", error);
       // localStorage.clear();
-      // router.push("/");
+      //     router.push("/");
     }
-  } catch (error) {
-    console.error("Error fetching fund details:", error);
-    // localStorage.clear();
-    //     router.push("/");
-  }
-};
+  };
 
   const fetchSearchResults = async (query) => {
     if (!query || query.length < 2) {
@@ -209,10 +368,8 @@ const MutualFundComparison = () => {
 
       const data = await response.json();
 
-      console.log(data?.data, "formattedResultsformattedResults")
+      console.log(data?.data, "formattedResultsformattedResults");
       if (data?.status === "success") {
-  
-
         setSearchResults(data?.data);
       } else {
         setSearchResults([]);
@@ -307,12 +464,30 @@ const MutualFundComparison = () => {
         { key: "Sharpe Ratio 1 Year", label: "Sharpe Ratio (1Y)" },
         { key: "Sharpe Ratio 3 Year", label: "Sharpe Ratio (3Y)" },
         { key: "Sharpe Ratio 5 Year", label: "Sharpe Ratio (5Y)" },
-        { key: "Capture Ratio Downside 1 Year", label: "Downside Capture Ratio (1Y)" },
-        { key: "Capture Ratio Downside 3 Year", label: "Downside Capture Ratio (3Y)" },
-        { key: "Capture Ratio Downside 5 Year", label: "Downside Capture Ratio (5Y)" },
-        { key: "Capture Ratio Upside 1 Year", label: "Upside Capture Ratio (1Y)" },
-        { key: "Capture Ratio Upside 3 Year", label: "Upside Capture Ratio (3Y)" },
-        { key: "Capture Ratio Upside 5 Year", label: "Upside Capture Ratio (5Y)" },
+        {
+          key: "Capture Ratio Downside 1 Year",
+          label: "Downside Capture Ratio (1Y)",
+        },
+        {
+          key: "Capture Ratio Downside 3 Year",
+          label: "Downside Capture Ratio (3Y)",
+        },
+        {
+          key: "Capture Ratio Downside 5 Year",
+          label: "Downside Capture Ratio (5Y)",
+        },
+        {
+          key: "Capture Ratio Upside 1 Year",
+          label: "Upside Capture Ratio (1Y)",
+        },
+        {
+          key: "Capture Ratio Upside 3 Year",
+          label: "Upside Capture Ratio (3Y)",
+        },
+        {
+          key: "Capture Ratio Upside 5 Year",
+          label: "Upside Capture Ratio (5Y)",
+        },
         { key: "Alpha 1 Year", label: "Alpha (1Y)" },
         { key: "Alpha 3 Year", label: "Alpha (3Y)" },
         { key: "Alpha 5 Year", label: "Alpha (5Y)" },
@@ -334,29 +509,32 @@ const MutualFundComparison = () => {
 
   const formatValue = (value, fieldKey) => {
     if (value === "N/A" || value === undefined || value === null) return "N/A";
-  
+
     try {
       const numValue = parseFloat(value);
-  
+
       if (isNaN(numValue)) return value;
-  
+
       if (
         fieldKey.includes("Return") ||
         fieldKey.includes("XIRR") ||
         fieldKey === "Expense Ratio" ||
-        fieldKey.includes("Cap") ||  // for market cap fields
+        fieldKey.includes("Cap") || // for market cap fields
         fieldKey.includes("Alpha") ||
-        fieldKey.includes("Capture Ratio")  // for capture ratio fields
+        fieldKey.includes("Capture Ratio") // for capture ratio fields
       ) {
         return `${numValue.toFixed(2)}%`;
       } else if (fieldKey === "AUM (in Rs.)") {
         return `₹${(numValue / 10000000).toFixed(2)} Cr`;
       } else if (fieldKey.includes("Standard Deviation")) {
         return `${numValue.toFixed(3)}`;
-      } else if (fieldKey.includes("Sharpe Ratio") || fieldKey.includes("Beta")) {
+      } else if (
+        fieldKey.includes("Sharpe Ratio") ||
+        fieldKey.includes("Beta")
+      ) {
         return `${numValue.toFixed(3)}`;
       }
-  
+
       return value;
     } catch (error) {
       return value;
@@ -375,7 +553,7 @@ const MutualFundComparison = () => {
               key={fund.id}
               className="px-4 py-3 bg-gray-50 text-left text-sm font-semibold text-gray-700 border-b border-gray-200"
             >
-              {fund?.['FSCBI_LegalName'] || "Unknown Fund"}
+              {fund?.["FSCBI_LegalName"] || "Unknown Fund"}
             </th>
           ))}
         </tr>
@@ -434,24 +612,22 @@ const MutualFundComparison = () => {
                 ) : searchResults.length > 0 ? (
                   searchResults.map((fund) => (
                     <>
-
-                      {fund?.FSCBI_ISIN !== null ? <div
-                        key={fund.id}
-                        className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
-                        onClick={() => {
-                          handleAddFund(fund);
-                        }}
-                      >
-                        <div className="font-medium text-gray-800">
-                          {fund.FSCBI_LegalName}
+                      {fund?.FSCBI_ISIN !== null ? (
+                        <div
+                          key={fund.id}
+                          className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
+                          onClick={() => {
+                            handleAddFund(fund);
+                          }}
+                        >
+                          <div className="font-medium text-gray-800">
+                            {fund.FSCBI_LegalName}
+                          </div>
+                          <div className="text-sm text-gray-500 mt-1">
+                            {fund.FSCBI_ProviderCompanyName}
+                          </div>
                         </div>
-                        <div className="text-sm text-gray-500 mt-1">
-                          {fund.FSCBI_ProviderCompanyName}
-                        </div>
-
-                      </div> : null}
-
-
+                      ) : null}
                     </>
                   ))
                 ) : searchQuery.length > 0 ? (
@@ -473,8 +649,12 @@ const MutualFundComparison = () => {
               >
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <h3 className="font-medium text-gray-800">  {fund?.['FSCBI_LegalName'] || "Unknown Fund"}</h3>
-                    <span className="text-sm text-gray-500">{fund?.['FSCBI_ProviderCompanyName'] || "Unknown Fund"}</span>
+                    <h3 className="font-medium text-gray-800">
+                      {fund?.["FSCBI_LegalName"] || "Unknown Fund"}
+                    </h3>
+                    <span className="text-sm text-gray-500">
+                      {fund?.["FSCBI_ProviderCompanyName"] || "Unknown Fund"}
+                    </span>
                   </div>
                   <button
                     onClick={() => handleRemoveFund(fund?.id)}
