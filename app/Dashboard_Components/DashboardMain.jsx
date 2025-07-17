@@ -580,7 +580,7 @@ export default function DashboardMain() {
                 {Number(payload[1]?.value || 0).toLocaleString("en-IN")}
               </p>
               <p className="text-yellow-600">
-                BSE500: {Number(payload[2]?.value || 0).toLocaleString("en-IN")}
+              Sensex: {Number(payload[2]?.value || 0).toLocaleString("en-IN")}
               </p>
             </>
           )}
@@ -876,7 +876,7 @@ export default function DashboardMain() {
                                       ).toLocaleString("en-IN")}
                                     </p>
                                     <p className="text-yellow-600">
-                                      BSE500:{" "}
+                                    Sensex:{" "}
                                       {Number(
                                         payload[2]?.value || 0
                                       ).toLocaleString("en-IN")}
@@ -914,7 +914,7 @@ export default function DashboardMain() {
                             yAxisId="left"
                             type="monotone"
                             dataKey="sensex"
-                            name="BSE500"
+                            name="sensex"
                             stroke="#f59e0b"
                             strokeWidth={2}
                             dot={{ r: 3 }}
