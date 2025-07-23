@@ -120,7 +120,7 @@ const PDFUploadPage = () => {
       <div className="max-w-xl mx-auto">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-fuchsia-900">
-            UPLOAD MF CAMS PDF
+            UPLOAD STOCK PDF
           </h2>
           <p className="mt-2 text-gray-600">With your PDF password</p>
         </div>
@@ -187,14 +187,14 @@ const PDFUploadPage = () => {
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-700"
               >
-               CAMS PDF PASWORD
+               STOCK PDF PASWORD
               </label>
               <div className="mt-1 relative">
                 <input
                   type="password"
                   id="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e?.target?.value)}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-fuchsia-500 focus:border-fuchsia-500"
                   placeholder="Enter pdf password"
                 />

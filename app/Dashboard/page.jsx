@@ -14,7 +14,7 @@ import DirectStockDashboard from "../Dashboard_Components/DirectStockDashboard";
 import Compare_Mutual_Fund from "../Dashboard_Components/Compare_Mutual_Fund";
 import DebtMutualFund from "../Dashboard_Components/DebtMutualFund";
 import AMCGrid from "../Dashboard_Components/AMCGrid";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
@@ -38,6 +38,9 @@ export default function Dashboard() {
     "Comparison",
     "AMC",
   ];
+
+  // Add state for upload popup
+  const [showUploadOptions, setShowUploadOptions] = useState(false);
 
   // Initialize state from localStorage or default to 0
   const [activeIndex, setActiveIndex] = useState(() => {
@@ -78,28 +81,72 @@ export default function Dashboard() {
     setActiveIndexSecond(index);
   };
 
+  // Updated UploadButton component
   const UploadButton = () => {
-    const handleFileUpload = (event) => {
+    const handleUploadMutualFund = () => {
       route.push("/UploadPdf");
+      setShowUploadOptions(false);
+    };
+
+    const handleUploadStockData = () => {
+      // TODO: Add your stock data upload page route here
+      route.push("/UploadStockData"); // Replace with your actual route
+      setShowUploadOptions(false);
+    };
+
+    const toggleUploadOptions = () => {
+      setShowUploadOptions(!showUploadOptions);
     };
 
     return (
-      <div
-        onClick={() => handleFileUpload()}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-8 md:right-12 lg:bottom-12 lg:right-24 z-50 flex flex-col items-center"
-      >
-        <label
-          htmlFor="cams-upload"
-          className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-[#5E2751] hover:bg-[#4a1f40] text-white rounded-full shadow-lg cursor-pointer transition-all duration-200 hover:shadow-xl"
+      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-8 md:right-12 lg:bottom-12 lg:right-24 z-50 flex flex-col items-center">
+        {/* Upload Options Popup */}
+        {showUploadOptions && (
+          <div className="mb-4 bg-white rounded-lg shadow-lg border border-gray-200 p-4 min-w-48">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-sm font-semibold text-[#5E2751] px-3 py-2 ">Upload Options</h3>
+              {/* <button
+                onClick={() => setShowUploadOptions(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-4 h-4 color=#3e9392" />
+              </button> */}
+            </div>
+            
+            <div className="space-y-2">
+              <button
+                onClick={handleUploadMutualFund}
+                className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200 font-semibold"
+              >
+                Upload Mutual Fund Cams pdf
+              </button>
+              
+              <button
+                onClick={handleUploadStockData}
+                className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200 font-semibold"
+              >
+                Upload Stock pdf
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Main Upload Button */}
+        <div
+          onClick={toggleUploadOptions}
+          className="flex flex-col items-center cursor-pointer"
         >
-          <Plus className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" />
-        </label>
-        <span className="text-xs sm:text-sm font-sans font-bold text-gray-700 mt-2 text-center">
-          Upload PDF
-        </span>
+          <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-[#5E2751] hover:bg-[#4a1f40] text-white rounded-full shadow-lg transition-all duration-200 hover:shadow-xl">
+            <Plus className={`w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 transition-transform duration-200 ${showUploadOptions ? 'rotate-45' : ''}`} />
+          </div>
+          <span className="text-xs sm:text-sm font-sans font-bold text-gray-700 mt-2 text-center">
+           {showUploadOptions ? "Cancel"  :"Upload PDF"  } 
+          </span>
+        </div>
       </div>
     );
   };
+
   return (
     <>
       <div className="bg-primary w-full overflow-hidden bg-white min-h-screen ">
