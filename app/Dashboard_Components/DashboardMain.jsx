@@ -1072,139 +1072,60 @@ export default function DashboardMain() {
 
           <div className="container mx-auto px-4 py-6">
             {/* Table Header */ }
-
-            { systematicTransactions.length > 0 ? (
-              <div className="grid grid-cols-7 text-left p-3 bg-[#F5F5F5] rounded-lg gap-6">
-                <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                  FUND NAME
-                </div>
-                <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                  TYPE
-                </div>
-                <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                  START DATE
-                </div>
-                {/* <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                  NO OF SIP
-                </div> */}
-                <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                  FREQUENCY
-                </div>
-                <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                  AMOUNT (₹)
-                </div>
-                <div className="text-xs font-normal leading-6 text-left text-[#848CA9]">
-                  ACTION
-                </div>
+            { systematicTransactions.length > 0 && (
+              <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] text-left p-3 bg-[#F5F5F5] rounded-lg gap-4">
+                <div className="text-xs font-normal leading-6 text-[#848CA9]">FUND NAME</div>
+                <div className="text-xs font-normal leading-6 text-[#848CA9]">TYPE</div>
+                <div className="text-xs font-normal leading-6 text-[#848CA9]">START DATE</div>
+                <div className="text-xs font-normal leading-6 text-[#848CA9]">FREQUENCY</div>
+                <div className="text-xs font-normal leading-6 text-[#848CA9]">AMOUNT (₹)</div>
+                <div className="text-xs font-normal leading-6 text-[#848CA9]">ACTION</div>
               </div>
-            ) : null }
+            ) }
 
             {/* Table Body */ }
             { systematicTransactions.length > 0 ? (
               systematicTransactions.map((row, index) => (
                 <div
                   key={ index }
-                  className="grid grid-cols-7 bg-[#F5F5F5] text-left p-2 my-2 items-center rounded-lg gap-2"
+                  className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] bg-white text-left p-3 my-2 items-center rounded-lg gap-4 shadow-sm"
                 >
-                  <div className="text-sm text-gray-700">
-                    <div
-                      className="font-medium break-words"
-                      title={ row.fund_name }
+                  <div className="text-sm text-gray-700">{ row.fund_name }</div>
+                  <div className="text-sm text-gray-700">{ row.transaction_type || "N/A" }</div>
+                  <div className="text-sm text-gray-700">{ formatDate(row.sip_start_date) }</div>
+                  <div className="text-sm text-gray-700">{ row.frequency }</div>
+                  <div className="text-sm text-gray-700">₹{ row.amount.toLocaleString("en-IN") }</div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={ () => handleEditTransaction(row) }
+                      className="text-[#35B26B] border border-[#35B26B] rounded-md p-2 hover:bg-[#e8f5eb] transition-colors"
+                      title="Edit"
                     >
-                      { row.fund_name }
-                    </div>
-                  </div>
-                  {/* <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
-                    {row.fund_name}
-                  </div> */}
-                  <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
-                    { row.transaction_type || "N/A" }
-                  </div>
-                  <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
-                    { formatDate(row.sip_start_date) }
-                  </div>
-                  {/* <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
-                    { row.number_of_installments }
-                  </div> */}
-                  <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
-                    { row.frequency }
-                  </div>
-                  <div className="font-poppins text-sm font-medium text-[#3F4765] truncate">
-                    ₹{ row.amount.toLocaleString("en-IN") }
-                  </div>
-                  <div className="font-poppins text-sm font-medium text-[#3F4765] truncate flex">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={ () => handleEditTransaction(row) }
-                        className="text-[#35B26B] border border-[#35B26B] rounded-md p-2 hover:bg-[#e8f5eb] transition-colors"
-                        title="Edit"
-                      >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={ () => handleDeleteTransaction(row.id) }
-                        disabled={ isDeleting }
-                        className={ `text-[#dc2626] border border-[#dc2626] rounded-md p-2 hover:bg-[#fef2f2] transition-colors ${isDeleting ? "opacity-50 cursor-not-allowed" : ""
-                          }` }
-                        title={ isDeleting ? "Deleting..." : "Delete" }
-                      >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="m3 6 3 0"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                          />
-                          <path
-                            d="m21 6-3 0"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                          />
-                          <path
-                            d="m18 6-.84 12.63a1 1 0 0 1-1 .84H7.89a1 1 0 0 1-1-.84L6 6"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            d="m8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </button>
-                    </div>
+                      {/* Edit Icon */ }
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={ () => handleDeleteTransaction(row.id) }
+                      disabled={ isDeleting }
+                      className={ `text-[#dc2626] border border-[#dc2626] rounded-md p-2 hover:bg-[#fef2f2] transition-colors ${isDeleting ? "opacity-50 cursor-not-allowed" : ""
+                        }` }
+                      title={ isDeleting ? "Deleting..." : "Delete" }
+                    >
+                      {/* Delete Icon */ }
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="m3 6 3 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        <path d="m21 6-3 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        <path d="m18 6-.84 12.63a1 1 0 0 1-1 .84H7.89a1 1 0 0 1-1-.84L6 6"
+                          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="m8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
               ))
