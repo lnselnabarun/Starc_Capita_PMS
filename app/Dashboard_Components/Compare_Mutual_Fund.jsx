@@ -550,8 +550,6 @@ const MutualFundComparison = () => {
       // fieldsToShow = sections[section].fields.slice(0, 5);
       fieldsToShow = sections[section].fields.filter((field) => field.isFirstDisplay);
     } else if (section === "riskMeasures" && !showAllRiskMeasures) {
-      
-      // fieldsToShow = sections[section].fields.slice(0, 5);
       fieldsToShow = sections[section].fields.filter((field) => field.isFirstDisplay);
     } else if (section === "marketCap" && !showAllRiskMeasures) {
       fieldsToShow = sections[section].fields.filter((field) => field.isFirstDisplay);;

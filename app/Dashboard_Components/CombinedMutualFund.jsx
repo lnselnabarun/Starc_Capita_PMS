@@ -968,14 +968,18 @@ export default function CombinedMutualFund() {
                               className="px-6 py-1 whitespace-nowrap"
                               style={ { minWidth: "120px" } }
                             >
-                              <div className="text-sm text-gray-900"></div>
+                              <div className="text-sm text-gray-900">
+                                {`₹${formatMoney(items?.summery?.totalCurrentCost)}`}
+                              </div>
                             </td>
                             {/* Current Cost */ }
                             <td
                               className="px-6 py-1 whitespace-nowrap"
                               style={ { minWidth: "120px" } }
                             >
-                              <div className="text-sm text-gray-900"></div>
+                              <div className="text-sm text-gray-900">
+
+                              </div>
                             </td>
                             {/* Current XIRR */ }
                             <td
