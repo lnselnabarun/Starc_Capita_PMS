@@ -778,13 +778,15 @@ export default function DashboardMain() {
                             return date.toLocaleDateString('en-US', {
                               month: 'short',
                               day: 'numeric'
-                            }).toLocaleLowerCase().replace(' ', '-');
+                            }).toLowerCase().split(' ').map(function (word) {
+                              return (word.charAt(0).toUpperCase() + word.slice(1));
+                            }).join(' ').replace(' ', '-');
                           } }
                           ticks={ PortfolioData
-                            .filter((_, index) => index % 2 === 0) 
+                            .filter((_, index) => index % 2 === 0)
                             .map(item => item.date)
                           }
-                          interval={ 0 } 
+                          interval={ 0 }
                         />
 
                         { chartView === "xirr" ? (
