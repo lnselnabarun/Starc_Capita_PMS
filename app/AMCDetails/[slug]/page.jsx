@@ -547,7 +547,11 @@ const AMCDetails = ({ params }) => {
                       <td
                         className="px-6 py-1 whitespace-nowrap"
                         style={ { minWidth: "120px" } }
-                      ></td>
+                      >
+                        <div className="text-sm font-bold text-gray-900">
+                          { `${summaryData.totalCurrentCost}` }
+                        </div>
+                      </td>
                       <td
                         className="px-6 py-1 whitespace-nowrap"
                         style={ { minWidth: "120px" } }
