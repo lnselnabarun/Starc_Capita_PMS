@@ -759,7 +759,33 @@ export default function DashboardMain() {
                           tickLine={ true }
                           tick={ true }
                           height={ 50 }
+                          tickFormatter={ (dateStr) => {
+                            const date = new Date(dateStr);
+                            return date.toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric'
+                            }).toUpperCase().replace(' ', '-');
+                          } }
                         /> */}
+                        <XAxis
+                          dataKey="date"
+                          axisLine={ true }
+                          tickLine={ true }
+                          tick={ true }
+                          height={ 50 }
+                          tickFormatter={ (dateStr) => {
+                            const date = new Date(dateStr);
+                            return date.toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric'
+                            }).toLocaleLowerCase().replace(' ', '-');
+                          } }
+                          ticks={ PortfolioData
+                            .filter((_, index) => index % 2 === 0) 
+                            .map(item => item.date)
+                          }
+                          interval={ 0 } 
+                        />
 
                         { chartView === "xirr" ? (
                           <>
@@ -1264,7 +1290,7 @@ export default function DashboardMain() {
               {/* <!-- Third Text and Image in Column --> */ }
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                  {result !== null ? result.toFixed(2) : 'Loading...'}
+                  { result !== null ? result.toFixed(2) : 'Loading...' }
                 </div>
                 <div className="w-6 h-6 sm:w-8 sm:h-8">
                   <Image
