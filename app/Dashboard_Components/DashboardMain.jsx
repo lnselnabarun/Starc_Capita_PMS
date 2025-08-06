@@ -779,13 +779,13 @@ export default function DashboardMain() {
                         <CartesianGrid strokeDasharray="3 3" opacity={ 0.3 } />
 
                         {/* Hidden XAxis that still provides positioning */ }
-                        <XAxis
+                        {/* <XAxis
                           dataKey="date"
                           axisLine={ true }
                           tickLine={ true }
                           tick={ true }
                           height={ 50 }
-                        />
+                        /> */}
 
                         { chartView === "xirr" ? (
                           <>
@@ -1075,7 +1075,7 @@ export default function DashboardMain() {
               <div className="hidden md:block">
                 <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] text-left p-3 bg-[#F5F5F5] rounded-lg gap-4 ">
                   <div className="text-xs font-normal leading-6 text-[#848CA9]">FUND NAME</div>
-                  <div className="text-xs font-normal leading-6 text-[#848CA9]">TYPE</div>
+                  <div className="text-xs font-normal leading-6 text-[#848CA9] text-center">TYPE</div>
                   <div className="text-xs font-normal leading-6 text-[#848CA9]">START DATE</div>
                   <div className="text-xs font-normal leading-6 text-[#848CA9]">FREQUENCY</div>
                   <div className="text-xs font-normal leading-6 text-[#848CA9]">AMOUNT (₹)</div>
@@ -1093,7 +1093,7 @@ export default function DashboardMain() {
                       className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] bg-white text-left p-3 my-2 items-center rounded-lg gap-4 shadow-sm"
                     >
                       <div className="text-sm text-gray-700">{ row.fund_name }</div>
-                      <div className="text-sm text-gray-700">{ row.transaction_type || "N/A" }</div>
+                      <div className="text-sm text-gray-700 text-center">{ row.transaction_type || "N/A" }</div>
                       <div className="text-sm text-gray-700">{ formatDate(row.sip_start_date) }</div>
                       <div className="text-sm text-gray-700">{ row.frequency }</div>
                       <div className="text-sm text-gray-700">₹{ row.amount.toLocaleString("en-IN") }</div>

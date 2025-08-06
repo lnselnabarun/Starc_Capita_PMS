@@ -65,7 +65,7 @@ export default function CombinedMutualFund() {
   const headers = [
     "Name",
     "Category",
-    "ISIN",
+    // "ISIN",
     "Current Cost (₹)",
     "Current XIRR",
     "Current VALUE (₹)",
@@ -423,14 +423,14 @@ export default function CombinedMutualFund() {
                               </div>
                             </td>
                             {/* Current isin */}
-                            <td
+                            {/* <td
                               className="px-6 py-4 whitespace-nowrap"
                               style={{ minWidth: "120px" }}
                             >
                               <div className="text-sm text-gray-900">
                                 {item?.isin || "N/A"}
                               </div>
-                            </td>
+                            </td> */}
                             {/* Current Cost */}
                             <td
                               className="px-6 py-4 whitespace-nowrap"
@@ -712,21 +712,21 @@ export default function CombinedMutualFund() {
                           </div>
                         </td>
                         {/* Current isin */}
-                        <td
+                        {/* <td
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
                            
                           </div>
-                        </td>
+                        </td> */}
                         {/* Current Cost */}
                         <td
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                            
+                            {`₹${formatMoney(items?.summery?.totalCurrentCost)}`}
                           </div>
                         </td>
                         {/* Current XIRR */}

@@ -416,11 +416,11 @@ const MutualFundComparison = () => {
     returns: {
       title: "Returns",
       fields: [
-        { key: "Trailing Return 1 Month", label: "1 Month Trailing" },
-        { key: "Trailing Return 1 Year", label: "1 Year Trailing" },
-        { key: "Trailing Return 3 Year", label: "3 Year Trailing" },
-        { key: "Trailing Return 5 Year", label: "5 Year Trailing" },
-        { key: "Return Since Inception", label: "Since Inception" },
+        { key: "Trailing Return 1 Month", label: "1 Month Trailing" ,isFirstDisplay: true},
+        { key: "Trailing Return 1 Year", label: "1 Year Trailing" ,isFirstDisplay: true},
+        { key: "Trailing Return 3 Year", label: "3 Year Trailing" ,isFirstDisplay: true},
+        { key: "Trailing Return 5 Year", label: "5 Year Trailing" ,isFirstDisplay: true},
+        { key: "Return Since Inception", label: "Since Inception" ,isFirstDisplay: true },
         { key: "Rolling Return Avg 1YR", label: "1 Year Avg Rolling" },
         { key: "Rolling Return Min 1YR", label: "1 Year Min Rolling" },
         { key: "Rolling Return Max 1YR", label: "1 Year Max Rolling" },
@@ -444,41 +444,43 @@ const MutualFundComparison = () => {
     marketCap: {
       title: "Market Cap Breakdown",
       fields: [
-        { key: "Large Cap Net", label: "Large Cap Net" },
-        { key: "Mid Cap Net", label: "Mid Cap Net" },
-        { key: "Small Cap Net", label: "Small Cap Net" },
-        { key: "Large Cap Short", label: "Large Cap Short" },
-        { key: "Mid Cap Long", label: "Mid Cap Long" },
-        { key: "Large Cap Long", label: "Large Cap Long" },
-        { key: "Mid Cap Short", label: "Mid Cap Short" },
+        { key: "Small Cap Net", label: "Small Cap Net" ,isFirstDisplay: true},
         { key: "Small Cap Long", label: "Small Cap Long" },
         { key: "Small Cap Short", label: "Small Cap Short" },
+        { key: "Large Cap Net", label: "Large Cap Net" ,isFirstDisplay: true},
+        { key: "Large Cap Long", label: "Large Cap Long" },
+        { key: "Large Cap Short", label: "Large Cap Short" },
+        { key: "Mid Cap Net", label: "Mid Cap Net" ,isFirstDisplay: true},
+        { key: "Mid Cap Long", label: "Mid Cap Long" },
+        { key: "Mid Cap Short", label: "Mid Cap Short" },
       ],
     },
     riskMeasures: {
       title: "Risk Measures",
       fields: [
-        { key: "Standard Deviation 1 Year", label: "Standard Deviation (1Y)" },
+        { key: "Standard Deviation 1 Year", label: "Standard Deviation (1Y)" ,isFirstDisplay: true},
         { key: "Standard Deviation 3 Year", label: "Standard Deviation (3Y)" },
         { key: "Standard Deviation 5 Year", label: "Standard Deviation (5Y)" },
-        { key: "Sharpe Ratio 1 Year", label: "Sharpe Ratio (1Y)" },
+        { key: "Sharpe Ratio 1 Year", label: "Sharpe Ratio (1Y)" ,isFirstDisplay: true },
         { key: "Sharpe Ratio 3 Year", label: "Sharpe Ratio (3Y)" },
         { key: "Sharpe Ratio 5 Year", label: "Sharpe Ratio (5Y)" },
         {
           key: "Capture Ratio Downside 1 Year",
           label: "Downside Capture Ratio (1Y)",
+          isFirstDisplay: true
         },
         {
           key: "Capture Ratio Downside 3 Year",
-          label: "Downside Capture Ratio (3Y)",
+          label: "Downside Capture Ratio (3Y)"
         },
         {
           key: "Capture Ratio Downside 5 Year",
-          label: "Downside Capture Ratio (5Y)",
+          label: "Downside Capture Ratio (5Y)"
         },
         {
           key: "Capture Ratio Upside 1 Year",
           label: "Upside Capture Ratio (1Y)",
+          isFirstDisplay: true
         },
         {
           key: "Capture Ratio Upside 3 Year",
@@ -488,10 +490,10 @@ const MutualFundComparison = () => {
           key: "Capture Ratio Upside 5 Year",
           label: "Upside Capture Ratio (5Y)",
         },
-        { key: "Alpha 1 Year", label: "Alpha (1Y)" },
+        { key: "Alpha 1 Year", label: "Alpha (1Y)" ,isFirstDisplay: true},
         { key: "Alpha 3 Year", label: "Alpha (3Y)" },
         { key: "Alpha 5 Year", label: "Alpha (5Y)" },
-        { key: "Beta 1 Year", label: "Beta (1Y)" },
+        { key: "Beta 1 Year", label: "Beta (1Y)" ,isFirstDisplay: true},
         { key: "Beta 3 Year", label: "Beta (3Y)" },
         { key: "Beta 5 Year", label: "Beta (5Y)" },
       ],
@@ -545,11 +547,12 @@ const MutualFundComparison = () => {
     let fieldsToShow = sections[section].fields;
 
     if (section === "returns" && !showAllReturns) {
-      fieldsToShow = sections[section].fields.slice(0, 5);
+      // fieldsToShow = sections[section].fields.slice(0, 5);
+      fieldsToShow = sections[section].fields.filter((field) => field.isFirstDisplay);
     } else if (section === "riskMeasures" && !showAllRiskMeasures) {
-      fieldsToShow = sections[section].fields.slice(0, 5);
+      fieldsToShow = sections[section].fields.filter((field) => field.isFirstDisplay);
     } else if (section === "marketCap" && !showAllRiskMeasures) {
-      fieldsToShow = sections[section].fields.slice(0, 3);
+      fieldsToShow = sections[section].fields.filter((field) => field.isFirstDisplay);;
     }
 
     return (
