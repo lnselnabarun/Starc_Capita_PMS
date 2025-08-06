@@ -32,7 +32,7 @@ export default function DashboardMain() {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-
+  const [result, setResult] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -46,8 +46,26 @@ export default function DashboardMain() {
     frequency: "",
     amount: "",
     isin: "",
-    selectedFundData: null, // Add this to store complete fund data
+    selectedFundData: null,
   });
+
+  // Add this useEffect to log the calculation
+  useEffect(() => {
+    if (balanceData?.currentValue && DashboardData?.data?.totalNetExpenseRatio) {
+      const currentValue = balanceData.currentValue;
+      const totalNetExpenseRatio = parseFloat(DashboardData.data.totalNetExpenseRatio);
+      const calcResult = currentValue * totalNetExpenseRatio;
+
+      console.log("currentValue * totalNetExpenseRatio:", calcResult);
+      console.log("Calculation details:", {
+        currentValue,
+        totalNetExpenseRatio,
+        result: calcResult
+      });
+
+      setResult(calcResult);
+    }
+  }, [balanceData, DashboardData]);
 
   const fetchSearchResults = async (query) => {
     if (!query || query.length < 2) {
@@ -73,7 +91,6 @@ export default function DashboardMain() {
       }
 
       const data = await response.json();
-
       console.log(data?.data, "formattedResultsformattedResults");
       if (data?.status === "success") {
         setSearchResults(data?.data);
@@ -93,9 +110,7 @@ export default function DashboardMain() {
       setLoading(true);
       setError(null);
 
-      // Get user ID from localStorage
       const userId = localStorage.getItem("UserId");
-
       if (!userId) {
         throw new Error("User ID not found in localStorage");
       }
@@ -118,12 +133,8 @@ export default function DashboardMain() {
       }
 
       const data = await response.json();
-
       if (data.status === "success") {
         setBalanceData(data?.data);
-      } else {
-        //   localStorage.clear();
-        // router.push("/");
       }
     } catch (err) {
       setError(err.message);
@@ -151,7 +162,6 @@ export default function DashboardMain() {
   const fetchSystematicTransactions = async () => {
     try {
       const userId = localStorage.getItem("UserId");
-
       if (!userId) {
         console.error("User ID not found in localStorage");
         return;
@@ -175,35 +185,27 @@ export default function DashboardMain() {
       }
 
       const data = await response.json();
-
       if (data.status === "success") {
         setSystematicTransactions(data.data);
-      } else {
-        // localStorage.clear();
-        // router.push("/");
       }
     } catch (error) {
       console.error("Error fetching systematic transactions:", error);
     }
   };
 
-  // Add this useEffect to fetch data on component mount
   useEffect(() => {
     fetchSystematicTransactions();
   }, []);
+
   const handleSaveSystematicTransaction = async () => {
     try {
       setIsSaving(true);
-
-      // Get user ID from localStorage
       const userId = localStorage.getItem("UserId");
-
       if (!userId) {
         alert("User ID not found. Please login again.");
         return;
       }
 
-      // Prepare the request body
       const requestBody = {
         user_reg_id: userId,
         fund_name: formData.fundName,
@@ -234,13 +236,10 @@ export default function DashboardMain() {
       }
 
       const data = await response.json();
-
       console.log(data, "datadata");
 
       if (data.status === "success") {
         alert("Systematic transaction added successfully!");
-
-        // Reset form and close modal
         setFormData({
           fundName: "",
           transactionType: "",
@@ -253,12 +252,7 @@ export default function DashboardMain() {
         });
         setSearchResults([]);
         setIsModalOpen(false);
-
-        // Refresh the systematic transactions list
         fetchSystematicTransactions();
-      } else {
-        //   localStorage.clear();
-        // router.push("/");
       }
     } catch (error) {
       console.error("Error saving systematic transaction:", error);
@@ -317,10 +311,7 @@ export default function DashboardMain() {
         data: {},
       });
       if (response.data?.status === "success") {
-        SetDashboardData(response.data?.data);
-      } else {
-        //   localStorage.clear();
-        // router.push("/");
+        SetDashboardData(response.data);
       }
     } catch (error) {
       throw error;
@@ -349,8 +340,7 @@ export default function DashboardMain() {
         console.log(data?.data, "0000000"), setRecentTransactions(data?.data);
       });
     } catch (err) {
-      // localStorage.clear();
-      // router.push("/");
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -376,24 +366,19 @@ export default function DashboardMain() {
       const data = await response.json();
 
       if (data?.status === "success") {
-        // Process data for chart readability
         const processedData = data?.summaries.map((item) => ({
           date: item?.date,
           totalCost: parseFloat(item?.totalCost),
-          currentValue: parseFloat(item?.currentValue), // Fallback value for visualization
+          currentValue: parseFloat(item?.currentValue),
           sensex: parseInt(item?.sensex),
           xirr: parseFloat(item?.xirr),
         }));
 
-        // Sort by date for proper timeline display
         processedData.sort((a, b) => new Date(a.date) - new Date(b.date));
-
         setPortfolioData(processedData);
-      } else {
       }
     } catch (error) {
-      // localStorage.clear();
-      // router.push("/");
+      console.error(error);
     }
   };
 
@@ -434,17 +419,14 @@ export default function DashboardMain() {
       }
 
       const data = await response.json();
-
       if (data.status === "success") {
         alert("Systematic transaction deleted successfully!");
-        // Refresh the systematic transactions list
         fetchSystematicTransactions();
       } else {
         alert(data.message || "Failed to delete systematic transaction");
       }
     } catch (error) {
-      // localStorage.clear();
-      // router.push("/");
+      console.error(error);
     } finally {
       setIsDeleting(false);
     }
@@ -468,7 +450,6 @@ export default function DashboardMain() {
   const handleUpdateSystematicTransaction = async () => {
     try {
       setIsUpdating(true);
-
       const userId = localStorage.getItem("UserId");
 
       if (!userId) {
@@ -505,11 +486,8 @@ export default function DashboardMain() {
       }
 
       const data = await response.json();
-
       if (data.status === "success") {
         alert("Systematic transaction updated successfully!");
-
-        // Reset form and close modal
         setFormData({
           fundName: "",
           transactionType: "",
@@ -523,8 +501,6 @@ export default function DashboardMain() {
         setSearchResults([]);
         setIsEditModalOpen(false);
         setEditingTransaction(null);
-
-        // Refresh the systematic transactions list
         fetchSystematicTransactions();
       } else {
         alert(data.message || "Failed to update systematic transaction");
@@ -566,10 +542,8 @@ export default function DashboardMain() {
           </p>
 
           { chartView === "xirr" ? (
-            // Only show XIRR for the XIRR view
             <p className="text-green-600">XIRR: { payload[0]?.value || 0 }%</p>
           ) : (
-            // Show all other values for the investment view
             <>
               <p className="text-blue-600">
                 Current Cost: ₹
@@ -609,24 +583,24 @@ export default function DashboardMain() {
     }
   };
 
-  // Format date for x-axis
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
     const date = new Date(dateStr);
-
     const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // +1 because getMonth() is 0-indexed
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear();
-
     return `${day}-${month}-${year}`;
   };
+
   const getGainLossText = () => {
     if (!balanceData) return "Gain";
     return balanceData.todaysGain < 0 ? "Loss" : "Gain";
   };
+
   useEffect(() => {
     fetchBalanceData();
   }, []);
+
   const formatCurrency = (amount) => {
     if (amount === null || amount === undefined) return "₹0";
     return `₹${Math.abs(amount).toLocaleString("en-IN", {
@@ -1290,9 +1264,7 @@ export default function DashboardMain() {
               {/* <!-- Third Text and Image in Column --> */ }
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                  { balanceData
-                    ? formatCurrency(balanceData.weightedExpenseRatio)
-                    : "₹0" }
+                  {result !== null ? result.toFixed(2) : 'Loading...'}
                 </div>
                 <div className="w-6 h-6 sm:w-8 sm:h-8">
                   <Image
