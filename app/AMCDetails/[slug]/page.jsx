@@ -549,7 +549,7 @@ const AMCDetails = ({ params }) => {
                         style={ { minWidth: "120px" } }
                       >
                         <div className="text-sm font-bold text-gray-900">
-                          { `${summaryData.totalCurrentCost}` }
+                          { `₹${formatMoney(summaryData.totalCurrentCost)}` }
                         </div>
                       </td>
                       <td

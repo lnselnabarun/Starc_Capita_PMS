@@ -775,12 +775,9 @@ export default function DashboardMain() {
                           height={ 50 }
                           tickFormatter={ (dateStr) => {
                             const date = new Date(dateStr);
-                            return date.toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric'
-                            }).toLowerCase().split(' ').map(function (word) {
-                              return (word.charAt(0).toUpperCase() + word.slice(1));
-                            }).join(' ').replace(' ', '-');
+                            const day = date.getDate();
+                            const month = date.toLocaleString('en-US', { month: 'short' });
+                            return `${day}-${month}`;
                           } }
                           ticks={ PortfolioData
                             .filter((_, index) => index % 2 === 0)
@@ -1292,7 +1289,7 @@ export default function DashboardMain() {
               {/* <!-- Third Text and Image in Column --> */ }
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                  { result !== null ? result.toFixed(2) : 'Loading...' }
+                  { result !== null ? formatCurrency(result.toFixed(2)) : "₹0" }
                 </div>
                 <div className="w-6 h-6 sm:w-8 sm:h-8">
                   <Image
