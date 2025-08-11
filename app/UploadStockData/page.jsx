@@ -84,7 +84,7 @@ const PDFUploadPage = () => {
 
       // Make API call
       const response = await axios.post(
-        "https://dev.netrumusa.com/starkcapital/api/upload-cams-file",
+        "",
         formData,
         {
           headers: {
