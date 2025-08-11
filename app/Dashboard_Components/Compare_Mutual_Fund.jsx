@@ -13,10 +13,12 @@ const MutualFundComparison = () => {
     overview: true,
     returns: true,
     portfolio: true,
-    marketCap: true, // ADD THIS LINE
+    marketCap: true,
     riskMeasures: true,
     fundDetails: true,
   });
+  const [showAllReturns, setShowAllReturns] = useState(false);
+  const [showAllRiskMeasures, setShowAllRiskMeasures] = useState(false);
 
   const handleSearch = (e) => {
     const query = e?.target?.value;
@@ -167,7 +169,7 @@ const MutualFundComparison = () => {
     });
     detailsArray.push({ name: "Other Net", details: "N/A" }); // Not available in new API
 
-    // Market Cap Breakdown - ADD THIS NEW SECTION
+    // Market Cap Breakdown
     detailsArray.push({
       name: "Large Cap Long",
       details: apiData["IMCBD-IndiaLargeCapLong"] || "N/A",
@@ -300,7 +302,6 @@ const MutualFundComparison = () => {
     return detailsArray;
   };
 
-  // 1. Update the fetchFundDetails function
   const fetchFundDetails = async (fundId) => {
     try {
       const response = await fetch(
@@ -415,11 +416,11 @@ const MutualFundComparison = () => {
     returns: {
       title: "Returns",
       fields: [
-        { key: "Trailing Return 1 Month", label: "1 Month Trailing" },
-        { key: "Trailing Return 1 Year", label: "1 Year Trailing" },
-        { key: "Trailing Return 3 Year", label: "3 Year Trailing" },
-        { key: "Trailing Return 5 Year", label: "5 Year Trailing" },
-        { key: "Return Since Inception", label: "Since Inception" },
+        { key: "Trailing Return 1 Month", label: "1 Month Trailing" ,isFirstDisplay: true},
+        { key: "Trailing Return 1 Year", label: "1 Year Trailing" ,isFirstDisplay: true},
+        { key: "Trailing Return 3 Year", label: "3 Year Trailing" ,isFirstDisplay: true},
+        { key: "Trailing Return 5 Year", label: "5 Year Trailing" ,isFirstDisplay: true},
+        { key: "Return Since Inception", label: "Since Inception" ,isFirstDisplay: true },
         { key: "Rolling Return Avg 1YR", label: "1 Year Avg Rolling" },
         { key: "Rolling Return Min 1YR", label: "1 Year Min Rolling" },
         { key: "Rolling Return Max 1YR", label: "1 Year Max Rolling" },
@@ -440,45 +441,46 @@ const MutualFundComparison = () => {
         { key: "Other Net", label: "Others" },
       ],
     },
-    // ADD THIS NEW SECTION
     marketCap: {
       title: "Market Cap Breakdown",
       fields: [
-        { key: "Large Cap Long", label: "Large Cap Long" },
-        { key: "Large Cap Net", label: "Large Cap Net" },
-        { key: "Large Cap Short", label: "Large Cap Short" },
-        { key: "Mid Cap Long", label: "Mid Cap Long" },
-        { key: "Mid Cap Net", label: "Mid Cap Net" },
-        { key: "Mid Cap Short", label: "Mid Cap Short" },
+        { key: "Small Cap Net", label: "Small Cap Net" ,isFirstDisplay: true},
         { key: "Small Cap Long", label: "Small Cap Long" },
-        { key: "Small Cap Net", label: "Small Cap Net" },
         { key: "Small Cap Short", label: "Small Cap Short" },
+        { key: "Large Cap Net", label: "Large Cap Net" ,isFirstDisplay: true},
+        { key: "Large Cap Long", label: "Large Cap Long" },
+        { key: "Large Cap Short", label: "Large Cap Short" },
+        { key: "Mid Cap Net", label: "Mid Cap Net" ,isFirstDisplay: true},
+        { key: "Mid Cap Long", label: "Mid Cap Long" },
+        { key: "Mid Cap Short", label: "Mid Cap Short" },
       ],
     },
     riskMeasures: {
       title: "Risk Measures",
       fields: [
-        { key: "Standard Deviation 1 Year", label: "Standard Deviation (1Y)" },
+        { key: "Standard Deviation 1 Year", label: "Standard Deviation (1Y)" ,isFirstDisplay: true},
         { key: "Standard Deviation 3 Year", label: "Standard Deviation (3Y)" },
         { key: "Standard Deviation 5 Year", label: "Standard Deviation (5Y)" },
-        { key: "Sharpe Ratio 1 Year", label: "Sharpe Ratio (1Y)" },
+        { key: "Sharpe Ratio 1 Year", label: "Sharpe Ratio (1Y)" ,isFirstDisplay: true },
         { key: "Sharpe Ratio 3 Year", label: "Sharpe Ratio (3Y)" },
         { key: "Sharpe Ratio 5 Year", label: "Sharpe Ratio (5Y)" },
         {
           key: "Capture Ratio Downside 1 Year",
           label: "Downside Capture Ratio (1Y)",
+          isFirstDisplay: true
         },
         {
           key: "Capture Ratio Downside 3 Year",
-          label: "Downside Capture Ratio (3Y)",
+          label: "Downside Capture Ratio (3Y)"
         },
         {
           key: "Capture Ratio Downside 5 Year",
-          label: "Downside Capture Ratio (5Y)",
+          label: "Downside Capture Ratio (5Y)"
         },
         {
           key: "Capture Ratio Upside 1 Year",
           label: "Upside Capture Ratio (1Y)",
+          isFirstDisplay: true
         },
         {
           key: "Capture Ratio Upside 3 Year",
@@ -488,10 +490,10 @@ const MutualFundComparison = () => {
           key: "Capture Ratio Upside 5 Year",
           label: "Upside Capture Ratio (5Y)",
         },
-        { key: "Alpha 1 Year", label: "Alpha (1Y)" },
+        { key: "Alpha 1 Year", label: "Alpha (1Y)" ,isFirstDisplay: true},
         { key: "Alpha 3 Year", label: "Alpha (3Y)" },
         { key: "Alpha 5 Year", label: "Alpha (5Y)" },
-        { key: "Beta 1 Year", label: "Beta (1Y)" },
+        { key: "Beta 1 Year", label: "Beta (1Y)" ,isFirstDisplay: true},
         { key: "Beta 3 Year", label: "Beta (3Y)" },
         { key: "Beta 5 Year", label: "Beta (5Y)" },
       ],
@@ -519,9 +521,9 @@ const MutualFundComparison = () => {
         fieldKey.includes("Return") ||
         fieldKey.includes("XIRR") ||
         fieldKey === "Expense Ratio" ||
-        fieldKey.includes("Cap") || // for market cap fields
+        fieldKey.includes("Cap") ||
         fieldKey.includes("Alpha") ||
-        fieldKey.includes("Capture Ratio") // for capture ratio fields
+        fieldKey.includes("Capture Ratio")
       ) {
         return `${numValue.toFixed(2)}%`;
       } else if (fieldKey === "AUM (in Rs.)") {
@@ -541,50 +543,89 @@ const MutualFundComparison = () => {
     }
   };
 
-  const renderTable = (section) => (
-    <table className="w-full border-collapse">
-      <thead>
-        <tr>
-          <th className="px-4 py-3 bg-gray-50 text-left text-sm font-semibold text-gray-700 border-b border-gray-200 sticky left-0 z-10">
-            Metric
-          </th>
-          {selectedFunds.map((fund) => (
-            <th
-              key={fund.id}
-              className="px-4 py-3 bg-gray-50 text-left text-sm font-semibold text-gray-700 border-b border-gray-200"
-            >
-              {fund?.["FSCBI_LegalName"] || "Unknown Fund"}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {sections[section].fields?.map((field, rowIndex) => (
-          <tr
-            key={field?.key}
-            className={rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"}
-          >
-            <td className="px-4 py-3 text-sm font-medium text-gray-700 border-b border-gray-200 sticky left-0 bg-inherit">
-              {field?.label}
-            </td>
-            {selectedFunds.map((fund) => {
-              const value = findDetailValue(fund, field?.key);
-              const displayValue = formatValue(value, field?.key);
+  const renderTable = (section) => {
+    let fieldsToShow = sections[section].fields;
 
-              return (
-                <td
-                  key={fund?.id}
-                  className="px-4 py-3 text-sm text-gray-700 border-b border-gray-200 text-right"
+    if (section === "returns" && !showAllReturns) {
+      // fieldsToShow = sections[section].fields.slice(0, 5);
+      fieldsToShow = sections[section].fields.filter((field) => field.isFirstDisplay);
+    } else if (section === "riskMeasures" && !showAllRiskMeasures) {
+      fieldsToShow = sections[section].fields.filter((field) => field.isFirstDisplay);
+    } else if (section === "marketCap" && !showAllRiskMeasures) {
+      fieldsToShow = sections[section].fields.filter((field) => field.isFirstDisplay);;
+    }
+
+    return (
+      <div>
+        <table className="w-full border-collapse">
+          <thead>
+            <tr>
+              <th className="px-4 py-3 bg-gray-50 text-left text-sm font-semibold text-gray-700 border-b border-gray-200 sticky left-0 z-10">
+                Metric
+              </th>
+              { selectedFunds.map((fund) => (
+                <th
+                  key={ fund.id }
+                  className="px-4 py-3 bg-gray-50 text-left text-sm font-semibold text-gray-700 border-b border-gray-200"
                 >
-                  {displayValue}
+                  { fund?.["FSCBI_LegalName"] || "Unknown Fund" }
+                </th>
+              )) }
+            </tr>
+          </thead>
+          <tbody>
+            { fieldsToShow?.map((field, rowIndex) => (
+              <tr
+                key={ field?.key }
+                className={ rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50" }
+              >
+                <td className="px-4 py-3 text-sm font-medium text-gray-700 border-b border-gray-200 sticky left-0 bg-inherit">
+                  { field?.label }
                 </td>
-              );
-            })}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
+                { selectedFunds.map((fund) => {
+                  const value = findDetailValue(fund, field?.key);
+                  const displayValue = formatValue(value, field?.key);
+
+                  return (
+                    <td
+                      key={ fund?.id }
+                      className="px-4 py-3 text-sm text-gray-700 border-b border-gray-200 text-right"
+                    >
+                      { displayValue }
+                    </td>
+                  );
+                }) }
+              </tr>
+            )) }
+          </tbody>
+        </table>
+
+        {/* Show More/Less buttons for Returns and Risk Measures */ }
+        { (section === "returns" || section === "riskMeasures" || section === "marketCap") && (
+          <div className="mt-4 text-center">
+            <button
+              onClick={ () => {
+                if (section === "returns") {
+                  setShowAllReturns(!showAllReturns);
+                } else {
+                  setShowAllRiskMeasures(!showAllRiskMeasures);
+                }
+              } }
+              className="text-purple-600 hover:text-purple-800 text-sm font-medium"
+            >
+              { section === "returns"
+                ? showAllReturns
+                  ? "Hide Some Returns"
+                  : "Show All Returns"
+                : showAllRiskMeasures
+                  ? "Hide Some Risk Measures"
+                  : "Show All Risk Measures" }
+            </button>
+          </div>
+        ) }
+      </div>
+    );
+  };
 
   return (
     <div className="container mx-auto px-4 md:px-8 py-6 bg-gray-50 min-h-screen">
@@ -596,81 +637,81 @@ const MutualFundComparison = () => {
           <div className="relative w-full md:w-96">
             <input
               type="text"
-              value={searchQuery}
-              onChange={handleSearch}
+              value={ searchQuery }
+              onChange={ handleSearch }
               placeholder="Search mutual funds to compare"
               className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
             />
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
 
-            {showSearchResults && (
+            { showSearchResults && (
               <div className="absolute z-50 w-full mt-2 bg-white rounded-lg shadow-lg border border-gray-200 max-h-80 overflow-y-auto">
-                {isLoading ? (
+                { isLoading ? (
                   <div className="p-4 text-center text-gray-500">
                     Loading...
                   </div>
                 ) : searchResults.length > 0 ? (
                   searchResults.map((fund) => (
                     <>
-                      {fund?.FSCBI_ISIN !== null ? (
+                      { fund?.FSCBI_ISIN !== null ? (
                         <div
-                          key={fund.id}
+                          key={ fund.id }
                           className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
-                          onClick={() => {
+                          onClick={ () => {
                             handleAddFund(fund);
-                          }}
+                          } }
                         >
                           <div className="font-medium text-gray-800">
-                            {fund.FSCBI_LegalName}
+                            { fund.FSCBI_LegalName }
                           </div>
                           <div className="text-sm text-gray-500 mt-1">
-                            {fund.FSCBI_ProviderCompanyName}
+                            { fund.FSCBI_ProviderCompanyName }
                           </div>
                         </div>
-                      ) : null}
+                      ) : null }
                     </>
                   ))
                 ) : searchQuery.length > 0 ? (
                   <div className="p-4 text-center text-gray-500">
                     No funds found
                   </div>
-                ) : null}
+                ) : null }
               </div>
-            )}
+            ) }
           </div>
         </div>
 
-        {selectedFunds.length > 0 ? (
+        { selectedFunds.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            {selectedFunds?.map((fund) => (
+            { selectedFunds?.map((fund) => (
               <div
-                key={fund.id}
+                key={ fund.id }
                 className="bg-white rounded-lg shadow-sm p-4 border border-gray-200"
               >
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <h3 className="font-medium text-gray-800">
-                      {fund?.["FSCBI_LegalName"] || "Unknown Fund"}
+                      { fund?.["FSCBI_LegalName"] || "Unknown Fund" }
                     </h3>
                     <span className="text-sm text-gray-500">
-                      {fund?.["FSCBI_ProviderCompanyName"] || "Unknown Fund"}
+                      { fund?.["FSCBI_ProviderCompanyName"] || "Unknown Fund" }
                     </span>
                   </div>
                   <button
-                    onClick={() => handleRemoveFund(fund?.id)}
+                    onClick={ () => handleRemoveFund(fund?.id) }
                     className="text-gray-400 hover:text-gray-600"
                   >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
                 <button
-                  onClick={() => handleRemoveFund(fund?.id)}
+                  onClick={ () => handleRemoveFund(fund?.id) }
                   className="w-full bg-purple-100 hover:bg-purple-200 text-purple-700 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
                 >
                   Remove
                 </button>
               </div>
-            ))}
+            )) }
           </div>
         ) : (
           <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
@@ -681,37 +722,37 @@ const MutualFundComparison = () => {
               Search and add up to 4 mutual funds to compare
             </div>
           </div>
-        )}
+        ) }
 
-        {selectedFunds.length > 0 && (
+        { selectedFunds.length > 0 && (
           <div className="space-y-6">
-            {Object.entries(sections).map(([key, section]) => (
+            { Object.entries(sections).map(([key, section]) => (
               <div
-                key={key}
+                key={ key }
                 className="bg-white rounded-lg shadow-sm border border-gray-200"
               >
                 <button
-                  onClick={() => toggleSection(key)}
+                  onClick={ () => toggleSection(key) }
                   className="w-full px-6 py-4 flex justify-between items-center hover:bg-gray-50"
                 >
                   <h2 className="text-lg font-semibold text-gray-800">
-                    {section.title}
+                    { section.title }
                   </h2>
-                  {sectionStates[key] ? (
+                  { sectionStates[key] ? (
                     <ChevronUp className="w-5 h-5 text-gray-400" />
                   ) : (
                     <ChevronDown className="w-5 h-5 text-gray-400" />
-                  )}
+                  ) }
                 </button>
-                {sectionStates[key] && (
+                { sectionStates[key] && (
                   <div className="p-6 border-t border-gray-200">
-                    <div className="overflow-x-auto">{renderTable(key)}</div>
+                    <div className="overflow-x-auto">{ renderTable(key) }</div>
                   </div>
-                )}
+                ) }
               </div>
-            ))}
+            )) }
           </div>
-        )}
+        ) }
       </div>
     </div>
   );
