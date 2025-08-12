@@ -1410,7 +1410,7 @@ export default function DashboardMain() {
                   {`Today's`}
                 </div> */}
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                  Expenses
+                  Expenses Ratio
                 </div>
               </div>
 
@@ -1421,10 +1421,7 @@ export default function DashboardMain() {
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
                   {result !== null
-                    ? formatCurrency(
-                        balanceData?.currentValue *
-                          balanceData?.weightedExpenseRatio.toFixed(2)
-                      )
+                    ? formatCurrency(balanceData?.weightedExpenseRatio)
                     : "₹0"}
                 </div>
                 <div className="w-6 h-6 sm:w-8 sm:h-8">
