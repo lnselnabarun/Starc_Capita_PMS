@@ -24,7 +24,7 @@ export default function Dashboard() {
     "Mutual Funds",
     "Direct Stock",
     "Home Budgeting",
-    "Taxed",
+    "Taxes",
     "Tools",
     "Other",
   ];
@@ -38,37 +38,40 @@ export default function Dashboard() {
     "Comparison",
     "AMC",
   ];
-
+  const menuItemForDrectStock = ["Summary", "Intrinsic Calculation"];
   // Add state for upload popup
   const [showUploadOptions, setShowUploadOptions] = useState(false);
 
   // Initialize state from localStorage or default to 0
   const [activeIndex, setActiveIndex] = useState(() => {
     // This runs only on client-side during initial render
-    if (typeof window === 'undefined') return 0;
-    
-    const savedIndex = localStorage.getItem('dashboardActiveIndex');
+    if (typeof window === "undefined") return 0;
+
+    const savedIndex = localStorage.getItem("dashboardActiveIndex");
     return savedIndex !== null ? parseInt(savedIndex, 10) : 0;
   });
 
   const [activeIndexSecond, setActiveIndexSecond] = useState(() => {
     // This runs only on client-side during initial render
-    if (typeof window === 'undefined') return 0;
-    
-    const savedIndex = localStorage.getItem('dashboardActiveIndexSecond');
+    if (typeof window === "undefined") return 0;
+
+    const savedIndex = localStorage.getItem("dashboardActiveIndexSecond");
     return savedIndex !== null ? parseInt(savedIndex, 10) : 0;
   });
 
   // Update localStorage whenever state changes
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('dashboardActiveIndex', activeIndex.toString());
+    if (typeof window !== "undefined") {
+      localStorage.setItem("dashboardActiveIndex", activeIndex.toString());
     }
   }, [activeIndex]);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('dashboardActiveIndexSecond', activeIndexSecond.toString());
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "dashboardActiveIndexSecond",
+        activeIndexSecond.toString()
+      );
     }
   }, [activeIndexSecond]);
 
@@ -104,7 +107,9 @@ export default function Dashboard() {
         {showUploadOptions && (
           <div className="mb-4 bg-white rounded-lg shadow-lg border border-gray-200 p-4 min-w-48">
             <div className="flex justify-between items-center mb-3">
-              <h3 className="text-sm font-semibold text-[#5E2751] px-3 py-2 ">Upload Options</h3>
+              <h3 className="text-sm font-semibold text-[#5E2751] px-3 py-2 ">
+                Upload Options
+              </h3>
               {/* <button
                 onClick={() => setShowUploadOptions(false)}
                 className="text-gray-400 hover:text-gray-600"
@@ -112,7 +117,7 @@ export default function Dashboard() {
                 <X className="w-4 h-4 color=#3e9392" />
               </button> */}
             </div>
-            
+
             <div className="space-y-2">
               <button
                 onClick={handleUploadMutualFund}
@@ -120,7 +125,7 @@ export default function Dashboard() {
               >
                 Upload Mutual Fund Cams pdf
               </button>
-              
+
               <button
                 onClick={handleUploadStockData}
                 className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200 font-semibold"
@@ -137,10 +142,14 @@ export default function Dashboard() {
           className="flex flex-col items-center cursor-pointer"
         >
           <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-[#5E2751] hover:bg-[#4a1f40] text-white rounded-full shadow-lg transition-all duration-200 hover:shadow-xl">
-            <Plus className={`w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 transition-transform duration-200 ${showUploadOptions ? 'rotate-45' : ''}`} />
+            <Plus
+              className={`w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 transition-transform duration-200 ${
+                showUploadOptions ? "rotate-45" : ""
+              }`}
+            />
           </div>
           <span className="text-xs sm:text-sm font-sans font-bold text-gray-700 mt-2 text-center">
-           {showUploadOptions ? "Cancel"  :"Upload PDF"  } 
+            {showUploadOptions ? "Cancel" : "Upload PDF"}
           </span>
         </div>
       </div>
@@ -244,6 +253,26 @@ export default function Dashboard() {
             ))}
           </div>
         ) : null}
+
+        {activeIndex === 2 ? (
+          <div className="bg-[#F5F5F5] flex items-center justify-start px-4 overflow-x-auto whitespace-nowrap pl-8 md:pl-16 lg:pl-28">
+            {menuItemForDrectStock?.map((item, index) => (
+              <span
+                key={index}
+                onClick={() => handleClickSecond(index)}
+                className={`cursor-pointer text-[#5E2751] text-lg lg:text-base px-7 py-2 font-semibold font-sans 
+          ${
+            activeIndexSecond === index
+              ? "border-b-2 border-[#5E2751]"
+              : "border-b-4 border-transparent"
+          }`}
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+        ) : null}
+
         {activeIndex === 0 && activeIndexSecond === 0 ? (
           <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
             Dashboard
@@ -281,9 +310,14 @@ export default function Dashboard() {
           </span>
         ) : null} */}
 
-        {activeIndex === 2 ? (
+        {activeIndex === 2 && activeIndexSecond === 0 ? (
           <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
-            Direct Stock
+            Stock Summary
+          </span>
+        ) : null}
+        {activeIndex === 2 && activeIndexSecond === 1 ? (
+          <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
+            Intrinsic Calculation
           </span>
         ) : null}
 

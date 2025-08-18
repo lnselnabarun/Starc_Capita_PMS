@@ -124,9 +124,8 @@ export default function AnalysisMain() {
       fontName: "sans-serif",
       bold: true,
     },
-    is3D: true,
-    pieHole: 0.4, // Creates a donut chart
-    colors: ["#5C6BC0", "#EC407A", "#FFA726"], // More professional color scheme
+    is3D: false,
+    colors: ["#5C6BC0", "#EC407A", "#FFA726", "#60BC63"], // Using colors similar to your UI
     backgroundColor: "transparent",
     legend: {
       position: "right",
@@ -167,7 +166,7 @@ export default function AnalysisMain() {
       fontName: "sans-serif",
       bold: true,
     },
-    is3D: true,
+    is3D: false,
     colors: ["#5C6BC0", "#EC407A", "#FFA726", "#60BC63"], // Using colors similar to your UI
     backgroundColor: "transparent",
     legend: {
@@ -216,9 +215,8 @@ export default function AnalysisMain() {
       fontName: "sans-serif",
       bold: true,
     },
-    is3D: true,
-    pieHole: 0.4, // Creates a donut chart
-    colors: ["#4e73df", "#e9c46a", "#4cab62", "#e07a5f"],
+    is3D: false,
+    colors: ["#5C6BC0", "#EC407A", "#FFA726", "#60BC63"], // Using colors similar to your UI
     backgroundColor: "transparent",
     legend: {
       position: "right",
@@ -265,9 +263,8 @@ export default function AnalysisMain() {
       fontName: "sans-serif",
       bold: true,
     },
-    is3D: true,
-    pieHole: 0.4, // Creates a donut chart
-    colors: ["#DC2626", "#F97316", "#FBBF24", "#FEF3C7"], // Red to yellow gradient palette
+    is3D: false,
+    colors: ["#5C6BC0", "#EC407A", "#FFA726", "#60BC63"], // Using colors similar to your UI
     backgroundColor: "transparent",
     legend: {
       position: "right",

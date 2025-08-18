@@ -1359,7 +1359,11 @@ export default function DashboardMain() {
 
           <div className="flex flex-col sm:flex-row justify-between space-x-0 sm:space-x-4 mt-3">
             {/* <!-- First Card --> */}
-            <div className="relative bg-[#60BC63] rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto">
+            <div
+              className={`relative rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto ${
+                getGainLossText() === "Gain" ? "bg-[#60BC63]" : "bg-red-500"
+              }`}
+            >
               {/* <!-- First Two Text Elements in Column --> */}
               <div className="flex flex-col space-y-2">
                 {/* <div className="text-white font-semibold text-base sm:text-sm md:text-base">
@@ -1391,14 +1395,14 @@ export default function DashboardMain() {
 
               {/* <!-- Absolute Image at Bottom Right --> */}
               <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10">
-                <Image
+                {/* <Image
                   src={require("../assets/logo/Highlight_green.png")}
                   alt="Value Image"
                   width={100}
                   height={100}
                   objectFit="contain"
                   className="w-full h-full"
-                />
+                /> */}
               </div>
             </div>
 
@@ -1410,7 +1414,7 @@ export default function DashboardMain() {
                   {`Today's`}
                 </div> */}
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                  Expenses Ratio
+                WeightedExpRatio
                 </div>
               </div>
 
@@ -1437,28 +1441,28 @@ export default function DashboardMain() {
 
               {/* <!-- Absolute Image at Bottom Right --> */}
               <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10">
-                <Image
+                {/* <Image
                   src={require("../assets/logo/Highlight_yellow.png")}
                   alt="Value Image"
                   width={100}
                   height={100}
                   objectFit="contain"
                   className="w-full h-full"
-                />
+                /> */}
               </div>
             </div>
           </div>
-          <div className="flex items-center space-x-4 justify-between mt-2">
+          {/* <div className="flex items-center space-x-4 justify-between mt-2">
             <div className="font-sans text-lg sm:text-base md:text-lg font-medium leading-5 text-left text-[#3F4765]">
               Activities
             </div>
             <div className="font-sans text-sm sm:text-base md:text-sm font-medium leading-5 text-left text-[#969CCB]">
               {`Today  ▼`}
             </div>
-          </div>
+          </div> */}
 
-          <div className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-2">
-            {/* First Section: Image and Text in one row */}
+          {/* <div className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-2">
+           
             <div className="flex items-center space-x-4">
               <Image
                 src={require("../assets/logo/Activity.png")}
@@ -1474,7 +1478,7 @@ export default function DashboardMain() {
               </div>
             </div>
 
-            {/* Second Section: Two text elements column-wise */}
+            
             <div className="flex flex-col space-y-2">
               <p className="text-sm font-semibold text-[#F85842] text-end">
                 ₹2,435.80
@@ -1483,10 +1487,10 @@ export default function DashboardMain() {
                 Today | 16.40
               </p>
             </div>
-          </div>
+          </div> */}
 
-          <div className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-4">
-            {/* First Section: Image and Text in one row */}
+          {/* <div className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-4">
+            
             <div className="flex items-center space-x-4">
               <Image
                 src={require("../assets/logo/Logo_B.png")}
@@ -1502,7 +1506,7 @@ export default function DashboardMain() {
               </div>
             </div>
 
-            {/* Second Section: Two text elements column-wise */}
+           
             <div className="flex flex-col space-y-2">
               <p className="text-sm font-semibold text-[#24A959] text-end">
                 ₹1,435.72
@@ -1511,9 +1515,9 @@ export default function DashboardMain() {
                 Today | 16.40
               </p>
             </div>
-          </div>
-          <div className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-4">
-            {/* First Section: Image and Text in one row */}
+          </div> */}
+          {/* <div className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-4">
+            
             <div className="flex items-center space-x-4">
               <Image
                 src={require("../assets/logo/Logo_A.png")}
@@ -1529,7 +1533,7 @@ export default function DashboardMain() {
               </div>
             </div>
 
-            {/* Second Section: Two text elements column-wise */}
+          
             <div className="flex flex-col space-y-2">
               <p className="text-sm font-semibold text-[#24A959] text-end">
                 ₹1,435.72
@@ -1538,7 +1542,7 @@ export default function DashboardMain() {
                 Today | 16.40
               </p>
             </div>
-          </div>
+          </div> */}
 
           <div
             onClick={() => router.push("/Newslist")}
