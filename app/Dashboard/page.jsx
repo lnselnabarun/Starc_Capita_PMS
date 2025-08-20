@@ -123,14 +123,14 @@ export default function Dashboard() {
                 onClick={handleUploadMutualFund}
                 className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200 font-semibold"
               >
-                Upload Mutual Fund Cams pdf
+                Upload Mutual Fund CAMS Pdf
               </button>
 
               <button
                 onClick={handleUploadStockData}
                 className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200 font-semibold"
               >
-                Upload Stock pdf
+                Upload Stock Pdf
               </button>
             </div>
           </div>

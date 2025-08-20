@@ -1330,6 +1330,8 @@ export default function DashboardMain() {
                       ))}
                     </div>
                   </div>
+
+                  
                 </>
               ))
             ) : (
@@ -1366,18 +1368,13 @@ export default function DashboardMain() {
             >
               {/* <!-- First Two Text Elements in Column --> */}
               <div className="flex flex-col space-y-2">
-                {/* <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                  {`Gain`}
-                </div> */}
-                <div className="text-white font-semibold text-base sm:text-sm md:text-base">
+                <div className="text-white font-semibold text-sm sm:text-sm md:text-sm">
                   {`Today's ${getGainLossText()}`}
                 </div>
               </div>
 
-              {/* <!-- Dashed Border --> */}
               <div className="border-t border-dashed border-white my-4"></div>
 
-              {/* <!-- Third Text and Image in Column --> */}
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
                   {balanceData ? formatCurrency(balanceData?.todaysGain) : "₹0"}
@@ -1392,40 +1389,26 @@ export default function DashboardMain() {
                   />
                 </div>
               </div>
-
-              {/* <!-- Absolute Image at Bottom Right --> */}
               <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10">
-                {/* <Image
-                  src={require("../assets/logo/Highlight_green.png")}
-                  alt="Value Image"
-                  width={100}
-                  height={100}
-                  objectFit="contain"
-                  className="w-full h-full"
-                /> */}
               </div>
             </div>
 
+
+
+
             {/* <!-- Second Card --> */}
             <div className="relative bg-[#FFBA33] rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto">
-              {/* <!-- First Two Text Elements in Column --> */}
               <div className="flex flex-col space-y-2">
-                {/* <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                  {`Today's`}
-                </div> */}
-                <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                WeightedExpRatio
+                <div className="text-white font-semibold text-sm sm:text-sm md:text-sm">
+                Weighted Expence Ratio (%)
                 </div>
               </div>
-
-              {/* <!-- Dashed Border --> */}
               <div className="border-t border-dashed border-white my-4"></div>
 
-              {/* <!-- Third Text and Image in Column --> */}
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
                   {result !== null
-                    ? formatCurrency(balanceData?.weightedExpenseRatio)
+                    ? balanceData?.weightedExpenseRatio
                     : "₹0"}
                 </div>
                 <div className="w-6 h-6 sm:w-8 sm:h-8">
@@ -1438,17 +1421,73 @@ export default function DashboardMain() {
                   />
                 </div>
               </div>
-
-              {/* <!-- Absolute Image at Bottom Right --> */}
               <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10">
-                {/* <Image
-                  src={require("../assets/logo/Highlight_yellow.png")}
-                  alt="Value Image"
-                  width={100}
-                  height={100}
-                  objectFit="contain"
-                  className="w-full h-full"
-                /> */}
+              
+              </div>
+            </div>
+          </div>
+
+
+
+          <div className="flex flex-col sm:flex-row justify-between space-x-0 sm:space-x-4 mt-3">
+            {/* <!-- First Card --> */}
+            <div
+              className={`relative rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto bg-[#783c6a]`}
+            >
+              {/* <!-- First Two Text Elements in Column --> */}
+              <div className="flex flex-col space-y-2">
+                <div className="text-white font-semibold text-sm sm:text-sm md:text-sm">
+                  {`Current Value Changes (%)`}
+                </div>
+              </div>
+
+              <div className="border-t border-dashed border-white my-4"></div>
+
+              <div className="flex flex-col space-y-2">
+                <div className="text-white font-semibold text-base sm:text-sm md:text-base">
+                  {balanceData ? balanceData?.currentValueChanges : "₹0"}
+                </div>
+                <div className="w-6 h-6 sm:w-8 sm:h-8">
+                  <Image
+                    src={require("../assets/logo/Credit_Card_yellow.png")}
+                    alt="Card Image"
+                    width={24}
+                    height={24}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+              <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10">
+              </div>
+            </div>
+
+            {/* <!-- Second Card --> */}
+            <div className="relative bg-[#783c6a] rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto">
+              <div className="flex flex-col space-y-2">
+                <div className="text-white font-semibold text-sm sm:text-sm md:text-sm">
+                BSE500 Value Changes (%)
+                </div>
+              </div>
+              <div className="border-t border-dashed border-white my-4"></div>
+
+              <div className="flex flex-col space-y-2">
+                <div className="text-white font-semibold text-base sm:text-sm md:text-base">
+                  {result !== null
+                    ? balanceData?.BSE500Changes
+                    : "₹0"}
+                </div>
+                <div className="w-6 h-6 sm:w-8 sm:h-8">
+                  <Image
+                    src={require("../assets/logo/Credit_Card_yellow.png")}
+                    alt="Card Image"
+                    width={24}
+                    height={24}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+              <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10">
+              
               </div>
             </div>
           </div>
