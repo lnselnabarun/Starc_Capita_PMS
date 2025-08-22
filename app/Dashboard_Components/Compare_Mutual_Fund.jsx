@@ -71,8 +71,6 @@ const MutualFundComparison = () => {
   };
 
   const transformApiResponseToDetails = (apiData, fullData) => {
-    console.log(apiData, "apiDataapiData");
-    console.log(fullData, "fullData with rolling returns");
 
     const detailsArray = [];
 
@@ -369,7 +367,6 @@ const MutualFundComparison = () => {
 
       const data = await response.json();
 
-      console.log(data?.data, "formattedResultsformattedResults");
       if (data?.status === "success") {
         setSearchResults(data?.data);
       } else {

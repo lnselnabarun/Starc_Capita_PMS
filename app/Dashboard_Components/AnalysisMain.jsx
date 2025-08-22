@@ -392,7 +392,6 @@ export default function AnalysisMain() {
       }
 
       const data = await response.json();
-      console.log(data, "setPortfolioMarketCapDistributionData");
 
       if (data?.status === "success") {
         // Transform the data into the required format for Google Charts
@@ -604,8 +603,6 @@ export default function AnalysisMain() {
 
       const data = await response.json();
 
-      console.log(data?.data, "fetch_AMC_Distribution");
-
       if (data?.status === "success") {
         // Format the API response data for the chart
         const formattedData = [["Category", "Percentage"]];
@@ -618,8 +615,6 @@ export default function AnalysisMain() {
             formattedData.push([item?.amc, percentage]);
           }
         });
-
-        console.log(formattedData, "Formatted AMC Distribution");
 
         setAMC_Distribution_data(formattedData);
       } else {

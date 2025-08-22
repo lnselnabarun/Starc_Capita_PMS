@@ -165,26 +165,6 @@ export default function Dashboard() {
             <Logo />
           </div>
 
-          {/* Search Bar */}
-          <div className="flex items-center w-[450px] bg-[#F5F5F5] px-3 rounded-full py-1">
-            {/* Search Icon */}
-            <div className="mx-2">
-              <Image
-                src={require("../assets/logo/search.png")} // Replace with your icon path
-                alt="Search Icon"
-                width={24} // Icon width
-                height={24} // Icon height
-              />
-            </div>
-
-            {/* Search Input */}
-            <input
-              type="text"
-              placeholder="Search for Stocks, Mutual Funds..."
-              className="w-full bg-transparent text-gray-600 p-2 focus:outline-none focus:bg-[#F5F5F5]" // Updated focus styles
-            />
-          </div>
-
           {/* Right Image Icon */}
           <Link href="/Profile" passHref>
             <div className="flex items-center justify-between rounded-lg hover:bg-gray-100 p-2 cursor-pointer transition-colors duration-200">
@@ -310,7 +290,7 @@ export default function Dashboard() {
           </span>
         ) : null} */}
 
-        {activeIndex === 2 && activeIndexSecond === 0 ? (
+        {/* {activeIndex === 2 && activeIndexSecond === 0 ? (
           <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
             Stock Summary
           </span>
@@ -319,7 +299,7 @@ export default function Dashboard() {
           <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
             Intrinsic Calculation
           </span>
-        ) : null}
+        ) : null} */}
 
         {activeIndex === 0 && activeIndexSecond === 0 ? (
           <DashboardMain />
@@ -345,7 +325,7 @@ export default function Dashboard() {
           <Compare_Mutual_Fund />
         ) : null}
         {activeIndex === 1 && activeIndexSecond === 5 ? <AMCGrid /> : null}
-        {activeIndex === 2 ? <DirectStockDashboard /> : null}
+        {activeIndex === 2 && activeIndexSecond === 0  ? <DirectStockDashboard /> : null}
       </div>
 
       <div className="bg-primary w-full overflow-hidden bg-white min-h-screen ">

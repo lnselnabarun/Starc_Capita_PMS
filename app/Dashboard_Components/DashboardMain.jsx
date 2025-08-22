@@ -61,13 +61,6 @@ export default function DashboardMain() {
       );
       const calcResult = currentValue * totalNetExpenseRatio;
 
-      console.log("currentValue * totalNetExpenseRatio:", calcResult);
-      console.log("Calculation details:", {
-        currentValue,
-        totalNetExpenseRatio,
-        result: calcResult,
-      });
-
       setResult(calcResult);
     }
   }, [balanceData, DashboardData]);
@@ -96,7 +89,6 @@ export default function DashboardMain() {
       }
 
       const data = await response.json();
-      console.log(data?.data, "formattedResultsformattedResults");
       if (data?.status === "success") {
         setSearchResults(data?.data);
       } else {
@@ -138,10 +130,6 @@ export default function DashboardMain() {
       }
 
       const data = await response.json();
-      console.log(
-        data?.data,
-        "https://dev.netrumusa.com/starkcapital/api-backend/my-balance"
-      );
       if (data.status === "success") {
         setBalanceData(data?.data);
       }
@@ -227,8 +215,6 @@ export default function DashboardMain() {
         transaction_type: formData?.transactionType,
       };
 
-      console.log("Sending data:", requestBody);
-
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/add-user-portfoliosip",
         {
@@ -245,7 +231,6 @@ export default function DashboardMain() {
       }
 
       const data = await response.json();
-      console.log(data, "datadata");
 
       if (data.status === "success") {
         alert("Systematic transaction added successfully!");
@@ -328,11 +313,6 @@ export default function DashboardMain() {
   }
 
   const GetRecentTrans = async (token, userId) => {
-    console.log(
-      JSON.stringify({ user_id: userId.toString() }),
-      token,
-      "GetRecentTrans"
-    );
     try {
       setLoading(true);
       const response = await fetch(
@@ -346,7 +326,6 @@ export default function DashboardMain() {
         }
       );
       const data = response.json().then((data) => {
-        console.log(data?.data, "0000000"), setRecentTransactions(data?.data);
       });
     } catch (err) {
       console.error(err);
@@ -618,7 +597,6 @@ export default function DashboardMain() {
     })}`;
   };
 
-  console.log(formData, "formData");
   return (
     <>
       <div className="flex flex-col md:flex-row w-full justify-between px-4 sm:px-6 lg:px-28">
@@ -749,7 +727,6 @@ export default function DashboardMain() {
                     <p>Error loading chart: {error}</p>
                   </div>
                 ) : (
-                  // Complete LineChart component with proper tooltip display for each view
                   <>
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart
@@ -1330,8 +1307,6 @@ export default function DashboardMain() {
                       ))}
                     </div>
                   </div>
-
-                  
                 </>
               ))
             ) : (
@@ -1343,20 +1318,11 @@ export default function DashboardMain() {
         </div>
 
         {/* Second div with 20% width on medium and larger screens */}
-        <div className="w-full md:w-[27%] bg-[#f5F5F5F5] p-1 sm:p-2">
+        <div className="w-full md:w-[27%] bg-[#f5f5f5] p-1 sm:p-2 rounded-lg">
           <div className="flex items-center space-x-4 justify-between">
-            <div className="font-sans text-lg sm:text-base md:text-lg font-medium leading-5 text-left text-[#3F4765]">
+            <div className="font-sans text-lg sm:text-base md:text-lg font-semibold leading-5 text-left text-[#3F4765] mt-1">
               My Balance
             </div>
-            {/* <div className="flex items-center justify-center bg-white rounded-full h-8 w-8 sm:h-10 sm:w-10">
-              <Image
-                src={require("../assets/logo/IconPlus.png")}
-                alt="Centered Image"
-                width={20}
-                height={20}
-                className="h-5 w-5"
-              />
-            </div> */}
           </div>
 
           <div className="flex flex-col sm:flex-row justify-between space-x-0 sm:space-x-4 mt-3">
@@ -1389,27 +1355,21 @@ export default function DashboardMain() {
                   />
                 </div>
               </div>
-              <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10">
-              </div>
+              <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10"></div>
             </div>
-
-
-
 
             {/* <!-- Second Card --> */}
             <div className="relative bg-[#FFBA33] rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto">
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-sm sm:text-sm md:text-sm">
-                Weighted Expence Ratio (%)
+                  Expense Ratio (%)
                 </div>
               </div>
               <div className="border-t border-dashed border-white my-4"></div>
 
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                  {result !== null
-                    ? balanceData?.weightedExpenseRatio
-                    : "₹0"}
+                  {result !== null ? balanceData?.weightedExpenseRatio : "₹0"}
                 </div>
                 <div className="w-6 h-6 sm:w-8 sm:h-8">
                   <Image
@@ -1421,13 +1381,15 @@ export default function DashboardMain() {
                   />
                 </div>
               </div>
-              <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10">
-              
-              </div>
+              <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10"></div>
             </div>
           </div>
 
-
+          <div className="flex items-center space-x-4 justify-between mt-2">
+            <div className="font-sans text-lg sm:text-base md:text-lg font-semibold leading-5 text-left text-[#3F4765]">
+              Change (This Month)
+            </div>
+          </div>
 
           <div className="flex flex-col sm:flex-row justify-between space-x-0 sm:space-x-4 mt-3">
             {/* <!-- First Card --> */}
@@ -1437,7 +1399,7 @@ export default function DashboardMain() {
               {/* <!-- First Two Text Elements in Column --> */}
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-sm sm:text-sm md:text-sm">
-                  {`Current Value Changes (%)`}
+                  {`Current Value`}
                 </div>
               </div>
 
@@ -1445,7 +1407,7 @@ export default function DashboardMain() {
 
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                  {balanceData ? balanceData?.currentValueChanges : "₹0"}
+                  {balanceData ? `${balanceData?.currentValueChanges}%` : "0 %"}
                 </div>
                 <div className="w-6 h-6 sm:w-8 sm:h-8">
                   <Image
@@ -1457,24 +1419,21 @@ export default function DashboardMain() {
                   />
                 </div>
               </div>
-              <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10">
-              </div>
+              <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10"></div>
             </div>
 
             {/* <!-- Second Card --> */}
             <div className="relative bg-[#783c6a] rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto">
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-sm sm:text-sm md:text-sm">
-                BSE500 Value Changes (%)
+                  BSE50
                 </div>
               </div>
               <div className="border-t border-dashed border-white my-4"></div>
 
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
-                  {result !== null
-                    ? balanceData?.BSE500Changes
-                    : "₹0"}
+                  {result !== null ? `${balanceData?.BSE500Changes} %` : "0 %"}
                 </div>
                 <div className="w-6 h-6 sm:w-8 sm:h-8">
                   <Image
@@ -1486,103 +1445,9 @@ export default function DashboardMain() {
                   />
                 </div>
               </div>
-              <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10">
-              
-              </div>
+              <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10"></div>
             </div>
           </div>
-          {/* <div className="flex items-center space-x-4 justify-between mt-2">
-            <div className="font-sans text-lg sm:text-base md:text-lg font-medium leading-5 text-left text-[#3F4765]">
-              Activities
-            </div>
-            <div className="font-sans text-sm sm:text-base md:text-sm font-medium leading-5 text-left text-[#969CCB]">
-              {`Today  ▼`}
-            </div>
-          </div> */}
-
-          {/* <div className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-2">
-           
-            <div className="flex items-center space-x-4">
-              <Image
-                src={require("../assets/logo/Activity.png")}
-                alt="Currency Image"
-                width={46}
-                height={46}
-              />
-              <div className="flex flex-col space-y-2">
-                <p className="text-xs font-semibold text-[#3F4765] ">
-                  Activities Name
-                </p>
-                <p className="text-sm font-normal text-[#3F4765]">Sell </p>
-              </div>
-            </div>
-
-            
-            <div className="flex flex-col space-y-2">
-              <p className="text-sm font-semibold text-[#F85842] text-end">
-                ₹2,435.80
-              </p>
-              <p className="text-xs font-normal text-[#3F4765] text-end">
-                Today | 16.40
-              </p>
-            </div>
-          </div> */}
-
-          {/* <div className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-4">
-            
-            <div className="flex items-center space-x-4">
-              <Image
-                src={require("../assets/logo/Logo_B.png")}
-                alt="Currency Image"
-                width={46}
-                height={46}
-              />
-              <div className="flex flex-col space-y-2">
-                <p className="text-xs font-semibold text-[#3F4765] ">
-                  Activities Name
-                </p>
-                <p className="text-sm font-normal text-[#3F4765]">Buy </p>
-              </div>
-            </div>
-
-           
-            <div className="flex flex-col space-y-2">
-              <p className="text-sm font-semibold text-[#24A959] text-end">
-                ₹1,435.72
-              </p>
-              <p className="text-xs font-normal text-[#3F4765] text-end">
-                Today | 16.40
-              </p>
-            </div>
-          </div> */}
-          {/* <div className="flex justify-between items-start space-y-4 md:space-y-0 flex-row mt-4">
-            
-            <div className="flex items-center space-x-4">
-              <Image
-                src={require("../assets/logo/Logo_A.png")}
-                alt="Currency Image"
-                width={46}
-                height={46}
-              />
-              <div className="flex flex-col space-y-2">
-                <p className="text-xs font-semibold text-[#3F4765] ">
-                  Activities Name
-                </p>
-                <p className="text-sm font-normal text-[#3F4765]">Buy</p>
-              </div>
-            </div>
-
-          
-            <div className="flex flex-col space-y-2">
-              <p className="text-sm font-semibold text-[#24A959] text-end">
-                ₹1,435.72
-              </p>
-              <p className="text-xs font-normal text-[#3F4765] text-end">
-                Today | 16.40
-              </p>
-            </div>
-          </div> */}
-
           <div
             onClick={() => router.push("/Newslist")}
             className="flex items-center space-x-4 justify-between mt-6 p-4 rounded-lg transition-all duration-300 ease-in-out hover:bg-gray-100 hover:shadow-md"

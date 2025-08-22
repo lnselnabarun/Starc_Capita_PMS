@@ -118,8 +118,6 @@ export default function CombinedMutualFund() {
     initializeData();
   }, []);
 
- 
-
   const applyFilters = () => {
     let filtered = [...familyData];
 
@@ -154,9 +152,6 @@ export default function CombinedMutualFund() {
   };
 
   async function GetCombindMutualFund(token) {
-
-
-    
     try {
       const response = await axios.post(
         "https://dev.netrumusa.com/starkcapital/api-backend/get-usermf-data",
@@ -169,104 +164,58 @@ export default function CombinedMutualFund() {
           },
         }
       );
-  
-      // console.log("=== API Response Debug ===");
-      // console.log("Full response:", response);
-      // console.log("Response data:", response.data);
-      // console.log("Response status:", response.data?.status);
-      
+
       if (response.data?.status === "success") {
-        // Debug the exact structure
-        // console.log("=== Data Structure Debug ===");
-        // console.log("response.data:", response.data);
-        // console.log("response.data.data:", response.data?.data);
-        // console.log("Type of response.data.data:", typeof response.data?.data);
-        // console.log("Is array?", Array.isArray(response.data?.data));
-        
-        // Handle different possible structures
         let rawData;
-        
-        // Check if data is nested deeper (like response.data.data.data)
+
         if (response.data?.data?.data) {
           rawData = response.data.data.data;
-          // console.log("Using nested data (response.data.data.data)");
-        } 
-        // Check if data is at response.data.data level
-        else if (response.data?.data) {
+        } else if (response.data?.data) {
           rawData = response.data.data;
-          // console.log("Using data at response.data.data level");
-        }
-        // Fallback to direct data
-        else {
+        } else {
           rawData = response.data;
-          // console.log("Using direct response.data");
         }
-        
-        // console.log("Raw data structure:", rawData);
-        // console.log("Raw data type:", typeof rawData);
-        // console.log("Raw data is array:", Array.isArray(rawData));
-        
-        // If rawData is your grouped structure (array of objects with 'data' property)
+
         if (Array.isArray(rawData) && rawData.length > 0 && rawData[0]?.data) {
-          // console.log("Detected grouped data structure");
-          // Set the data as is - don't flatten it since your render logic expects this structure
           setFilteredData(rawData);
-          
-          // If you also want to set family data with flattened structure
-          const flattenedData = rawData.flatMap(group => group.data || []);
-          // console.log("Flattened data count:", flattenedData.length);
+
+          const flattenedData = rawData.flatMap((group) => group.data || []);
           setFamilyData(flattenedData);
         }
-        // If rawData is a flat array
         if (Array.isArray(rawData)) {
-          // console.log("Detected flat array structure");
-          
-          // Remove duplicates
-          
-          const uniqueData = rawData.map( dataOne => {
+          const uniqueData = rawData.map((dataOne) => {
             dataOne.data = dataOne.data.filter((item, index, self) => {
-              return index === self.findIndex((t) => {
-                if (item?.id && t?.id) return t.id === item.id;
-                if (item?.isin && t?.isin) return t.isin === item.isin;
-                if (item?.scheme && t?.scheme) return t.scheme === item.scheme;
-                return false;
-              });
+              return (
+                index ===
+                self.findIndex((t) => {
+                  if (item?.id && t?.id) return t.id === item.id;
+                  if (item?.isin && t?.isin) return t.isin === item.isin;
+                  if (item?.scheme && t?.scheme)
+                    return t.scheme === item.scheme;
+                  return false;
+                })
+              );
             });
-            return dataOne
-          })
-          
-          
-          
-          // console.log("Original count:", rawData.length);
-          // console.log("After deduplication:", uniqueData,uniqueData.length);
-          
+            return dataOne;
+          });
           setFamilyData(uniqueData);
-          // setFilteredData(uniqueData);
           setFilteredData(response.data.data);
-        }
-        // If rawData is an object
-        else {
-          // console.log("Data is not an array, handling as object");
+        } else {
           setFilteredData([rawData]);
           setFamilyData([rawData]);
         }
-        
       } else {
         throw new Error(
           response.data?.message || "API returned unsuccessful status"
         );
       }
     } catch (error) {
-      console.error("=== API Error Debug ===");
-      console.error("Error object:", error);
-      console.error("Error message:", error.message);
-      console.error("Error response:", error.response?.data);
-      console.error("Error status:", error.response?.status);
-      
       if (error.response) {
         throw new Error(
           `API Error (${error.response.status}): ${
-            error.response.data?.message || error.response.statusText || error.message
+            error.response.data?.message ||
+            error.response.statusText ||
+            error.message
           }`
         );
       } else if (error.request) {
@@ -331,10 +280,8 @@ export default function CombinedMutualFund() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header Section */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <div className="space-y-6">
-            {/* Title and Filter Row */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
               <h1 className="text-2xl font-bold text-gray-900">Fund List</h1>
               <div className="flex items-center space-x-4">
@@ -352,28 +299,24 @@ export default function CombinedMutualFund() {
           </div>
         </div>
 
-        {/* Table Section */}
         {filteredData?.length !== 0 ? (
           <div className="bg-white rounded-lg shadow">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    {/* Fixed width for name column to prevent layout shifts */}
                     <th
                       className="sticky left-0 z-20 bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       style={{ minWidth: "200px", maxWidth: "250px" }}
                     >
-                      {headers[0]} {/* Name column */}
+                      {headers[0]}
                     </th>
-                    {/* Fixed width for category column */}
                     <th
                       className="sticky left-[200px] z-10 bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       style={{ minWidth: "150px" }}
                     >
-                      {headers[1]} {/* Category column */}
+                      {headers[1]}
                     </th>
-                    {/* Regular columns with appropriate width */}
                     {headers.slice(2).map((header, index) => (
                       <th
                         key={index + 2}
@@ -395,7 +338,6 @@ export default function CombinedMutualFund() {
                       {items?.data?.map((item, index) => {
                         return (
                           <tr key={item.id} className="hover:bg-gray-50">
-                            {/* Fixed width for name column */}
                             <td
                               className="sticky left-0 z-20 bg-white px-6 py-4 whitespace-normal"
                               style={{
@@ -410,7 +352,6 @@ export default function CombinedMutualFund() {
                                   "N/A"}
                               </div>
                             </td>
-                            {/* Fixed width for category column */}
                             <td
                               className="sticky left-[200px] z-10 bg-white px-6 py-4 whitespace-normal"
                               style={{
@@ -422,16 +363,6 @@ export default function CombinedMutualFund() {
                                 {item?.["AT-FundLevelCategoryName"] || "N/A"}
                               </div>
                             </td>
-                            {/* Current isin */}
-                            {/* <td
-                              className="px-6 py-4 whitespace-nowrap"
-                              style={{ minWidth: "120px" }}
-                            >
-                              <div className="text-sm text-gray-900">
-                                {item?.isin || "N/A"}
-                              </div>
-                            </td> */}
-                            {/* Current Cost */}
                             <td
                               className="px-6 py-4 whitespace-nowrap"
                               style={{ minWidth: "120px" }}
@@ -442,7 +373,6 @@ export default function CombinedMutualFund() {
                                   : "N/A"}
                               </div>
                             </td>
-                            {/* Current XIRR */}
                             <td
                               className="px-6 py-4 whitespace-nowrap"
                               style={{ minWidth: "120px" }}
@@ -453,7 +383,6 @@ export default function CombinedMutualFund() {
                                   : "0%"}
                               </div>
                             </td>
-                            {/* Current Value */}
                             <td
                               className="px-6 py-4 whitespace-nowrap"
                               style={{ minWidth: "150px" }}
@@ -464,7 +393,6 @@ export default function CombinedMutualFund() {
                                   : "N/A"}
                               </div>
                             </td>
-                            {/* Expense Ratio */}
                             <td
                               className="px-6 py-4 whitespace-nowrap"
                               style={{ minWidth: "120px" }}
@@ -475,7 +403,6 @@ export default function CombinedMutualFund() {
                                   : "N/A"}
                               </div>
                             </td>
-                            {/* Exit Load */}
                             <td
                               className="px-6 py-4 whitespace-nowrap"
                               style={{ minWidth: "120px" }}
@@ -685,7 +612,10 @@ export default function CombinedMutualFund() {
                         );
                       })}
 
-                      <tr key={items.id} className="hover:bg-slate-300 bg-slate-200">
+                      <tr
+                        key={items.id}
+                        className="hover:bg-slate-300 bg-slate-200"
+                      >
                         {/* Fixed width for name column */}
                         <td
                           className="sticky left-0 z-20 bg-slate-200 px-6 py-1 whitespace-normal"
@@ -696,11 +626,9 @@ export default function CombinedMutualFund() {
                           }}
                         >
                           <div className="text-base font-bold text-fuchsia-950 line-clamp-2">
-                          Category Average
+                            Category Average
                           </div>
                         </td>
-                        {/* Fixed width for category column */}
-                        
                         <td
                           className="sticky left-[200px] z-10 bg-slate-200 px-6 py-1 whitespace-normal"
                           style={{
@@ -709,111 +637,84 @@ export default function CombinedMutualFund() {
                           }}
                         >
                           <div className="text-sm text-gray-900">
-                          {items?.category}
+                            {items?.category}
                           </div>
                         </td>
-                        {/* Current isin */}
-                        {/* <td
-                          className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
-                          <div className="text-sm text-gray-900">
-                           
-                          </div>
-                        </td> */}
-                        {/* Current Cost */}
                         <td
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                            {`₹${formatMoney(items?.summery?.totalCurrentCost)}`}
-                           
+                            {`₹${formatMoney(
+                              items?.summery?.totalCurrentCost
+                            )}`}
                           </div>
                         </td>
-                        {/* Current XIRR */}
                         <td
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
-                          <div className="text-sm text-gray-900">
-                          
-                          </div>
-                        </td>
-                        {/* Current Value */}
+                          <div className="text-sm text-gray-900"></div>
+                        </td> 
                         <td
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "150px" }}
                         >
                           <div className="text-sm text-gray-900">
-                          {`₹${formatMoney(items?.summery?.totalCurrentValue)}`}
+                            {`₹${formatMoney(
+                              items?.summery?.totalCurrentValue
+                            )}`}
                           </div>
-                        </td>
-                        {/* Expense Ratio */}
+                        </td> 
                         <td
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                          {items?.summery?.weightedExpenseRatio}
+                            {items?.summery?.weightedExpenseRatio}
                           </div>
-                        </td>
-                        {/* Exit Load */}
+                        </td> 
                         <td
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
-                          <div className="text-sm text-gray-900">
-                          
-                          </div>
+                          <div className="text-sm text-gray-900"></div>
                         </td>
                         <td
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
-                          <div className="text-sm text-gray-900">
-                          
-                          </div>
+                          <div className="text-sm text-gray-900"></div>
                         </td>
                         <td
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
-                          <div className="text-sm text-gray-900">
-                          
-                          </div>
+                          <div className="text-sm text-gray-900"></div>
                         </td>
                         <td
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
-                          <div className="text-sm text-gray-900">
-                           
-                          </div>
+                          <div className="text-sm text-gray-900"></div>
                         </td>
                         <td
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
-                          <div className="text-sm text-gray-900">
-                           
-                          </div>
+                          <div className="text-sm text-gray-900"></div>
                         </td>
                         <td
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
-                          <div className="text-sm text-gray-900">
-                           
-                          </div>
+                          <div className="text-sm text-gray-900"></div>
                         </td>
                         <td
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
-                          <div className="text-sm text-gray-900">
-                           
-                          </div>
+                          <div className="text-sm text-gray-900"></div>
                         </td>
                         <td
                           className="px-6 py-1 whitespace-nowrap"
@@ -825,8 +726,14 @@ export default function CombinedMutualFund() {
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
+                          <div className="text-sm text-gray-900"></div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
                           <div className="text-sm text-gray-900">
-                            
+                            {items?.summery?.weightedStdDev}
                           </div>
                         </td>
                         <td
@@ -834,7 +741,7 @@ export default function CombinedMutualFund() {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                          {items?.summery?.weightedStdDev}
+                            {items?.summery?.weightedSharpeRatio}
                           </div>
                         </td>
                         <td
@@ -842,7 +749,7 @@ export default function CombinedMutualFund() {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                          {items?.summery?.weightedSharpeRatio}
+                            {items?.summery?.weightedUpsideCapture}
                           </div>
                         </td>
                         <td
@@ -850,7 +757,7 @@ export default function CombinedMutualFund() {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                          {items?.summery?.weightedUpsideCapture}
+                            {items?.summery?.weightedDownsideCapture}
                           </div>
                         </td>
                         <td
@@ -858,7 +765,7 @@ export default function CombinedMutualFund() {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                          {items?.summery?.weightedDownsideCapture}
+                            {items?.summery?.weightedBeta}
                           </div>
                         </td>
                         <td
@@ -866,7 +773,7 @@ export default function CombinedMutualFund() {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                          {items?.summery?.weightedBeta}
+                            {items?.summery?.weightedAlpha}
                           </div>
                         </td>
                         <td
@@ -874,7 +781,7 @@ export default function CombinedMutualFund() {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                          {items?.summery?.weightedAlpha}
+                            {items?.summery?.weightedRolling1YrMax}
                           </div>
                         </td>
                         <td
@@ -882,7 +789,7 @@ export default function CombinedMutualFund() {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                          {items?.summery?.weightedRolling1YrMax}
+                            {items?.summery?.weightedRolling1YrAvg}
                           </div>
                         </td>
                         <td
@@ -890,7 +797,7 @@ export default function CombinedMutualFund() {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                          {items?.summery?.weightedRolling1YrAvg}
+                            {items?.summery?.weightedRolling1YrMin}
                           </div>
                         </td>
                         <td
@@ -898,7 +805,7 @@ export default function CombinedMutualFund() {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                          {items?.summery?.weightedRolling1YrMin}
+                            {items?.summery?.weightedRolling3YrMax}
                           </div>
                         </td>
                         <td
@@ -906,7 +813,7 @@ export default function CombinedMutualFund() {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                          {items?.summery?.weightedRolling3YrMax}
+                            {items?.summery?.weightedRolling3YrAvg}
                           </div>
                         </td>
                         <td
@@ -914,36 +821,23 @@ export default function CombinedMutualFund() {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                          {items?.summery?.weightedRolling3YrAvg}
+                            {items?.summery?.weightedRolling3YrMin}
                           </div>
                         </td>
                         <td
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
-                          <div className="text-sm text-gray-900">
-                          {items?.summery?.weightedRolling3YrMin}
-                          </div>
+                          <div className="text-sm text-gray-900"></div>
                         </td>
                         <td
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
-                          <div className="text-sm text-gray-900">
-                           
-                          </div>
-                        </td>
-                        <td
-                          className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
-                          <div className="text-sm text-gray-900">
-                          
-                          </div>
+                          <div className="text-sm text-gray-900"></div>
                         </td>
 
                         {/* Action column */}
-                      
                       </tr>
                     </>
                   ))}
