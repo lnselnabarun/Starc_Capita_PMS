@@ -702,7 +702,6 @@ export default function DashboardMain() {
                 >
                   Investment
                 </button>
-
                 <button
                   onClick={() => setChartView("xirr")}
                   className={`text-[#9FA8C7] px-4 py-2 rounded-2xl border text-sm ${
@@ -717,7 +716,6 @@ export default function DashboardMain() {
             </div>
 
             <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg">
-              {" "}
               <div className="w-full h-96">
                 {isLoading ? (
                   <div className="w-full h-full flex items-center justify-center">
@@ -740,22 +738,6 @@ export default function DashboardMain() {
                         }}
                       >
                         <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-
-                        {/* Hidden XAxis that still provides positioning */}
-                        {/* <XAxis
-                          dataKey="date"
-                          axisLine={ true }
-                          tickLine={ true }
-                          tick={ true }
-                          height={ 50 }
-                          tickFormatter={ (dateStr) => {
-                            const date = new Date(dateStr);
-                            return date.toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric'
-                            }).toUpperCase().replace(' ', '-');
-                          } }
-                        /> */}
                         <XAxis
                           dataKey="date"
                           axisLine={true}
