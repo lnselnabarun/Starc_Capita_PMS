@@ -104,10 +104,10 @@ export default function DirectStockDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}
-        <div className=" rounded-2xl shadow-xl p-8 mb-8 border border-slate-200">
+        {/* <div className=" rounded-2xl shadow-xl p-8 mb-8 border border-slate-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
              
@@ -115,11 +115,11 @@ export default function DirectStockDashboard() {
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
                   Stock Summary
                 </h1>
-                {/* <p className="text-slate-600 mt-1">Monitor your investment performance</p> */}
+                
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Stock Table */}
         {stockData?.length !== 0 ? (

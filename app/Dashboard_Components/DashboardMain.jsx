@@ -326,6 +326,7 @@ export default function DashboardMain() {
         }
       );
       const data = response.json().then((data) => {
+        setRecentTransactions(data?.data);
       });
     } catch (err) {
       console.error(err);

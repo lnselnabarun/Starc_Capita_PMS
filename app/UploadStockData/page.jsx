@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 const PDFUploadPage = () => {
   const router = useRouter();
   const [file, setFile] = useState(null);
-  const [password, setPassword] = useState("");
+  // const [password, setPassword] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -38,8 +38,13 @@ const PDFUploadPage = () => {
     setError("");
     if (!selectedFile) return;
 
-    if (selectedFile?.type !== "application/pdf") {
-      setError("Please upload a PDF file only");
+    // Change this line from "PDF file only" to "Excel file only"
+    if (
+      selectedFile?.type !==
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" &&
+      selectedFile?.type !== "application/vnd.ms-excel"
+    ) {
+      setError("Please upload an Excel file only (.xlsx or .xls)");
       return;
     }
 
@@ -53,19 +58,16 @@ const PDFUploadPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Reset previous errors
     setError("");
 
-    // Validate file and password
     if (!file) {
-      setError("Please select a PDF file");
+      setError("Please select an Excel file"); // CHANGED from "PDF file"
       return;
     }
-    if (!password) {
-      setError("Please enter a password");
-      return;
-    }
+    // if (!password) {
+    //   setError("Please enter a password");
+    //   return;
+    // }
 
     // Get user ID from local storage
     const userId = localStorage.getItem("UserId");
@@ -76,25 +78,22 @@ const PDFUploadPage = () => {
     // Create FormData to send file
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("password", password);
+    // formData.append("password", password);
     formData.append("user_id", userId);
 
     try {
       setIsLoading(true);
 
       // Make API call
-      const response = await axios.post(
-        "",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post("https://dev.netrumusa.com/starkcapital/api/upload-stock-transaction-file", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(response?.data)
       if (response.data?.status === "success") {
         setFile(null);
-        setPassword("");
+        // setPassword("");
         router.back();
       } else {
         throw new Error(response.data?.message || "Failed to fetch PDF list");
@@ -120,9 +119,9 @@ const PDFUploadPage = () => {
       <div className="max-w-xl mx-auto">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-fuchsia-900">
-            UPLOAD STOCK PDF
+            UPLOAD STOCK EXCEL
           </h2>
-          <p className="mt-2 text-gray-600">With your PDF password</p>
+          {/* <p className="mt-2 text-gray-600">With your Excel password</p> */}
         </div>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
@@ -155,13 +154,13 @@ const PDFUploadPage = () => {
                         name="file-upload"
                         type="file"
                         className="sr-only"
-                        accept=".pdf"
+                        accept=".xlsx,.xls" // CHANGED from ".xlsx" to include both Excel formats
                         onChange={handleFileChange}
                       />
                     </label>
                     <p className="pl-1">or drag and drop</p>
                   </div>
-                  <p className="text-xs text-gray-500">PDF up to 10MB</p>
+                  <p className="text-xs text-gray-500">Excel up to 10MB</p>
                 </div>
               ) : (
                 <div className="flex items-center justify-between bg-white p-4 rounded-lg border border-gray-200">
@@ -182,27 +181,7 @@ const PDFUploadPage = () => {
               )}
             </div>
 
-            <div className="mt-4">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-               STOCK PDF PASWORD
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e?.target?.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-fuchsia-500 focus:border-fuchsia-500"
-                  placeholder="Enter pdf password"
-                />
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-              </div>
-            </div>
+            
           </div>
 
           {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
@@ -218,17 +197,16 @@ const PDFUploadPage = () => {
               } 
               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fuchsia-500 transition-colors`}
           >
-            {isLoading ? "Uploading..." : "Upload PDF"}
+            {isLoading ? "Uploading..." : "Upload Excel"}{" "}
           </button>
-         
         </form>
         <button
-            onClick={() => router.back()}
-            type="submit"
-            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-fuchsia-900  bg-white hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors border-gray-500 mt-3`}
-          >
-            Go Back
-          </button>
+          onClick={() => router.back()}
+          type="submit"
+          className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-fuchsia-900  bg-white hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors border-gray-500 mt-3`}
+        >
+          Go Back
+        </button>
       </div>
     </div>
   );

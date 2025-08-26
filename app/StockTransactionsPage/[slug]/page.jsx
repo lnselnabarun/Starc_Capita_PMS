@@ -9,6 +9,7 @@ import {
   Activity,
   BarChart3,
   Filter,
+  IndianRupee
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -202,7 +203,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
             <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl hover:border-blue-200 transition-all duration-300 group w-full md:w-[48%] lg:w-[32%]">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 bg-blue-100 rounded-xl group-hover:bg-blue-200 transition-colors duration-200">
-                  <DollarSign className="w-6 h-6 text-blue-600" />
+                  <IndianRupee className="w-6 h-6 text-blue-600" />
                 </div>
                 <span className="text-xs text-gray-500 font-semibold uppercase tracking-wider">
                   Returns
@@ -276,7 +277,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
                   </th>
                   <th className="px-8 py-5 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
                     <div className="flex items-center">
-                      <DollarSign className="w-4 h-4 mr-2 text-gray-500" />
+                      <IndianRupee className="w-4 h-4 mr-2 text-gray-500" />
                       Amount (₹)
                     </div>
                   </th>

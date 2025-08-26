@@ -11,11 +11,13 @@ import CombinedMutualFund from "../Dashboard_Components/CombinedMutualFund";
 import EquityMutualFund from "../Dashboard_Components/EquityMutualFund";
 import HybridMutualFund from "../Dashboard_Components/HybridMutualFund";
 import DirectStockDashboard from "../Dashboard_Components/DirectStockDashboard";
+import IntrinsicCalculation from "../Dashboard_Components/IntrinsicCalculation"
 import Compare_Mutual_Fund from "../Dashboard_Components/Compare_Mutual_Fund";
 import DebtMutualFund from "../Dashboard_Components/DebtMutualFund";
 import AMCGrid from "../Dashboard_Components/AMCGrid";
 import { Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+
 
 export default function Dashboard() {
   const route = useRouter();
@@ -290,12 +292,12 @@ export default function Dashboard() {
           </span>
         ) : null} */}
 
-        {/* {activeIndex === 2 && activeIndexSecond === 0 ? (
-          <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
+        {activeIndex === 2 && activeIndexSecond === 0 ? (
+          <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6 bg-gray-50">
             Stock Summary
           </span>
         ) : null}
-        {activeIndex === 2 && activeIndexSecond === 1 ? (
+        {/* {activeIndex === 2 && activeIndexSecond === 1 ? (
           <span className="flex text-xl md:text-2xl lg:text-3xl font-sans font-medium text-gray-700 pl-8 md:pl-16 lg:pl-28 py-4 md:py-6">
             Intrinsic Calculation
           </span>
@@ -326,6 +328,8 @@ export default function Dashboard() {
         ) : null}
         {activeIndex === 1 && activeIndexSecond === 5 ? <AMCGrid /> : null}
         {activeIndex === 2 && activeIndexSecond === 0  ? <DirectStockDashboard /> : null}
+        {activeIndex === 2 && activeIndexSecond === 1  ? <IntrinsicCalculation /> : null}
+         
       </div>
 
       <div className="bg-primary w-full overflow-hidden bg-white min-h-screen ">
