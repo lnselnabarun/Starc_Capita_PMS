@@ -230,7 +230,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
                 {totalTransactions}
               </div>
               <div className="text-sm text-purple-600 font-medium">
-                Total Orders
+                XIRR
               </div>
             </div>
           </div>
@@ -319,17 +319,17 @@ const CombinedDetailsMutualFund = ({ params }) => {
                                 </div>
                               </td>
                               <td className="px-8 py-6 whitespace-nowrap">
-                                <div className="text-lg font-bold text-gray-900 font-mono">
+                                <div className="text-lg font-semibold text-gray-900">
                                   ₹{item?.net_rate}
                                 </div>
                               </td>
                               <td className="px-8 py-6 whitespace-nowrap">
-                                <div className="text-lg font-semibold text-gray-900 font-mono">
+                                <div className="text-lg font-semibold text-gray-900">
                                   {item?.qty}
                                 </div>
                               </td>
                               <td className="px-8 py-6 whitespace-nowrap">
-                                <div className="text-lg font-bold text-gray-900 font-mono">
+                                <div className="text-lg font-semibold text-gray-900">
                                   ₹{formatMoney(item?.amount)}
                                 </div>
                               </td>

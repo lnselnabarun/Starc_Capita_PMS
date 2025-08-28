@@ -1409,7 +1409,7 @@ export default function DashboardMain() {
             <div className="relative bg-[#783c6a] rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto">
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-sm sm:text-sm md:text-sm">
-                  BSE50
+                  BSE500
                 </div>
               </div>
               <div className="border-t border-dashed border-white my-4"></div>

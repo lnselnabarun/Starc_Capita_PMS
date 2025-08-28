@@ -1,7 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { BarChart3, Eye, AlertCircle, Loader2 } from "lucide-react";
+import {
+  BarChart3,
+  Eye,
+  AlertCircle,
+  Loader2,
+  ArrowLeft,
+  TrendingUp,
+  TrendingDown,
+  Calendar,
+  Filter,
+  IndianRupee,
+} from "lucide-react";
 
 export default function DirectStockDashboard() {
   const [stockData, setStockData] = useState([]);
@@ -14,6 +25,7 @@ export default function DirectStockDashboard() {
     "Total Qty",
     "Market Price (₹)",
     "Net Rate (₹)",
+    "Reference",
   ];
 
   useEffect(() => {
@@ -86,7 +98,9 @@ export default function DirectStockDashboard() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="bg-white rounded-2xl shadow-2xl p-8 flex items-center space-x-4">
           <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-          <div className="text-slate-700 font-medium">Loading stock data...</div>
+          <div className="text-slate-700 font-medium">
+            Loading stock data...
+          </div>
         </div>
       </div>
     );
@@ -125,10 +139,14 @@ export default function DirectStockDashboard() {
         {stockData?.length !== 0 ? (
           <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
-              <h2 className="text-xl font-semibold text-slate-800">Holdings Overview</h2>
-              <p className="text-slate-600 text-sm mt-1">{stockData.length} stocks in your portfolio</p>
+              <h2 className="text-xl font-semibold text-slate-800">
+                Holdings Overview
+              </h2>
+              <p className="text-slate-600 text-sm mt-1">
+                {stockData.length} stocks in your portfolio
+              </p>
             </div>
-            
+
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-slate-200">
                 <thead className="bg-slate-50">
@@ -155,10 +173,14 @@ export default function DirectStockDashboard() {
                     const currentValue = stock.market * stock.qty;
                     const investedValue = stock.net_rate * stock.qty;
                     const pnl = currentValue - investedValue;
-                    const pnlPercent = investedValue > 0 ? ((pnl / investedValue) * 100) : 0;
-                    
+                    const pnlPercent =
+                      investedValue > 0 ? (pnl / investedValue) * 100 : 0;
+
                     return (
-                      <tr key={stock.trading_symbol || index} className="hover:bg-slate-50 transition-colors duration-200">
+                      <tr
+                        key={stock.trading_symbol || index}
+                        className="hover:bg-slate-50 transition-colors duration-200"
+                      >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             {/* <div className="w-10 h-10 bg-gradient-to-r from-fuchsia-500 to-fuchsia-700 rounded-lg flex items-center justify-center mr-3">
@@ -172,7 +194,9 @@ export default function DirectStockDashboard() {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-slate-900">{stock.qty}</div>
+                          <div className="text-sm font-medium text-slate-900">
+                            {stock.qty}
+                          </div>
                           {/* <div className="text-xs text-slate-500">shares</div> */}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -187,17 +211,34 @@ export default function DirectStockDashboard() {
                           </div>
                           {/* <div className="text-xs text-slate-500">avg. cost</div> */}
                         </td>
-                        {/* <td className="px-6 py-4 whitespace-nowrap text-center">
-                          <div className={`text-sm font-semibold ${pnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            ₹{formatMoney(pnl)}
-                          </div>
-                          <div className={`text-xs ${pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                            ({pnlPercent >= 0 ? '+' : ''}{pnlPercent.toFixed(2)}%)
-                          </div>
-                        </td> */}
+                        <td className="px-6 py-4 whitespace-nowrap text-left ">
+                          <span
+                            className={`inline-flex items-start px-4 py-2 rounded-full text-sm font-bold shadow-sm border-2 transition-all duration-200 ${
+                              index % 2 == 0
+                                ? "bg-green-50 text-green-800 border-green-200 hover:bg-green-100 hover:shadow-green-200/50"
+                                : "bg-red-50 text-red-800 border-red-200 hover:bg-red-100 hover:shadow-red-200/50"
+                            }`}
+                          >
+                            {index % 2 == 0 ? (
+                              <>
+                                <TrendingUp className="w-4 h-4 mr-2" />
+                                BUY
+                              </>
+                            ) : (
+                              <>
+                                <TrendingDown className="w-4 h-4 mr-2" />
+                                SELL
+                              </>
+                            )}
+                          </span>
+                        </td>
                         <td className="px-6 py-4 whitespace-nowrap text-center">
-                          <button 
-                            onClick={() => router.push(`/StockTransactionsPage/${stock?.trading_symbol}`)}
+                          <button
+                            onClick={() =>
+                              router.push(
+                                `/StockTransactionsPage/${stock?.trading_symbol}`
+                              )
+                            }
                             className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-fuchsia-500 to-fuchsia-700 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-105 transition-all duration-200 shadow-lg"
                           >
                             <Eye className="w-4 h-4 mr-2" />
@@ -216,7 +257,9 @@ export default function DirectStockDashboard() {
             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <BarChart3 className="w-8 h-8 text-slate-400" />
             </div>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">No Stocks Found</h3>
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">
+              No Stocks Found
+            </h3>
             <p className="text-slate-600 max-w-md mx-auto">
               Your portfolio is empty. Start investing to see your stocks here.
             </p>
