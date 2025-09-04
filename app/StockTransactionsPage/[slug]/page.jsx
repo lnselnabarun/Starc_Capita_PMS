@@ -5,7 +5,6 @@ import {
   TrendingUp,
   TrendingDown,
   Calendar,
-  DollarSign,
   Activity,
   BarChart3,
   Filter,
@@ -30,6 +29,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
       try {
         setIsLoading(true);
         const token = localStorage.getItem("myData");
+        const user_id = localStorage.getItem("UserId");
         if (!token) {
           setError("No authentication token found");
           return;
@@ -44,12 +44,11 @@ const CombinedDetailsMutualFund = ({ params }) => {
               "Content-Type": "application/json",
               Authorization: `Bearer ${JSON.parse(token)}`,
             },
-            body: JSON.stringify({ user_id: "4" }),
+            body: JSON.stringify({ user_id: JSON.parse(user_id) }),
           }
         );
 
         const data = await response.json();
-        console.log(data.data[3], "data.datadata.data");
         if (data?.status === "success") {
           setTransactions(data.data);
         } else {
@@ -319,17 +318,17 @@ const CombinedDetailsMutualFund = ({ params }) => {
                                 </div>
                               </td>
                               <td className="px-8 py-6 whitespace-nowrap">
-                                <div className="text-lg font-semibold text-gray-900">
+                                <div className="text-lg font-medium text-gray-900">
                                   ₹{item?.net_rate}
                                 </div>
                               </td>
                               <td className="px-8 py-6 whitespace-nowrap">
-                                <div className="text-lg font-semibold text-gray-900">
+                                <div className="text-lg font-medium text-gray-900">
                                   {item?.qty}
                                 </div>
                               </td>
                               <td className="px-8 py-6 whitespace-nowrap">
-                                <div className="text-lg font-semibold text-gray-900">
+                                <div className="text-lg font-medium text-gray-900">
                                   ₹{formatMoney(item?.amount)}
                                 </div>
                               </td>

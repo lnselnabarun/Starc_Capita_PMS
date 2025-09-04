@@ -221,12 +221,12 @@ export default function DirectStockDashboard() {
                           >
                             {index % 2 == 0 ? (
                               <>
-                                <TrendingUp className="w-4 h-4 mr-2" />
+                                {/* <TrendingUp className="w-4 h-4 mr-2" /> */}
                                 BUY
                               </>
                             ) : (
                               <>
-                                <TrendingDown className="w-4 h-4 mr-2" />
+                                {/* <TrendingDown className="w-4 h-4 mr-2" /> */}
                                 SELL
                               </>
                             )}
