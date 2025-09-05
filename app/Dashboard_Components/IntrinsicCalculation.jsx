@@ -260,7 +260,7 @@ const IntrinsicCalculation = () => {
               <p className="text-gray-600">{stock.code}</p>
             </div>
             <div
-              className={`mt-3 p-2 rounded-lg text-center ${
+              className={`mt-3 p-2 rounded-lg text-center px-4 ${
                 parseFloat(intrinsicValue.withMarginOfSafety) >
                 fcfData[fcfData.length - 1].marketCap
                   ? "bg-green-100"
