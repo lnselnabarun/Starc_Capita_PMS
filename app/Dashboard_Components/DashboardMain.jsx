@@ -347,22 +347,32 @@ export default function DashboardMain() {
           body: JSON.stringify({ user_id: fundId.toString() }),
         }
       );
-
+  
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
+  
       const data = await response.json();
-
+  
       if (data?.status === "success") {
-        const processedData = data?.summaries.map((item) => ({
-          date: item?.date,
-          totalCost: parseFloat(item?.totalCost),
-          currentValue: parseFloat(item?.currentValue),
-          sensex: parseInt(item?.sensex),
-          xirr: parseFloat(item?.xirr),
-        }));
-
+        const processedData = data?.summaries
+          .map((item) => ({
+            date: item?.date,
+            totalCost: parseFloat(item?.totalCost),
+            currentValue: parseFloat(item?.currentValue),
+            sensex: parseInt(item?.sensex),
+            xirr: parseFloat(item?.xirr),
+          }))
+          .filter((item) => {
+            // Remove objects where any of these fields is 0
+            return (
+              item.totalCost !== 0 &&
+              item.currentValue !== 0 &&
+              item.sensex !== 0 &&
+              item.xirr !== 0
+            );
+          });
+  
         processedData.sort((a, b) => new Date(a.date) - new Date(b.date));
         setPortfolioData(processedData);
       }

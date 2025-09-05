@@ -13,7 +13,7 @@ const IntrinsicCalculation = () => {
   const [stock1Params, setStock1Params] = useState({
     expectedReturns: "15",
     EstimatedFutureFCF: "12", // This should be 12% as shown in Excel
-    terminalFCFMultiplier: "20", // This should be 15 as shown in Excel
+    terminalFCFMultiplier: "15", // This should be 15 as shown in Excel
     marginOfSafety: "20",
   });
 
@@ -258,6 +258,28 @@ const IntrinsicCalculation = () => {
                 {stock.name}
               </h2>
               <p className="text-gray-600">{stock.code}</p>
+            </div>
+            <div
+              className={`mt-3 p-2 rounded-lg text-center ${
+                parseFloat(intrinsicValue.withMarginOfSafety) >
+                fcfData[fcfData.length - 1].marketCap
+                  ? "bg-green-100"
+                  : "bg-red-100"
+              }`}
+            >
+              <span
+                className={`font-bold text-sm ${
+                  parseFloat(intrinsicValue.withMarginOfSafety) >
+                  fcfData[fcfData.length - 1].marketCap
+                    ? "text-green-800"
+                    : "text-red-800"
+                }`}
+              >
+                {parseFloat(intrinsicValue.withMarginOfSafety) >
+                fcfData[fcfData.length - 1].marketCap
+                  ? "BUY"
+                  : "HOLD/SELL"}
+              </span>
             </div>
             <button
               onClick={() => handleRemoveStock(stockIndex)}
@@ -547,7 +569,6 @@ const IntrinsicCalculation = () => {
                 </tbody>
               </table>
             </div>
-
           </div>
         </div>
 
@@ -573,14 +594,6 @@ const IntrinsicCalculation = () => {
               <span className="text-gray-600">Current Market Cap:</span>
               <span className="font-semibold">
                 {fcfData[fcfData.length - 1].marketCap.toFixed(2)}
-              </span>
-            </div>
-            <div className="mt-3 p-2 bg-green-100 rounded-lg text-center">
-              <span className="text-green-800 font-bold text-sm">
-                {parseFloat(intrinsicValue.withMarginOfSafety) >
-                fcfData[fcfData.length - 1].marketCap
-                  ? "BUY"
-                  : "HOLD/SELL"}
               </span>
             </div>
           </div>
