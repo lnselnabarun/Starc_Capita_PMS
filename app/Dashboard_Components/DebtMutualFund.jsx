@@ -596,8 +596,7 @@ export default function CombinedMutualFund() {
                                     `/CombinedDetailsMutualFund/${item.id}`
                                   )
                                 }
-                                className="text-green-600 hover:text-green-900 px-3 py-1 border border-green-600 rounded-md hover:bg-green-50"
-                              >
+                                className="text-green-600 hover:text-green-900 px-3 py-1 border border-green-600 rounded-md hover:bg-green-50">
                                 Detail
                               </button>
                             </td>
@@ -607,16 +606,14 @@ export default function CombinedMutualFund() {
 
                       <tr
                         key={items.id}
-                        className="hover:bg-slate-300 bg-slate-200"
-                      > 
+                        className="hover:bg-slate-300 bg-slate-200"> 
                         <td
                           className="sticky left-0 z-20 bg-slate-200 px-6 py-1 whitespace-normal"
                           style={{
                             minWidth: "200px",
                             maxWidth: "250px",
                             boxShadow: "2px 0 5px -2px rgba(0,0,0,0.1)",
-                          }}
-                        >
+                          }}>
                           <div className="text-base font-bold text-fuchsia-950 line-clamp-2">
                             Category Average
                           </div>
@@ -626,16 +623,14 @@ export default function CombinedMutualFund() {
                           style={{
                             minWidth: "150px",
                             boxShadow: "2px 0 5px -2px rgba(0,0,0,0.1)",
-                          }}
-                        >
+                          }}>
                           <div className="text-sm text-gray-900">
                             {items?.category}
                           </div>
                         </td> 
                         <td
                           className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
+                          style={{ minWidth: "120px" }}>
                           <div className="text-sm text-gray-900">
                             {`₹${formatMoney(
                               items?.summery?.totalCurrentCost
@@ -644,14 +639,12 @@ export default function CombinedMutualFund() {
                         </td> 
                         <td
                           className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
+                          style={{ minWidth: "120px" }}>
                           <div className="text-sm text-gray-900"></div>
                         </td> 
                         <td
                           className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "150px" }}
-                        >
+                          style={{ minWidth: "150px" }}>
                           <div className="text-sm text-gray-900">
                             {`₹${formatMoney(
                               items?.summery?.totalCurrentValue
@@ -660,34 +653,29 @@ export default function CombinedMutualFund() {
                         </td> 
                         <td
                           className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
+                          style={{ minWidth: "120px" }}>
                           <div className="text-sm text-gray-900">
                             {items?.summery?.weightedExpenseRatio}
                           </div>
                         </td> 
                         <td
                           className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
+                          style={{ minWidth: "120px" }}>
                           <div className="text-sm text-gray-900"></div>
                         </td>
                         <td
                           className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
+                          style={{ minWidth: "120px" }}>
                           <div className="text-sm text-gray-900"></div>
                         </td>
                         <td
                           className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
+                          style={{ minWidth: "120px" }}>
                           <div className="text-sm text-gray-900"></div>
                         </td>
                         <td
                           className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
+                          style={{ minWidth: "120px" }}>
                           <div className="text-sm text-gray-900"></div>
                         </td>
                         <td

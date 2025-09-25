@@ -364,16 +364,15 @@ export default function DashboardMain() {
             xirr: parseFloat(item?.xirr),
           }))
           .filter((item) => {
-            // Remove objects where any of these fields is 0
             return (
-              item.totalCost !== 0 &&
-              item.currentValue !== 0 &&
-              item.sensex !== 0 &&
-              item.xirr !== 0
+              item?.totalCost !== 0 &&
+              item?.currentValue !== 0 &&
+              item?.sensex !== 0 &&
+              item?.xirr !== 0
             );
           });
   
-        processedData.sort((a, b) => new Date(a.date) - new Date(b.date));
+        processedData.sort((a, b) => new Date(a?.date) - new Date(b?.date));
         setPortfolioData(processedData);
       }
     } catch (error) {
@@ -434,13 +433,13 @@ export default function DashboardMain() {
   const handleEditTransaction = (transaction) => {
     setEditingTransaction(transaction);
     setFormData({
-      fundName: transaction.fund_name || "",
-      transactionType: transaction.transaction_type || "",
-      sipStartDate: transaction.sip_start_date || "",
-      installments: transaction.number_of_installments || "",
-      frequency: transaction.frequency || "",
-      amount: transaction.amount || "",
-      isin: transaction.isin || "",
+      fundName: transaction?.fund_name || "",
+      transactionType: transaction?.transaction_type || "",
+      sipStartDate: transaction?.sip_start_date || "",
+      installments: transaction?.number_of_installments || "",
+      frequency: transaction?.frequency || "",
+      amount: transaction?.amount || "",
+      isin: transaction?.isin || "",
       selectedFundData: null,
     });
     setIsEditModalOpen(true);
@@ -457,15 +456,15 @@ export default function DashboardMain() {
       }
 
       const requestBody = {
-        id: editingTransaction.id,
+        id: editingTransaction?.id,
         user_reg_id: userId,
-        fund_name: formData.fundName,
+        fund_name: formData?.fundName,
         isin: formData?.isin,
-        sip_start_date: formData.sipStartDate,
+        sip_start_date: formData?.sipStartDate,
         sip_end_date: "",
-        number_of_installments: formData.installments,
-        frequency: formData.frequency,
-        amount: formData.amount,
+        number_of_installments: formData?.installments,
+        frequency: formData?.frequency,
+        amount: formData?.amount,
         transaction_type: formData?.transactionType,
       };
 

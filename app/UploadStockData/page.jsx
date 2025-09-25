@@ -90,7 +90,7 @@ const PDFUploadPage = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response?.data)
+      
       if (response.data?.status === "success") {
         setFile(null);
         // setPassword("");

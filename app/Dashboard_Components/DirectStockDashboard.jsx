@@ -1,18 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import {
-  BarChart3,
-  Eye,
-  AlertCircle,
-  Loader2,
-  ArrowLeft,
-  TrendingUp,
-  TrendingDown,
-  Calendar,
-  Filter,
-  IndianRupee,
-} from "lucide-react";
+import { BarChart3, Eye, AlertCircle, Loader2 } from "lucide-react";
 
 export default function DirectStockDashboard() {
   const [stockData, setStockData] = useState([]);
@@ -27,10 +16,6 @@ export default function DirectStockDashboard() {
     "Net Rate (₹)",
     "Reference",
   ];
-
-  useEffect(() => {
-    getStockTransactionSummary();
-  }, []);
 
   async function getStockTransactionSummary() {
     try {
@@ -53,7 +38,7 @@ export default function DirectStockDashboard() {
           },
         }
       );
-
+      
       if (response.data?.status === "success") {
         setStockData(response.data.data);
       } else {
@@ -78,7 +63,11 @@ export default function DirectStockDashboard() {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
+
+  useEffect(() => {
+    getStockTransactionSummary();
+  }, []);
 
   const formatMoney = (amount) => {
     return new Intl.NumberFormat("en-IN", {
@@ -173,9 +162,6 @@ export default function DirectStockDashboard() {
                     const currentValue = stock.market * stock.qty;
                     const investedValue = stock.net_rate * stock.qty;
                     const pnl = currentValue - investedValue;
-                    const pnlPercent =
-                      investedValue > 0 ? (pnl / investedValue) * 100 : 0;
-
                     return (
                       <tr
                         key={stock.trading_symbol || index}
@@ -201,13 +187,13 @@ export default function DirectStockDashboard() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-slate-900">
-                            ₹{formatMoney(stock.market)}
+                            {formatMoney(stock?.market)}
                           </div>
                           {/* <div className="text-xs text-slate-500">per share</div> */}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-slate-900">
-                            ₹{formatMoney(stock.net_rate)}
+                            {formatMoney(stock?.net_rate)}
                           </div>
                           {/* <div className="text-xs text-slate-500">avg. cost</div> */}
                         </td>

@@ -301,7 +301,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
                 : "border-[#E5EBEF]"
             }`}
           >
-            Transduction List
+            Transaction List
           </button>
         </div>
         {selectedButton === "Details" ? (

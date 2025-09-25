@@ -17,12 +17,10 @@ const CombinedDetailsMutualFund = ({ params }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const router = useRouter();
-  const formattedText = decodeURIComponent(params.slug).replace(/%20/g, " ");
+  const formattedText = decodeURIComponent(params?.slug).replace(/%20/g, " ");
   const handleBack = () => {
     router.back();
   };
-
-  console.log(formattedText, "formattedTextformattedText");
 
   useEffect(() => {
     async function getStockTransactionSummary() {
@@ -209,7 +207,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
                 </span>
               </div>
               <div className="text-2xl font-bold text-gray-900 mb-1">
-                ₹{formatMoney(totalReturns)}
+                {formatMoney(totalReturns)}
               </div>
               <div className="text-sm text-blue-600 font-medium">
                 Total Returns
@@ -319,7 +317,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
                               </td>
                               <td className="px-8 py-6 whitespace-nowrap">
                                 <div className="text-lg font-medium text-gray-900">
-                                  ₹{item?.net_rate}
+                                  {item?.net_rate}
                                 </div>
                               </td>
                               <td className="px-8 py-6 whitespace-nowrap">
@@ -329,7 +327,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
                               </td>
                               <td className="px-8 py-6 whitespace-nowrap">
                                 <div className="text-lg font-medium text-gray-900">
-                                  ₹{formatMoney(item?.amount)}
+                                  {formatMoney(item?.amount)}
                                 </div>
                               </td>
                               <td className="px-8 py-6 whitespace-nowrap">

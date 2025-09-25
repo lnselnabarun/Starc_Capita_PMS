@@ -189,7 +189,6 @@ const IntrinsicCalculation = () => {
 
     const calculateIntrinsicValue = () => {
       const futureCashFlows = generateFutureFCF();
-      console.log(futureCashFlows, "futureCashFlowsfutureCashFlows");
       const totalDiscountedCF = futureCashFlows.reduce(
         (sum, cf) => sum + parseFloat(cf.discountedCF),
         0
@@ -200,7 +199,6 @@ const IntrinsicCalculation = () => {
         totalDiscountedCF + parseFloat(terminalValue.discountedTerminalValue);
       const withMarginOfSafety =
         totalFutureCF * (1 - parseFloat(params.marginOfSafety) / 100);
-      console.log(totalFutureCF, "withMarginOfSafetywithMarginOfSafety");
       return {
         totalFutureCF: totalFutureCF.toFixed(2),
         withMarginOfSafety: withMarginOfSafety.toFixed(2),
