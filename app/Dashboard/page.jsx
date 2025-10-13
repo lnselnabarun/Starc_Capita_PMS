@@ -11,13 +11,14 @@ import CombinedMutualFund from "../Dashboard_Components/CombinedMutualFund";
 import EquityMutualFund from "../Dashboard_Components/EquityMutualFund";
 import HybridMutualFund from "../Dashboard_Components/HybridMutualFund";
 import DirectStockDashboard from "../Dashboard_Components/DirectStockDashboard";
-import IntrinsicCalculation from "../Dashboard_Components/IntrinsicCalculation"
+import IntrinsicCalculation from "../Dashboard_Components/IntrinsicCalculation";
 import Compare_Mutual_Fund from "../Dashboard_Components/Compare_Mutual_Fund";
 import DebtMutualFund from "../Dashboard_Components/DebtMutualFund";
 import AMCGrid from "../Dashboard_Components/AMCGrid";
 import { Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import LatestFile from "../Dashboard_Components/LatestFile";
 
 export default function Dashboard() {
   const route = useRouter();
@@ -307,6 +308,8 @@ export default function Dashboard() {
           <DashboardMain />
         ) : null}
 
+        {/* {activeIndex === 0 && activeIndexSecond === 0 ? <LatestFile /> : null} */}
+
         {activeIndex === 0 && activeIndexSecond === 1 ? <AnalysisMain /> : null}
 
         {activeIndex === 1 && activeIndexSecond === 0 ? (
@@ -327,9 +330,12 @@ export default function Dashboard() {
           <Compare_Mutual_Fund />
         ) : null}
         {activeIndex === 1 && activeIndexSecond === 5 ? <AMCGrid /> : null}
-        {activeIndex === 2 && activeIndexSecond === 0  ? <DirectStockDashboard /> : null}
-        {activeIndex === 2 && activeIndexSecond === 1  ? <IntrinsicCalculation /> : null}
-         
+        {activeIndex === 2 && activeIndexSecond === 0 ? (
+          <DirectStockDashboard />
+        ) : null}
+        {activeIndex === 2 && activeIndexSecond === 1 ? (
+          <IntrinsicCalculation />
+        ) : null}
       </div>
 
       <div className="bg-primary w-full overflow-hidden bg-white min-h-screen ">

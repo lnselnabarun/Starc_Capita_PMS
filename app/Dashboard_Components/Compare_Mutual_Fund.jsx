@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Search, X, ChevronDown, ChevronUp } from "lucide-react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 
 const MutualFundComparison = () => {
-  const router = useRouter();
+  // const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFunds, setSelectedFunds] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
@@ -71,7 +71,6 @@ const MutualFundComparison = () => {
   };
 
   const transformApiResponseToDetails = (apiData, fullData) => {
-
     const detailsArray = [];
 
     // Fund Overview
@@ -532,21 +531,27 @@ const MutualFundComparison = () => {
           label: "Standard Deviation (1Y)",
         },
         {
-          key: "Standard Deviation 3 Year", 
+          key: "Standard Deviation 3 Year",
           label: "Standard Deviation (3Y)",
+        },
+        {
+          key: "Standard Deviation 5 Year",
+          label: "Standard Deviation (5Y)",
           isFirstDisplay: true,
         },
-        { key: "Standard Deviation 5 Year", label: "Standard Deviation (5Y)" },
         {
           key: "Sharpe Ratio 1 Year",
           label: "Sharpe Ratio (1Y)",
         },
         {
-          key: "Sharpe Ratio 3 Year", 
+          key: "Sharpe Ratio 3 Year",
           label: "Sharpe Ratio (3Y)",
+        },
+        {
+          key: "Sharpe Ratio 5 Year",
+          label: "Sharpe Ratio (5Y)",
           isFirstDisplay: true,
         },
-        { key: "Sharpe Ratio 5 Year", label: "Sharpe Ratio (5Y)" },
         {
           key: "Capture Ratio Downside 1 Year",
           label: "Downside Capture Ratio (1Y)",
@@ -554,11 +559,11 @@ const MutualFundComparison = () => {
         {
           key: "Capture Ratio Downside 3 Year",
           label: "Downside Capture Ratio (3Y)",
-          isFirstDisplay: true,
         },
         {
           key: "Capture Ratio Downside 5 Year",
           label: "Downside Capture Ratio (5Y)",
+          isFirstDisplay: true,
         },
         {
           key: "Capture Ratio Upside 1 Year",
@@ -567,26 +572,24 @@ const MutualFundComparison = () => {
         {
           key: "Capture Ratio Upside 3 Year",
           label: "Upside Capture Ratio (3Y)",
-          isFirstDisplay: true,
         },
         {
           key: "Capture Ratio Upside 5 Year",
           label: "Upside Capture Ratio (5Y)",
+          isFirstDisplay: true,
         },
         { key: "Alpha 1 Year", label: "Alpha (1Y)" },
-        { 
-          key: "Alpha 3 Year", 
+        {
+          key: "Alpha 3 Year",
           label: "Alpha (3Y)",
-          isFirstDisplay: true,
         },
-        { key: "Alpha 5 Year", label: "Alpha (5Y)" },
+        { key: "Alpha 5 Year", label: "Alpha (5Y)", isFirstDisplay: true },
         { key: "Beta 1 Year", label: "Beta (1Y)" },
-        { 
-          key: "Beta 3 Year", 
+        {
+          key: "Beta 3 Year",
           label: "Beta (3Y)",
-          isFirstDisplay: true,
         },
-        { key: "Beta 5 Year", label: "Beta (5Y)" },
+        { key: "Beta 5 Year", label: "Beta (5Y)", isFirstDisplay: true },
       ],
     },
     fundDetails: {
@@ -662,11 +665,11 @@ const MutualFundComparison = () => {
               </th>
               {selectedFunds.map((fund) => (
                 <th
-                key={fund.id}
-                className="px-4 py-3 bg-gray-50 text-right text-sm font-semibold text-gray-700 border-b border-gray-200"
-              >
-                {fund?.["FSCBI_LegalName"] || "Unknown Fund"}
-              </th>
+                  key={fund.id}
+                  className="px-4 py-3 bg-gray-50 text-right text-sm font-semibold text-gray-700 border-b border-gray-200"
+                >
+                  {fund?.["FSCBI_LegalName"] || "Unknown Fund"}
+                </th>
               ))}
             </tr>
           </thead>
