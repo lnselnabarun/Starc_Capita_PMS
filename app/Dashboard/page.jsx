@@ -18,7 +18,7 @@ import AMCGrid from "../Dashboard_Components/AMCGrid";
 import { Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import LatestFile from "../Dashboard_Components/LatestFile";
+import DashboardMainNew from "../Dashboard_Components/DashboardMainNew";
 
 export default function Dashboard() {
   const route = useRouter();
@@ -308,7 +308,7 @@ export default function Dashboard() {
           <DashboardMain />
         ) : null}
 
-        {/* {activeIndex === 0 && activeIndexSecond === 0 ? <LatestFile /> : null} */}
+        {/* {activeIndex === 0 && activeIndexSecond === 0 ? <DashboardMainNew /> : null} */}
 
         {activeIndex === 0 && activeIndexSecond === 1 ? <AnalysisMain /> : null}
 

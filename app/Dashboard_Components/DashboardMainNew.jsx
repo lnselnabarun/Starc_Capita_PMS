@@ -1,24 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import { Chart } from "react-google-charts";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-// import LatestFile from '../Dashboard_Components/LatestFile'
 
-export default function DashboardMain() {
+export default function DashboardMainNew() {
   const router = useRouter();
 
-  const [chartView, setChartView] = useState("investment"); // "investment" or "xirr"
+  const [chartView, setChartView] = useState("investment");
+  const [timeRange, setTimeRange] = useState("1Y");
   const [DashboardData, SetDashboardData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -49,7 +40,6 @@ export default function DashboardMain() {
     selectedFundData: null,
   });
 
-  // Add this useEffect to log the calculation
   useEffect(() => {
     if (
       balanceData?.currentValue &&
@@ -60,7 +50,6 @@ export default function DashboardMain() {
         DashboardData.data.totalNetExpenseRatio
       );
       const calcResult = currentValue * totalNetExpenseRatio;
-
       setResult(calcResult);
     }
   }, [balanceData, DashboardData]);
@@ -347,13 +336,15 @@ export default function DashboardMain() {
           body: JSON.stringify({ user_id: fundId.toString() }),
         }
       );
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const data = await response.json();
-  
+
+      console.log(data);
+
       if (data?.status === "success") {
         const processedData = data?.summaries
           .map((item) => ({
@@ -372,7 +363,7 @@ export default function DashboardMain() {
               item?.currentValue >= 1400000 // ✅ Remove records where currentValue < 1.4M
             );
           });
-  
+
         processedData.sort((a, b) => new Date(a?.date) - new Date(b?.date));
         setPortfolioData(processedData);
       }
@@ -528,46 +519,198 @@ export default function DashboardMain() {
     return `${year}-${month}-${day}`;
   }
 
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-white p-4 border border-gray-200 rounded shadow-md">
-          <p className="font-bold">
-            {new Date(label).toLocaleDateString("en-IN", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            })}
-          </p>
-
-          {chartView === "xirr" ? (
-            <p className="text-green-600">XIRR: {payload[0]?.value || 0}%</p>
-          ) : (
-            <>
-              <p className="text-blue-600">
-                Current Cost: ₹
-                {Number(payload[0]?.value || 0).toLocaleString("en-IN")}
-              </p>
-              <p className="text-red-600">
-                Current Value: ₹
-                {Number(payload[1]?.value || 0).toLocaleString("en-IN")}
-              </p>
-              <p className="text-yellow-600">
-                Sensex: {Number(payload[2]?.value || 0).toLocaleString("en-IN")}
-              </p>
-            </>
-          )}
-        </div>
-      );
+  // NEW CHART FUNCTIONS
+  const generateChartData = (range, view) => {
+    if (!PortfolioData || PortfolioData.length === 0) {
+      if (view === "xirr") {
+        return [["Date", "XIRR"]];
+      }
+      return [["Date", "Current Cost", "Current Value", "BSE500"]];
     }
-    return null;
+
+    const allData = [...PortfolioData];
+    const latestDate = new Date(allData[allData.length - 1].date);
+    let filteredData = [];
+    let cutoffDate = new Date(latestDate);
+
+    switch (range) {
+      case "5D":
+        cutoffDate.setDate(cutoffDate.getDate() - 5);
+        filteredData = allData.filter((d) => new Date(d.date) >= cutoffDate);
+        break;
+      case "1M":
+        cutoffDate.setMonth(cutoffDate.getMonth() - 1);
+        filteredData = allData.filter((d) => new Date(d.date) >= cutoffDate);
+        break;
+      case "6M":
+        cutoffDate.setMonth(cutoffDate.getMonth() - 6);
+        filteredData = allData.filter((d) => new Date(d.date) >= cutoffDate);
+        break;
+      case "YTD":
+        const yearStart = new Date(latestDate.getFullYear(), 0, 1);
+        filteredData = allData.filter((d) => new Date(d.date) >= yearStart);
+        break;
+      case "1Y":
+        cutoffDate.setFullYear(cutoffDate.getFullYear() - 1);
+        filteredData = allData.filter((d) => new Date(d.date) >= cutoffDate);
+        break;
+      case "5Y":
+        cutoffDate.setFullYear(cutoffDate.getFullYear() - 5);
+        filteredData = allData.filter((d) => new Date(d.date) >= cutoffDate);
+        break;
+      case "MAX":
+        filteredData = allData;
+        break;
+      default:
+        filteredData = allData;
+        break;
+    }
+
+    if (filteredData.length === 0) {
+      filteredData = [allData[allData.length - 1]];
+    }
+
+    if (view === "xirr") {
+      const data = [["Date", "XIRR"]];
+      filteredData.forEach((item) => {
+        const date = new Date(item.date);
+        data.push([date, item.xirr]);
+      });
+      return data;
+    }
+
+    const data = [["Date", "Current Cost", "Current Value", "BSE500"]];
+    filteredData.forEach((item) => {
+      const date = new Date(item.date);
+      data.push([date, item.totalCost, item.currentValue, item.sensex]);
+    });
+
+    return data;
   };
 
-  const formatYAxis = (value) => {
-    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
-    if (value >= 1000) return `${(value / 1000).toFixed(0)}K`;
-    return value;
+  const calculateStats = () => {
+    if (!PortfolioData || PortfolioData.length === 0) {
+      return [];
+    }
+
+    const latest = PortfolioData[PortfolioData.length - 1];
+    const previous = PortfolioData[PortfolioData.length - 2] || latest;
+
+    const portfolioChange = latest.currentValue - previous.currentValue;
+    const portfolioPercent = (
+      (portfolioChange / previous.currentValue) *
+      100
+    ).toFixed(2);
+
+    const sensexChange =
+      latest.sensex > 0 && previous.sensex > 0
+        ? latest.sensex - previous.sensex
+        : 0;
+    const sensexPercent =
+      previous.sensex > 0
+        ? ((sensexChange / previous.sensex) * 100).toFixed(2)
+        : "0.00";
+
+    const xirrChange = latest.xirr - previous.xirr;
+    const xirrPercent = ((xirrChange / Math.abs(previous.xirr)) * 100).toFixed(
+      2
+    );
+
+    return [
+      {
+        name: "Portfolio Value",
+        value: latest.currentValue.toLocaleString("en-IN", {
+          maximumFractionDigits: 2,
+        }),
+        change:
+          portfolioChange >= 0
+            ? `+${portfolioChange.toFixed(2)}`
+            : portfolioChange.toFixed(2),
+        percent: `${portfolioPercent}%`,
+        color: "#00bcd4",
+      },
+      {
+        name: "BSE500",
+        value:
+          latest.sensex > 0
+            ? latest.sensex.toLocaleString("en-IN", {
+                maximumFractionDigits: 2,
+              })
+            : "N/A",
+        change:
+          sensexChange >= 0
+            ? `+${sensexChange.toFixed(2)}`
+            : sensexChange.toFixed(2),
+        percent: `${sensexPercent}%`,
+        color: "#9c27b0",
+      },
+      {
+        name: "Total Cost",
+        value: latest.totalCost.toLocaleString("en-IN", {
+          maximumFractionDigits: 2,
+        }),
+        change: "0.00",
+        percent: "0.00%",
+        color: "#2196f3",
+      },
+      {
+        name: "XIRR",
+        value: `${latest.xirr.toFixed(2)}%`,
+        change:
+          xirrChange >= 0 ? `+${xirrChange.toFixed(2)}` : xirrChange.toFixed(2),
+        percent: `${xirrPercent}%`,
+        color: "#ff9800",
+      },
+    ];
   };
+
+  const chartData = generateChartData(timeRange, chartView);
+  const stockData = PortfolioData.length > 0 ? calculateStats() : [];
+
+  const chartOptions =
+    chartView === "xirr"
+      ? {
+          curveType: "function",
+          legend: { position: "bottom" },
+          chartArea: { width: "90%", height: "75%", top: 20 },
+          hAxis: {
+            format: "MMM dd",
+            gridlines: { color: "#f0f0f0" },
+            textStyle: { color: "#666", fontSize: 11 },
+          },
+          vAxis: {
+            title: "",
+            gridlines: { color: "#f0f0f0" },
+            textStyle: { color: "#666", fontSize: 11 },
+            format: "#'%'",
+          },
+          colors: ["#10b981"],
+          lineWidth: 2,
+          backgroundColor: "white",
+          tooltip: { isHtml: true },
+        }
+      : {
+          curveType: "function",
+          legend: { position: "bottom" },
+          chartArea: { width: "90%", height: "75%", top: 20 },
+          hAxis: {
+            format: "MMM dd",
+            gridlines: { color: "#f0f0f0" },
+            textStyle: { color: "#666", fontSize: 11 },
+          },
+          vAxis: {
+            title: "",
+            gridlines: { color: "#f0f0f0" },
+            textStyle: { color: "#666", fontSize: 11 },
+            format: "short",
+          },
+          colors: ["#1e40af", "#dc2626", "#f59e0b"],
+          lineWidth: 2,
+          backgroundColor: "white",
+          tooltip: { isHtml: true },
+        };
+
+  const timeRanges = ["5D", "1M", "6M", "YTD", "1Y", "5Y", "MAX"];
 
   const getTypeColor = (type) => {
     switch (type.toLowerCase()) {
@@ -611,24 +754,15 @@ export default function DashboardMain() {
   return (
     <>
       <div className="flex flex-col md:flex-row w-full justify-between px-4 sm:px-6 lg:px-28">
-        {/* First div with 70% width on medium and larger screens */}
         <div className="w-full md:w-[70%] flex flex-wrap gap-4 justify-between">
           {/* Card 1 */}
           <div className="relative flex-1 min-w-[200px] max-w-[275px] bg-white border border-[#D9D9D9] rounded-lg p-2 h-[100px] sm:h-[110px] md:h-[120px]">
-            {/* Row 1 */}
             <div className="flex items-center mb-3">
-              <Image
-                src={require("../assets/logo/Bitcoin.png")} // Replace with your icon path
-                alt="Search Icon"
-                width={20} // Icon width
-                height={20} // Icon height
-              />
+              <div className="w-5 h-5 bg-gray-300 rounded"></div>
               <p className="text-xs sm:text-sm font-medium text-[#6E7499] ml-1">
                 Current Value
               </p>
             </div>
-
-            {/* Row 2 */}
             <div className="mb-3">
               <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
                 {`₹ ${formatMoney(
@@ -636,27 +770,16 @@ export default function DashboardMain() {
                 )}`}
               </p>
             </div>
-
-            {/* Row 3 */}
-            <div></div>
           </div>
 
           {/* Card 2 */}
           <div className="relative flex-1 min-w-[160px] max-w-[275px] bg-white border border-[#D9D9D9] rounded-lg p-2 h-[100px] sm:h-[110px] md:h-[120px]">
-            {/* Row 1 */}
             <div className="flex items-center mb-3">
-              <Image
-                src={require("../assets/logo/Icon1.png")} // Replace with your icon path
-                alt="Search Icon"
-                width={20} // Icon width
-                height={20} // Icon height
-              />
+              <div className="w-5 h-5 bg-gray-300 rounded"></div>
               <p className="text-xs sm:text-sm font-medium text-[#6E7499] ml-1">
                 Current Cost
               </p>
             </div>
-
-            {/* Row 2 */}
             <div className="mb-3">
               <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
                 {`₹ ${formatMoney(
@@ -668,31 +791,24 @@ export default function DashboardMain() {
 
           {/* Card 3 */}
           <div className="relative flex-1 min-w-[160px] max-w-[275px] bg-white border border-[#D9D9D9] rounded-lg p-2 h-[100px] sm:h-[110px] md:h-[120px]">
-            {/* Row 1 */}
             <div className="flex items-center mb-3">
-              <Image
-                src={require("../assets/logo/Icon2.png")} // Replace with your icon path
-                alt="Search Icon"
-                width={20} // Icon width
-                height={20} // Icon height
-              />
+              <div className="w-5 h-5 bg-gray-300 rounded"></div>
               <p className="text-xs sm:text-sm font-medium text-[#6E7499] ml-1">
                 Current XIRR
               </p>
             </div>
-
-            {/* Row 2 */}
             <div className="mb-3">
               <p className="text-sm sm:text-base md:text-lg font-semibold text-[#2B2B2B] ml-0 sm:ml-1">
-                {`₹ ${formatMoney(
+                {`${formatMoney(
                   PortfolioData[PortfolioData.length - 1]?.xirr
-                )}`}
+                )}%`}
               </p>
             </div>
           </div>
-          {/* {chart section} */}
-          <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg border-[1.5px] border-[#D9D9D9] ">
-            {/* First Content: Bold Text */}
+
+          {/* NEW CHART SECTION */}
+          <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg border-[1.5px] border-[#D9D9D9]">
+
             <div className="justify-between w-full flex flex-wrap gap-4 h-auto">
               <div className="flex flex-col items-start space-y-2">
                 <div className="font-medium text-lg sm:text-xl md:text-2xl text-[#3F4765] font-sans">
@@ -700,7 +816,7 @@ export default function DashboardMain() {
                 </div>
               </div>
 
-              {/* Toggle buttons */}
+              {/* Investment/XIRR Toggle buttons */}
               <div className="flex space-x-4">
                 <button
                   onClick={() => setChartView("investment")}
@@ -725,8 +841,31 @@ export default function DashboardMain() {
               </div>
             </div>
 
-            <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg">
-              <div className="w-full h-96">
+            {/* Time Range Selector */}
+            <div className="w-full flex gap-2 overflow-x-auto pb-2 border-b border-gray-200">
+              {timeRanges.map((range) => (
+                <button
+                  key={range}
+                  onClick={() => setTimeRange(range)}
+                  className={`px-4 py-2 text-sm whitespace-nowrap transition-all ${
+                    timeRange === range
+                      ? "bg-white text-black font-bold border-b-3 border-red-600"
+                      : "bg-transparent text-gray-600"
+                  }`}
+                  style={
+                    timeRange === range
+                      ? { borderBottom: "3px solid #d32f2f" }
+                      : {}
+                  }
+                >
+                  {range}
+                </button>
+              ))}
+            </div>
+
+            <div className="w-full flex flex-col lg:flex-row gap-4">
+              {/* Chart */}
+              <div className="flex-1 min-h-[400px]">
                 {isLoading ? (
                   <div className="w-full h-full flex items-center justify-center">
                     <p>Loading chart data...</p>
@@ -736,199 +875,54 @@ export default function DashboardMain() {
                     <p>Error loading chart: {error}</p>
                   </div>
                 ) : (
-                  <>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart
-                        data={PortfolioData}
-                        margin={{
-                          top: 10,
-                          right: 30,
-                          left: 20,
-                          bottom: 10, // Reduced bottom margin since we're hiding XAxis
-                        }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                        <XAxis
-                          dataKey="date"
-                          axisLine={true}
-                          tickLine={true}
-                          tick={true}
-                          height={50}
-                          tickFormatter={(dateStr) => {
-                            const date = new Date(dateStr);
-                            const day = date.getDate();
-                            const month = date.toLocaleString("en-US", {
-                              month: "short",
-                            });
-                            return `${day}-${month}`;
-                          }}
-                          ticks={PortfolioData.filter(
-                            (_, index) => index % 2 === 0
-                          ).map((item) => item.date)}
-                          interval={0}
-                        />
-
-                        {chartView === "xirr" ? (
-                          <>
-                            <YAxis
-                              yAxisId="right"
-                              orientation="right"
-                              tickFormatter={(value) => `${value}%`}
-                              domain={[0, 30]}
-                            />
-                            <Tooltip
-                              content={({ active, payload, label }) => {
-                                if (active && payload && payload.length) {
-                                  // Use payload[0].payload.date instead of label
-                                  const date = payload[0].payload.date;
-                                  return (
-                                    <div className="bg-white p-4 border border-gray-200 rounded shadow-md">
-                                      <p className="font-bold">
-                                        {new Date(date).toLocaleDateString(
-                                          "en-IN",
-                                          {
-                                            year: "numeric",
-                                            month: "short",
-                                            day: "numeric",
-                                          }
-                                        )}
-                                      </p>
-                                      <p className="text-green-600">
-                                        XIRR: {payload[0]?.value || 0}%
-                                      </p>
-                                    </div>
-                                  );
-                                }
-                                return null;
-                              }}
-                            />
-                            <Legend />
-                            <Line
-                              yAxisId="right"
-                              type="monotone"
-                              dataKey="xirr"
-                              name="XIRR%"
-                              stroke="#10b981"
-                              strokeWidth={2}
-                              dot={{ r: 3 }}
-                              activeDot={{ r: 6 }}
-                              connectNulls={true}
-                            />
-                          </>
-                        ) : (
-                          <>
-                            <YAxis
-                              yAxisId="left"
-                              orientation="left"
-                              tickFormatter={formatYAxis}
-                              domain={[1400000, 1800000]}
-                            />
-                            <Tooltip
-                              content={({ active, payload, label }) => {
-                                if (active && payload && payload.length) {
-                                  // Use payload[0].payload.date instead of label
-                                  const date = payload[0].payload.date;
-                                  return (
-                                    <div className="bg-white p-4 border border-gray-200 rounded shadow-md">
-                                      <p className="font-bold">
-                                        {new Date(date).toLocaleDateString(
-                                          "en-IN",
-                                          {
-                                            year: "numeric",
-                                            month: "short",
-                                            day: "numeric",
-                                          }
-                                        )}
-                                      </p>
-                                      <p className="text-blue-600">
-                                        Current Cost: ₹
-                                        {Number(
-                                          payload[0]?.value || 0
-                                        ).toLocaleString("en-IN")}
-                                      </p>
-                                      <p className="text-red-600">
-                                        Current Value: ₹
-                                        {Number(
-                                          payload[1]?.value || 0
-                                        ).toLocaleString("en-IN")}
-                                      </p>
-                                      <p className="text-yellow-600">
-                                        BSE500:{" "}
-                                        {Number(
-                                          payload[2]?.value || 0
-                                        ).toLocaleString("en-IN")}
-                                      </p>
-                                    </div>
-                                  );
-                                }
-                                return null;
-                              }}
-                            />
-                            <Legend />
-                            <Line
-                              yAxisId="left"
-                              type="monotone"
-                              dataKey="totalCost"
-                              name="Current Cost"
-                              stroke="#1e40af"
-                              strokeWidth={2}
-                              dot={{ r: 3 }}
-                              activeDot={{ r: 6 }}
-                              connectNulls={true}
-                            />
-                            <Line
-                              yAxisId="left"
-                              type="monotone"
-                              dataKey="currentValue"
-                              name="Current Value"
-                              stroke="#dc2626"
-                              strokeWidth={2}
-                              dot={{ r: 3 }}
-                              activeDot={{ r: 6 }}
-                              connectNulls={true}
-                            />
-                            <Line
-                              yAxisId="left"
-                              type="monotone"
-                              dataKey="sensex"
-                              name="BSE500"
-                              stroke="#f59e0b"
-                              strokeWidth={2}
-                              dot={{ r: 3 }}
-                              activeDot={{ r: 6 }}
-                              connectNulls={true}
-                            />
-                          </>
-                        )}
-                      </LineChart>
-                    </ResponsiveContainer>
-                    {/* <LatestFile */}
-                  </>
+                  <Chart
+                    chartType="LineChart"
+                    width="100%"
+                    height="400px"
+                    data={chartData}
+                    options={chartOptions}
+                  />
                 )}
               </div>
+
+              {/* Stats Panel */}
+              {/* <div className="w-full lg:w-64 flex flex-col gap-4">
+                {stockData.map((stock, index) => (
+                  <div key={index} className="flex items-center gap-3 text-sm">
+                    <div 
+                      className="w-1 h-5 rounded"
+                      style={{ backgroundColor: stock.color }}
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-800 mb-1">
+                        {stock.name}
+                      </div>
+                      <div className="flex gap-2 text-xs">
+                        <span className="text-gray-600">{stock.value}</span>
+                        <span className={stock.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}>
+                          {stock.change}
+                        </span>
+                        <span className={stock.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}>
+                          {stock.change.startsWith('+') ? '▲' : '▼'}{stock.percent}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div> */}
             </div>
           </div>
 
-          {/* <div className="justify-between w-full flex flex-wrap gap-4 h-auto mb-2">
-            <div className="flex flex-col items-start space-y-2">
-              <div className="font-medium text-lg sm:text-xl md:text-2xl text-[#3F4765] font-sans">
-                Recent Transactions
-              </div>
-            </div>
-          </div> */}
-
+          {/* Recent Transactions */}
           <div className="container mx-auto px-4 py-6 max-w-6xl">
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-              {/* Header */}
               <div className="bg-gradient-to-r from-slate-50 to-gray-100 px-6 py-4 border-b border-gray-200">
                 <h2 className="text-xl font-semibold text-gray-800">
                   Recent Transactions
                 </h2>
               </div>
 
-              {/* Desktop Table */}
               <div className="hidden md:block">
-                {/* Table Header */}
                 <div className="grid grid-cols-12 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-200 items-center">
                   <div className="col-span-2 text-xs font-semibold uppercase tracking-wide text-gray-600">
                     Date
@@ -944,7 +938,6 @@ export default function DashboardMain() {
                   </div>
                 </div>
 
-                {/* Table Body */}
                 <div className="divide-y divide-gray-200">
                   {RecentTransactions.map((row, index) => (
                     <div
@@ -986,7 +979,6 @@ export default function DashboardMain() {
                 </div>
               </div>
 
-              {/* Mobile Cards */}
               <div className="md:hidden">
                 <div className="divide-y divide-gray-200">
                   {RecentTransactions.map((row, index) => (
@@ -1026,7 +1018,6 @@ export default function DashboardMain() {
                 </div>
               </div>
 
-              {/* Empty State */}
               {RecentTransactions.length === 0 && (
                 <div className="text-center py-12">
                   <div className="text-gray-400 mb-2">
@@ -1050,6 +1041,7 @@ export default function DashboardMain() {
             </div>
           </div>
 
+          {/* Systematic Transactions */}
           <div className="justify-between w-full flex flex-wrap gap-4 h-auto mb-2">
             <div className="flex flex-col items-start space-y-2">
               <div className="font-medium text-lg sm:text-xl md:text-2xl text-[#3F4765] font-sans">
@@ -1095,12 +1087,9 @@ export default function DashboardMain() {
 
             {systematicTransactions.length > 0 ? (
               systematicTransactions.map((row, index) => (
-                <>
+                <React.Fragment key={index}>
                   <div className="hidden md:block">
-                    <div
-                      key={index}
-                      className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] bg-white text-left p-3 my-2 items-center rounded-lg gap-4 shadow-sm"
-                    >
+                    <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] bg-white text-left p-3 my-2 items-center rounded-lg gap-4 shadow-sm">
                       <div className="text-sm text-gray-700">
                         {row.fund_name}
                       </div>
@@ -1189,119 +1178,94 @@ export default function DashboardMain() {
                       </div>
                     </div>
                   </div>
-                  {/* Mobile Cards */}
                   <div className="md:hidden">
-                    <div className="divide-y divide-gray-200">
-                      {systematicTransactions.map((row, index) => (
-                        <div
-                          key={index}
-                          className="p-4 hover:bg-gray-50 transition-colors duration-150"
-                        >
-                          <div className="text-sm text-gray-700 mb-2 line-clamp-2">
-                            {formatDate(row.sip_start_date)} ({row.frequency})
-                          </div>
-                          <div className="flex justify-between items-start mb-2">
-                            <div className="text-sm font-medium text-gray-900">
-                              {row.fund_name}
-                            </div>
-
-                            <span
-                              className={
-                                "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-                              }
-                            >
-                              {row.transaction_type || "N/A"}
-                            </span>
-                          </div>
-
-                          {/* <div className="text-sm text-gray-700 mb-2 line-clamp-2">
-                            { row.frequency }
-                          </div> */}
-                          <div className="text-sm text-gray-700 mb-2 line-clamp-2">
-                            ₹{row.amount.toLocaleString("en-IN")}
-                          </div>
-                          <div className="text-right">
-                            <span className="text-lg text-gray-900 gap-2">
-                              <button
-                                onClick={() => handleEditTransaction(row)}
-                                className="text-[#35B26B] border border-[#35B26B] rounded-md p-2 hover:bg-[#e8f5eb] transition-colors"
-                                title="Edit"
-                              >
-                                <svg
-                                  width="16"
-                                  height="16"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                >
-                                  <path
-                                    d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
-                                  <path
-                                    d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
-                                </svg>
-                              </button>
-                            </span>
-                            <span className="text-lg text-gray-900 gap-2">
-                              <button
-                                onClick={() => handleDeleteTransaction(row.id)}
-                                disabled={isDeleting}
-                                className={`text-[#dc2626] border border-[#dc2626] rounded-md p-2 hover:bg-[#fef2f2] transition-colors ${
-                                  isDeleting
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : ""
-                                }`}
-                                title={isDeleting ? "Deleting..." : "Delete"}
-                              >
-                                <svg
-                                  width="16"
-                                  height="16"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                >
-                                  <path
-                                    d="m3 6 3 0"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                  />
-                                  <path
-                                    d="m21 6-3 0"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                  />
-                                  <path
-                                    d="m18 6-.84 12.63a1 1 0 0 1-1 .84H7.89a1 1 0 0 1-1-.84L6 6"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
-                                  <path
-                                    d="m8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
-                                </svg>
-                              </button>
-                            </span>
-                          </div>
+                    <div className="p-4 bg-white rounded-lg shadow-sm mb-2 hover:bg-gray-50 transition-colors">
+                      <div className="text-sm text-gray-700 mb-2">
+                        {formatDate(row.sip_start_date)} ({row.frequency})
+                      </div>
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="text-sm font-medium text-gray-900">
+                          {row.fund_name}
                         </div>
-                      ))}
+                        <span className="text-xs px-2 py-1 bg-gray-100 rounded">
+                          {row.transaction_type || "N/A"}
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-700 mb-2">
+                        ₹{row.amount.toLocaleString("en-IN")}
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleEditTransaction(row)}
+                          className="text-[#35B26B] border border-[#35B26B] rounded-md p-2 hover:bg-[#e8f5eb] transition-colors"
+                        >
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
+                            <path
+                              d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteTransaction(row.id)}
+                          disabled={isDeleting}
+                          className={`text-[#dc2626] border border-[#dc2626] rounded-md p-2 hover:bg-[#fef2f2] transition-colors ${
+                            isDeleting ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
+                        >
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
+                            <path
+                              d="m3 6 3 0"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                            />
+                            <path
+                              d="m21 6-3 0"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                            />
+                            <path
+                              d="m18 6-.84 12.63a1 1 0 0 1-1 .84H7.89a1 1 0 0 1-1-.84L6 6"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="m8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </>
+                </React.Fragment>
               ))
             ) : (
               <div className="text-center py-8 text-gray-500">
@@ -1311,7 +1275,7 @@ export default function DashboardMain() {
           </div>
         </div>
 
-        {/* Second div with 20% width on medium and larger screens */}
+        {/* Sidebar */}
         <div className="w-full md:w-[27%] bg-[#f5f5f5] p-1 sm:p-2 rounded-lg">
           <div className="flex items-center space-x-4 justify-between">
             <div className="font-sans text-lg sm:text-base md:text-lg font-semibold leading-5 text-left text-[#3F4765] mt-1">
@@ -1320,131 +1284,80 @@ export default function DashboardMain() {
           </div>
 
           <div className="flex flex-col sm:flex-row justify-between space-x-0 sm:space-x-4 mt-3">
-            {/* <!-- First Card --> */}
             <div
               className={`relative rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto ${
                 getGainLossText() === "Gain" ? "bg-[#60BC63]" : "bg-red-500"
               }`}
             >
-              {/* <!-- First Two Text Elements in Column --> */}
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-sm sm:text-sm md:text-sm">
                   {`Today's ${getGainLossText()}`}
                 </div>
               </div>
-
               <div className="border-t border-dashed border-white my-4"></div>
-
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
                   {balanceData ? formatCurrency(balanceData?.todaysGain) : "₹0"}
                 </div>
-                <div className="w-6 h-6 sm:w-8 sm:h-8">
-                  <Image
-                    src={require("../assets/logo/Credit_Card_green.png")}
-                    alt="Card Image"
-                    width={24}
-                    height={24}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white bg-opacity-20 rounded"></div>
               </div>
-              <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10"></div>
             </div>
 
-            {/* <!-- Second Card --> */}
-            <div className="relative bg-[#FFBA33] rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto">
+            <div className="relative bg-[#FFBA33] rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto mt-2 sm:mt-0">
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-sm sm:text-sm md:text-sm">
                   Expense Ratio (%)
                 </div>
               </div>
               <div className="border-t border-dashed border-white my-4"></div>
-
               <div className="flex flex-col space-y-2">
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
                   {result !== null ? balanceData?.weightedExpenseRatio : "₹0"}
                 </div>
-                <div className="w-6 h-6 sm:w-8 sm:h-8">
-                  <Image
-                    src={require("../assets/logo/Credit_Card_yellow.png")}
-                    alt="Card Image"
-                    width={24}
-                    height={24}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white bg-opacity-20 rounded"></div>
               </div>
-              <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10"></div>
             </div>
           </div>
 
-          <div className="flex items-center space-x-4 justify-between mt-2">
+          <div className="flex items-center space-x-4 justify-between mt-4">
             <div className="font-sans text-lg sm:text-base md:text-lg font-semibold leading-5 text-left text-[#3F4765]">
               Change (This Month)
             </div>
           </div>
 
           <div className="flex flex-col sm:flex-row justify-between space-x-0 sm:space-x-4 mt-3">
-            {/* <!-- First Card --> */}
-            <div
-              className={`relative rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto bg-[#783c6a]`}
-            >
-              {/* <!-- First Two Text Elements in Column --> */}
+            <div className="relative rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto bg-[#783c6a]">
               <div className="flex flex-col space-y-2">
-                <div className="text-white font-semibold text-sm sm:text-sm md:text-sm">
-                  {`Current Value`}
+                <div className="text-white font-semibold text-sm">
+                  Current Value
                 </div>
               </div>
-
               <div className="border-t border-dashed border-white my-4"></div>
-
               <div className="flex flex-col space-y-2">
-                <div className="text-white font-semibold text-base sm:text-sm md:text-base">
+                <div className="text-white font-semibold text-base">
                   {balanceData ? `${balanceData?.currentValueChanges}%` : "0 %"}
                 </div>
-                <div className="w-6 h-6 sm:w-8 sm:h-8">
-                  <Image
-                    src={require("../assets/logo/Credit_Card_yellow.png")}
-                    alt="Card Image"
-                    width={24}
-                    height={24}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white bg-opacity-20 rounded"></div>
               </div>
-              <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10"></div>
             </div>
 
-            {/* <!-- Second Card --> */}
-            <div className="relative bg-[#783c6a] rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto">
+            <div className="relative bg-[#783c6a] rounded-lg p-1 sm:p-2 w-full sm:w-[48%] h-auto mt-2 sm:mt-0">
               <div className="flex flex-col space-y-2">
-                <div className="text-white font-semibold text-sm sm:text-sm md:text-sm">
-                  BSE500
-                </div>
+                <div className="text-white font-semibold text-sm">BSE500</div>
               </div>
               <div className="border-t border-dashed border-white my-4"></div>
-
               <div className="flex flex-col space-y-2">
-                <div className="text-white font-semibold text-base sm:text-sm md:text-base">
+                <div className="text-white font-semibold text-base">
                   {result !== null ? `${balanceData?.BSE500Changes} %` : "0 %"}
                 </div>
-                <div className="w-6 h-6 sm:w-8 sm:h-8">
-                  <Image
-                    src={require("../assets/logo/Credit_Card_yellow.png")}
-                    alt="Card Image"
-                    width={24}
-                    height={24}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white bg-opacity-20 rounded"></div>
               </div>
-              <div className="absolute bottom-0 right-0 w-15 h-8 sm:w-10 sm:h-10"></div>
             </div>
           </div>
+
           <div
             onClick={() => router.push("/Newslist")}
-            className="flex items-center space-x-4 justify-between mt-6 p-4 rounded-lg transition-all duration-300 ease-in-out hover:bg-gray-100 hover:shadow-md"
+            className="flex items-center space-x-4 justify-between mt-6 p-4 rounded-lg transition-all duration-300 ease-in-out hover:bg-gray-100 hover:shadow-md cursor-pointer"
           >
             <div className="font-sans text-lg sm:text-base md:text-lg font-medium leading-5 text-left text-[#3F4765]">
               News
@@ -1453,41 +1366,38 @@ export default function DashboardMain() {
               See All
             </div>
           </div>
-          {NewsData?.map((item) => {
-            return (
-              <div
-                key={item}
-                className="flex justify-between items-start flex-row mt-4"
-              >
-                {/* First Section: Image and Text in one row */}
-                <div className="flex items-center space-x-4 w-[70%]">
-                  <div className="flex flex-col">
-                    <p className="text-sm font-medium text-[#3F4765] line-clamp-3 leading-5">
-                      {item?.content}
-                    </p>
-                    <p className="text-xs font-light text-[#A2A9C7] mt-1">
-                      {item?.source?.name}
-                    </p>
-                  </div>
-                </div>
 
-                {/* Second Section: Image */}
-                <div className="flex-shrink-0">
-                  <img
-                    src={item?.image}
-                    alt="News thumbnail"
-                    className="h-10 w-10 md:h-16 md:w-16 bg-[#C4C4C4] border border-gray-300 rounded-md object-cover"
-                  />
+          {NewsData?.map((item, idx) => (
+            <div
+              key={idx}
+              className="flex justify-between items-start flex-row mt-4"
+            >
+              <div className="flex items-center space-x-4 w-[70%]">
+                <div className="flex flex-col">
+                  <p className="text-sm font-medium text-[#3F4765] line-clamp-3 leading-5">
+                    {item?.content}
+                  </p>
+                  <p className="text-xs font-light text-[#A2A9C7] mt-1">
+                    {item?.source?.name}
+                  </p>
                 </div>
               </div>
-            );
-          })}
+              <div className="flex-shrink-0">
+                <img
+                  src={item?.image}
+                  alt="News thumbnail"
+                  className="h-10 w-10 md:h-16 md:w-16 bg-[#C4C4C4] border border-gray-300 rounded-md object-cover"
+                />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
+      {/* Add Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-[#3F4765]">
                 Add New Systematic Transaction
@@ -1501,7 +1411,6 @@ export default function DashboardMain() {
             </div>
 
             <form className="space-y-4">
-              {/* Fund Name - Searchable Input */}
               <div>
                 <label className="block text-sm font-medium text-[#3F4765] mb-1">
                   Fund Name
@@ -1524,9 +1433,9 @@ export default function DashboardMain() {
                   )}
                   {searchResults.length > 0 && (
                     <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
-                      {searchResults.map((result, index) => (
-                        <>
-                          {result?.FSCBI_ISIN !== null ? (
+                      {searchResults.map(
+                        (result, index) =>
+                          result?.FSCBI_ISIN !== null && (
                             <div
                               key={index}
                               onClick={() => {
@@ -1534,7 +1443,7 @@ export default function DashboardMain() {
                                   ...formData,
                                   fundName: result.FSCBI_LegalName,
                                   isin: result?.FSCBI_ISIN,
-                                  selectedFundData: result, // Store complete fund data
+                                  selectedFundData: result,
                                 });
                                 setSearchResults([]);
                               }}
@@ -1542,15 +1451,13 @@ export default function DashboardMain() {
                             >
                               {result.FSCBI_LegalName}
                             </div>
-                          ) : null}
-                        </>
-                      ))}
+                          )
+                      )}
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Transaction Type */}
               <div>
                 <label className="block text-sm font-medium text-[#3F4765] mb-1">
                   Transaction Type
@@ -1572,7 +1479,6 @@ export default function DashboardMain() {
                 </select>
               </div>
 
-              {/* SIP Start Date */}
               <div>
                 <label className="block text-sm font-medium text-[#3F4765] mb-1">
                   SIP Start Date
@@ -1587,7 +1493,6 @@ export default function DashboardMain() {
                 />
               </div>
 
-              {/* No. of Installments */}
               <div>
                 <label className="block text-sm font-medium text-[#3F4765] mb-1">
                   No. of Installments
@@ -1604,7 +1509,6 @@ export default function DashboardMain() {
                 />
               </div>
 
-              {/* Frequency */}
               <div>
                 <label className="block text-sm font-medium text-[#3F4765] mb-1">
                   Frequency
@@ -1624,7 +1528,6 @@ export default function DashboardMain() {
                 </select>
               </div>
 
-              {/* Amount */}
               <div>
                 <label className="block text-sm font-medium text-[#3F4765] mb-1">
                   Amount (₹)
@@ -1641,7 +1544,6 @@ export default function DashboardMain() {
                 />
               </div>
 
-              {/* Action Buttons */}
               <div className="flex gap-3 pt-4">
                 <button
                   type="button"
@@ -1668,9 +1570,10 @@ export default function DashboardMain() {
         </div>
       )}
 
+      {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-[#3F4765]">
                 Edit Systematic Transaction
@@ -1698,7 +1601,6 @@ export default function DashboardMain() {
             </div>
 
             <form className="space-y-4">
-              {/* Fund Name - Searchable Input */}
               <div>
                 <label className="block text-sm font-medium text-[#3F4765] mb-1">
                   Fund Name
@@ -1721,10 +1623,11 @@ export default function DashboardMain() {
                   )}
                   {searchResults.length > 0 && (
                     <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
-                      {searchResults.map((result, index) => (
-                        <div key={index}>
-                          {result?.FSCBI_ISIN !== null ? (
+                      {searchResults.map(
+                        (result, index) =>
+                          result?.FSCBI_ISIN !== null && (
                             <div
+                              key={index}
                               onClick={() => {
                                 setFormData({
                                   ...formData,
@@ -1738,15 +1641,13 @@ export default function DashboardMain() {
                             >
                               {result.FSCBI_LegalName}
                             </div>
-                          ) : null}
-                        </div>
-                      ))}
+                          )
+                      )}
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Transaction Type */}
               <div>
                 <label className="block text-sm font-medium text-[#3F4765] mb-1">
                   Transaction Type
@@ -1768,7 +1669,6 @@ export default function DashboardMain() {
                 </select>
               </div>
 
-              {/* SIP Start Date */}
               <div>
                 <label className="block text-sm font-medium text-[#3F4765] mb-1">
                   SIP Start Date
@@ -1783,7 +1683,6 @@ export default function DashboardMain() {
                 />
               </div>
 
-              {/* No. of Installments */}
               <div>
                 <label className="block text-sm font-medium text-[#3F4765] mb-1">
                   No. of Installments
@@ -1800,7 +1699,6 @@ export default function DashboardMain() {
                 />
               </div>
 
-              {/* Frequency */}
               <div>
                 <label className="block text-sm font-medium text-[#3F4765] mb-1">
                   Frequency
@@ -1820,7 +1718,6 @@ export default function DashboardMain() {
                 </select>
               </div>
 
-              {/* Amount */}
               <div>
                 <label className="block text-sm font-medium text-[#3F4765] mb-1">
                   Amount (₹)
@@ -1837,7 +1734,6 @@ export default function DashboardMain() {
                 />
               </div>
 
-              {/* Action Buttons */}
               <div className="flex gap-3 pt-4">
                 <button
                   type="button"
