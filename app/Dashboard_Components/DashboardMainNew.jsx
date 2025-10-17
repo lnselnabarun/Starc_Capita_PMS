@@ -8,6 +8,16 @@ import axios from "axios";
 export default function DashboardMainNew() {
   const router = useRouter();
 
+  //   useEffect(() => {
+  //     const handleContextMenu = (event) => {
+  //       event.preventDefault();
+  //     };
+  //     document.addEventListener('contextmenu', handleContextMenu);
+  //     return () => {
+  //       document.removeEventListener('contextmenu', handleContextMenu);
+  //     };
+  //   }, []);
+
   const [chartView, setChartView] = useState("investment");
   const [timeRange, setTimeRange] = useState("1Y");
   const [DashboardData, SetDashboardData] = useState({});
@@ -566,6 +576,8 @@ export default function DashboardMainNew() {
         break;
     }
 
+    console.log(cutoffDate, filteredData, "cutoffDate");
+
     if (filteredData.length === 0) {
       filteredData = [allData[allData.length - 1]];
     }
@@ -588,84 +600,84 @@ export default function DashboardMainNew() {
     return data;
   };
 
-  const calculateStats = () => {
-    if (!PortfolioData || PortfolioData.length === 0) {
-      return [];
-    }
+//   const calculateStats = () => {
+//     if (!PortfolioData || PortfolioData.length === 0) {
+//       return [];
+//     }
 
-    const latest = PortfolioData[PortfolioData.length - 1];
-    const previous = PortfolioData[PortfolioData.length - 2] || latest;
+//     const latest = PortfolioData[PortfolioData.length - 1];
+//     const previous = PortfolioData[PortfolioData.length - 2] || latest;
 
-    const portfolioChange = latest.currentValue - previous.currentValue;
-    const portfolioPercent = (
-      (portfolioChange / previous.currentValue) *
-      100
-    ).toFixed(2);
+//     const portfolioChange = latest.currentValue - previous.currentValue;
+//     const portfolioPercent = (
+//       (portfolioChange / previous.currentValue) *
+//       100
+//     ).toFixed(2);
 
-    const sensexChange =
-      latest.sensex > 0 && previous.sensex > 0
-        ? latest.sensex - previous.sensex
-        : 0;
-    const sensexPercent =
-      previous.sensex > 0
-        ? ((sensexChange / previous.sensex) * 100).toFixed(2)
-        : "0.00";
+//     const sensexChange =
+//       latest.sensex > 0 && previous.sensex > 0
+//         ? latest.sensex - previous.sensex
+//         : 0;
+//     const sensexPercent =
+//       previous.sensex > 0
+//         ? ((sensexChange / previous.sensex) * 100).toFixed(2)
+//         : "0.00";
 
-    const xirrChange = latest.xirr - previous.xirr;
-    const xirrPercent = ((xirrChange / Math.abs(previous.xirr)) * 100).toFixed(
-      2
-    );
+//     const xirrChange = latest.xirr - previous.xirr;
+//     const xirrPercent = ((xirrChange / Math.abs(previous.xirr)) * 100).toFixed(
+//       2
+//     );
 
-    return [
-      {
-        name: "Portfolio Value",
-        value: latest.currentValue.toLocaleString("en-IN", {
-          maximumFractionDigits: 2,
-        }),
-        change:
-          portfolioChange >= 0
-            ? `+${portfolioChange.toFixed(2)}`
-            : portfolioChange.toFixed(2),
-        percent: `${portfolioPercent}%`,
-        color: "#00bcd4",
-      },
-      {
-        name: "BSE500",
-        value:
-          latest.sensex > 0
-            ? latest.sensex.toLocaleString("en-IN", {
-                maximumFractionDigits: 2,
-              })
-            : "N/A",
-        change:
-          sensexChange >= 0
-            ? `+${sensexChange.toFixed(2)}`
-            : sensexChange.toFixed(2),
-        percent: `${sensexPercent}%`,
-        color: "#9c27b0",
-      },
-      {
-        name: "Total Cost",
-        value: latest.totalCost.toLocaleString("en-IN", {
-          maximumFractionDigits: 2,
-        }),
-        change: "0.00",
-        percent: "0.00%",
-        color: "#2196f3",
-      },
-      {
-        name: "XIRR",
-        value: `${latest.xirr.toFixed(2)}%`,
-        change:
-          xirrChange >= 0 ? `+${xirrChange.toFixed(2)}` : xirrChange.toFixed(2),
-        percent: `${xirrPercent}%`,
-        color: "#ff9800",
-      },
-    ];
-  };
+//     return [
+//       {
+//         name: "Portfolio Value",
+//         value: latest.currentValue.toLocaleString("en-IN", {
+//           maximumFractionDigits: 2,
+//         }),
+//         change:
+//           portfolioChange >= 0
+//             ? `+${portfolioChange.toFixed(2)}`
+//             : portfolioChange.toFixed(2),
+//         percent: `${portfolioPercent}%`,
+//         color: "#00bcd4",
+//       },
+//       {
+//         name: "BSE500",
+//         value:
+//           latest.sensex > 0
+//             ? latest.sensex.toLocaleString("en-IN", {
+//                 maximumFractionDigits: 2,
+//               })
+//             : "N/A",
+//         change:
+//           sensexChange >= 0
+//             ? `+${sensexChange.toFixed(2)}`
+//             : sensexChange.toFixed(2),
+//         percent: `${sensexPercent}%`,
+//         color: "#9c27b0",
+//       },
+//       {
+//         name: "Total Cost",
+//         value: latest.totalCost.toLocaleString("en-IN", {
+//           maximumFractionDigits: 2,
+//         }),
+//         change: "0.00",
+//         percent: "0.00%",
+//         color: "#2196f3",
+//       },
+//       {
+//         name: "XIRR",
+//         value: `${latest.xirr.toFixed(2)}%`,
+//         change:
+//           xirrChange >= 0 ? `+${xirrChange.toFixed(2)}` : xirrChange.toFixed(2),
+//         percent: `${xirrPercent}%`,
+//         color: "#ff9800",
+//       },
+//     ];
+//   };
 
   const chartData = generateChartData(timeRange, chartView);
-  const stockData = PortfolioData.length > 0 ? calculateStats() : [];
+//   const stockData = PortfolioData.length > 0 ? calculateStats() : [];
 
   const chartOptions =
     chartView === "xirr"
@@ -675,7 +687,7 @@ export default function DashboardMainNew() {
           chartArea: { width: "90%", height: "75%", top: 20 },
           hAxis: {
             format: "MMM dd",
-            gridlines: { color: "#f0f0f0" },
+            gridlines: { color: "transparent" }, // Changed from "#f0f0f0" to "transparent"
             textStyle: { color: "#666", fontSize: 11 },
           },
           vAxis: {
@@ -695,7 +707,7 @@ export default function DashboardMainNew() {
           chartArea: { width: "90%", height: "75%", top: 20 },
           hAxis: {
             format: "MMM dd",
-            gridlines: { color: "#f0f0f0" },
+            gridlines: { color: "transparent" }, // Changed from "#f0f0f0" to "transparent"
             textStyle: { color: "#666", fontSize: 11 },
           },
           vAxis: {
@@ -808,7 +820,6 @@ export default function DashboardMainNew() {
 
           {/* NEW CHART SECTION */}
           <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg border-[1.5px] border-[#D9D9D9]">
-
             <div className="justify-between w-full flex flex-wrap gap-4 h-auto">
               <div className="flex flex-col items-start space-y-2">
                 <div className="font-medium text-lg sm:text-xl md:text-2xl text-[#3F4765] font-sans">
