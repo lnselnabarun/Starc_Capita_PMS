@@ -17,6 +17,8 @@ import {
   Target,
   ArrowUp,
   ArrowDown,
+  Calendar,
+  PieChart
 } from "lucide-react";
 import Image from "next/image";
 import { Chart } from "react-google-charts";
@@ -41,6 +43,30 @@ export default function AnalysisMain() {
     useState();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const assetAllocationData = {
+    date: "21 Oct 2024",
+    total: "₹50,00,000",
+    equity: "₹30,00,000",
+    equityPercent: "60%",
+    debt: "₹15,00,000",
+    debtPercent: "30%",
+    others: "₹5,00,000",
+    othersPercent: "10%",
+  };
+
+  const marketCapData = {
+    date: "21 Oct 2024",
+    totalEquityAUM: "₹30,00,000",
+    largeCap: "₹18,00,000",
+    largeCapPercent: "60%",
+    midCapAUM: "₹7,50,000",
+    midCapPercent: "25%",
+    smallCapAUM: "₹3,00,000",
+    smallCapPercent: "10%",
+    others: "₹1,50,000",
+    othersPercent: "5%",
+  };
   const router = useRouter();
 
   // Default data for Risk Ratios chart (will be replaced with API data)
@@ -117,7 +143,7 @@ export default function AnalysisMain() {
   ];
 
   const portfolio_allocation_options = {
-    title: "Portfolio Asset Allocation",
+    // title: "Portfolio Asset Allocation",
     titleTextStyle: {
       color: "#3F4765",
       fontSize: 16,
@@ -159,7 +185,7 @@ export default function AnalysisMain() {
   };
 
   const portfolio_MarketCap_options = {
-    title: "Portfolio Market Cap Distribution",
+    // title: "Portfolio Market Cap Distribution",
     titleTextStyle: {
       color: "#3F4765",
       fontSize: 16,
@@ -690,8 +716,77 @@ export default function AnalysisMain() {
           </div>
           <div className="w-full flex flex-wrap gap-4 justify-between">
             {/* Card 1 */}
-            <div className="relative flex-1 w-1/2 bg-white border border-[#D9D9D9] rounded-xl p-4 z-10">
-              <div className="pt-4">
+            <div className="flex-1 min-w-[400px] bg-white border border-[#D9D9D9] rounded-xl overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 border-b border-[#E5EBEF]">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-lg font-semibold text-[#3F4765] flex items-center gap-2">
+                    <PieChart className="w-5 h-5 text-blue-500" />
+                    Portfolio Asset Allocation
+                  </h3>
+                  <div className="flex items-center gap-1 text-sm text-gray-600">
+                    <Calendar className="w-4 h-4" />
+                    <span>{assetAllocationData.date}</span>
+                  </div>
+                </div>
+
+                {/* Data Grid */}
+                <div className="grid grid-cols-2 gap-3 mt-3">
+                  <div className="bg-white rounded-lg p-2 border border-gray-100">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-500">Total</span>
+                      <span className="text-sm font-semibold text-[#2B2B2B]">
+                        {assetAllocationData.total}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-2 border border-gray-100">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-500">Equity</span>
+                      <div className="text-right">
+                        <span className="text-sm font-semibold text-[#2B2B2B] block">
+                          {assetAllocationData.equity}
+                        </span>
+                        <span className="text-xs text-green-600">
+                          {assetAllocationData.equityPercent}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-2 border border-gray-100">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-500">
+                        Debt (inc. Arbitrage)
+                      </span>
+                      <div className="text-right">
+                        <span className="text-sm font-semibold text-[#2B2B2B] block">
+                          {assetAllocationData.debt}
+                        </span>
+                        <span className="text-xs text-blue-600">
+                          {assetAllocationData.debtPercent}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-2 border border-gray-100">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-500">Others</span>
+                      <div className="text-right">
+                        <span className="text-sm font-semibold text-[#2B2B2B] block">
+                          {assetAllocationData.others}
+                        </span>
+                        <span className="text-xs text-orange-600">
+                          {assetAllocationData.othersPercent}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 h-[250px] flex items-center justify-center">
                 <Chart
                   chartType="PieChart"
                   data={PortFolioAssetAllocation}
@@ -703,8 +798,100 @@ export default function AnalysisMain() {
             </div>
 
             {/* Card 2 */}
-            <div className="relative flex-1 w-1/2 bg-white border border-[#D9D9D9] rounded-xl p-4 z-10">
-              <div className="pt-4">
+            <div className="flex-1 min-w-[400px] bg-white border border-[#D9D9D9] rounded-xl overflow-hidden">
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 border-b border-[#E5EBEF]">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-lg font-semibold text-[#3F4765] flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-purple-500" />
+                    Portfolio Market Cap Distribution
+                  </h3>
+                  <div className="flex items-center gap-1 text-sm text-gray-600">
+                    <Calendar className="w-4 h-4" />
+                    <span>{marketCapData?.date}</span>
+                  </div>
+                </div>
+
+                {/* Data Grid */}
+                <div className="space-y-2">
+                 
+
+                  {/* Market Cap Breakdown */}
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="bg-white rounded-lg p-2 border border-gray-100">
+                      <div className="text-center">
+                        <span className="text-xs text-gray-500 block">
+                          Large Cap
+                        </span>
+                        <span className="text-sm font-semibold text-[#2B2B2B] block">
+                          {marketCapData?.largeCap}
+                        </span>
+                        <span className="text-xs text-blue-600">
+                          {marketCapData?.largeCapPercent}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="bg-white rounded-lg p-2 border border-gray-100">
+                      <div className="text-center">
+                        <span className="text-xs text-gray-500 block">
+                          Mid Cap
+                        </span>
+                        <span className="text-sm font-semibold text-[#2B2B2B] block">
+                          {marketCapData?.midCapAUM}
+                        </span>
+                        <span className="text-xs text-green-600">
+                          {marketCapData?.midCapPercent}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="bg-white rounded-lg p-2 border border-gray-100">
+                      <div className="text-center">
+                        <span className="text-xs text-gray-500 block">
+                          Small Cap
+                        </span>
+                        <span className="text-sm font-semibold text-[#2B2B2B] block">
+                          {marketCapData?.smallCapAUM}
+                        </span>
+                        <span className="text-xs text-orange-600">
+                          {marketCapData.smallCapPercent}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                 
+
+                  {/* Total Row */}
+                  <div className="bg-white rounded-lg p-2 border border-gray-100">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-500">
+                        Total Equity AUM
+                      </span>
+                      <span className="text-sm font-semibold text-[#2B2B2B]">
+                        {marketCapData?.totalEquityAUM}
+                      </span>
+                    </div>
+                  </div>
+
+                   {/* Others Row */}
+                  <div className="bg-white rounded-lg p-2 border border-gray-100">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-500">Others</span>
+                      <div className="text-right">
+                        <span className="text-sm font-semibold text-[#2B2B2B]">
+                          {marketCapData.others}
+                        </span>
+                        <span className="text-xs text-purple-600 ml-2">
+                          {marketCapData.othersPercent}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                   
+                </div>
+              </div>
+              <div className="p-4 h-[250px] flex items-center justify-center">
                 <Chart
                   chartType="PieChart"
                   data={PortfolioMarketCapDistributionData}

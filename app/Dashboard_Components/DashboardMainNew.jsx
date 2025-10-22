@@ -19,7 +19,7 @@ export default function DashboardMainNew() {
   //   }, []);
 
   const [chartView, setChartView] = useState("investment");
-  const [timeRange, setTimeRange] = useState("1Y");
+  const [timeRange, setTimeRange] = useState("6M");
   const [DashboardData, SetDashboardData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -600,84 +600,84 @@ export default function DashboardMainNew() {
     return data;
   };
 
-//   const calculateStats = () => {
-//     if (!PortfolioData || PortfolioData.length === 0) {
-//       return [];
-//     }
+  //   const calculateStats = () => {
+  //     if (!PortfolioData || PortfolioData.length === 0) {
+  //       return [];
+  //     }
 
-//     const latest = PortfolioData[PortfolioData.length - 1];
-//     const previous = PortfolioData[PortfolioData.length - 2] || latest;
+  //     const latest = PortfolioData[PortfolioData.length - 1];
+  //     const previous = PortfolioData[PortfolioData.length - 2] || latest;
 
-//     const portfolioChange = latest.currentValue - previous.currentValue;
-//     const portfolioPercent = (
-//       (portfolioChange / previous.currentValue) *
-//       100
-//     ).toFixed(2);
+  //     const portfolioChange = latest.currentValue - previous.currentValue;
+  //     const portfolioPercent = (
+  //       (portfolioChange / previous.currentValue) *
+  //       100
+  //     ).toFixed(2);
 
-//     const sensexChange =
-//       latest.sensex > 0 && previous.sensex > 0
-//         ? latest.sensex - previous.sensex
-//         : 0;
-//     const sensexPercent =
-//       previous.sensex > 0
-//         ? ((sensexChange / previous.sensex) * 100).toFixed(2)
-//         : "0.00";
+  //     const sensexChange =
+  //       latest.sensex > 0 && previous.sensex > 0
+  //         ? latest.sensex - previous.sensex
+  //         : 0;
+  //     const sensexPercent =
+  //       previous.sensex > 0
+  //         ? ((sensexChange / previous.sensex) * 100).toFixed(2)
+  //         : "0.00";
 
-//     const xirrChange = latest.xirr - previous.xirr;
-//     const xirrPercent = ((xirrChange / Math.abs(previous.xirr)) * 100).toFixed(
-//       2
-//     );
+  //     const xirrChange = latest.xirr - previous.xirr;
+  //     const xirrPercent = ((xirrChange / Math.abs(previous.xirr)) * 100).toFixed(
+  //       2
+  //     );
 
-//     return [
-//       {
-//         name: "Portfolio Value",
-//         value: latest.currentValue.toLocaleString("en-IN", {
-//           maximumFractionDigits: 2,
-//         }),
-//         change:
-//           portfolioChange >= 0
-//             ? `+${portfolioChange.toFixed(2)}`
-//             : portfolioChange.toFixed(2),
-//         percent: `${portfolioPercent}%`,
-//         color: "#00bcd4",
-//       },
-//       {
-//         name: "BSE500",
-//         value:
-//           latest.sensex > 0
-//             ? latest.sensex.toLocaleString("en-IN", {
-//                 maximumFractionDigits: 2,
-//               })
-//             : "N/A",
-//         change:
-//           sensexChange >= 0
-//             ? `+${sensexChange.toFixed(2)}`
-//             : sensexChange.toFixed(2),
-//         percent: `${sensexPercent}%`,
-//         color: "#9c27b0",
-//       },
-//       {
-//         name: "Total Cost",
-//         value: latest.totalCost.toLocaleString("en-IN", {
-//           maximumFractionDigits: 2,
-//         }),
-//         change: "0.00",
-//         percent: "0.00%",
-//         color: "#2196f3",
-//       },
-//       {
-//         name: "XIRR",
-//         value: `${latest.xirr.toFixed(2)}%`,
-//         change:
-//           xirrChange >= 0 ? `+${xirrChange.toFixed(2)}` : xirrChange.toFixed(2),
-//         percent: `${xirrPercent}%`,
-//         color: "#ff9800",
-//       },
-//     ];
-//   };
+  //     return [
+  //       {
+  //         name: "Portfolio Value",
+  //         value: latest.currentValue.toLocaleString("en-IN", {
+  //           maximumFractionDigits: 2,
+  //         }),
+  //         change:
+  //           portfolioChange >= 0
+  //             ? `+${portfolioChange.toFixed(2)}`
+  //             : portfolioChange.toFixed(2),
+  //         percent: `${portfolioPercent}%`,
+  //         color: "#00bcd4",
+  //       },
+  //       {
+  //         name: "BSE500",
+  //         value:
+  //           latest.sensex > 0
+  //             ? latest.sensex.toLocaleString("en-IN", {
+  //                 maximumFractionDigits: 2,
+  //               })
+  //             : "N/A",
+  //         change:
+  //           sensexChange >= 0
+  //             ? `+${sensexChange.toFixed(2)}`
+  //             : sensexChange.toFixed(2),
+  //         percent: `${sensexPercent}%`,
+  //         color: "#9c27b0",
+  //       },
+  //       {
+  //         name: "Total Cost",
+  //         value: latest.totalCost.toLocaleString("en-IN", {
+  //           maximumFractionDigits: 2,
+  //         }),
+  //         change: "0.00",
+  //         percent: "0.00%",
+  //         color: "#2196f3",
+  //       },
+  //       {
+  //         name: "XIRR",
+  //         value: `${latest.xirr.toFixed(2)}%`,
+  //         change:
+  //           xirrChange >= 0 ? `+${xirrChange.toFixed(2)}` : xirrChange.toFixed(2),
+  //         percent: `${xirrPercent}%`,
+  //         color: "#ff9800",
+  //       },
+  //     ];
+  //   };
 
   const chartData = generateChartData(timeRange, chartView);
-//   const stockData = PortfolioData.length > 0 ? calculateStats() : [];
+  //   const stockData = PortfolioData.length > 0 ? calculateStats() : [];
 
   const chartOptions =
     chartView === "xirr"
@@ -770,7 +770,12 @@ export default function DashboardMainNew() {
           {/* Card 1 */}
           <div className="relative flex-1 min-w-[200px] max-w-[275px] bg-white border border-[#D9D9D9] rounded-lg p-2 h-[100px] sm:h-[110px] md:h-[120px]">
             <div className="flex items-center mb-3">
-              <div className="w-5 h-5 bg-gray-300 rounded"></div>
+              <Image
+                src={require("../assets/logo/Bitcoin.png")} // Replace with your icon path
+                alt="Search Icon"
+                width={20} // Icon width
+                height={20} // Icon height
+              />
               <p className="text-xs sm:text-sm font-medium text-[#6E7499] ml-1">
                 Current Value
               </p>
@@ -787,7 +792,12 @@ export default function DashboardMainNew() {
           {/* Card 2 */}
           <div className="relative flex-1 min-w-[160px] max-w-[275px] bg-white border border-[#D9D9D9] rounded-lg p-2 h-[100px] sm:h-[110px] md:h-[120px]">
             <div className="flex items-center mb-3">
-              <div className="w-5 h-5 bg-gray-300 rounded"></div>
+              <Image
+                src={require("../assets/logo/Icon1.png")} // Replace with your icon path
+                alt="Search Icon"
+                width={20} // Icon width
+                height={20} // Icon height
+              />
               <p className="text-xs sm:text-sm font-medium text-[#6E7499] ml-1">
                 Current Cost
               </p>
@@ -804,7 +814,12 @@ export default function DashboardMainNew() {
           {/* Card 3 */}
           <div className="relative flex-1 min-w-[160px] max-w-[275px] bg-white border border-[#D9D9D9] rounded-lg p-2 h-[100px] sm:h-[110px] md:h-[120px]">
             <div className="flex items-center mb-3">
-              <div className="w-5 h-5 bg-gray-300 rounded"></div>
+              <Image
+                src={require("../assets/logo/Icon2.png")} // Replace with your icon path
+                alt="Search Icon"
+                width={20} // Icon width
+                height={20} // Icon height
+              />
               <p className="text-xs sm:text-sm font-medium text-[#6E7499] ml-1">
                 Current XIRR
               </p>
@@ -1310,7 +1325,15 @@ export default function DashboardMainNew() {
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
                   {balanceData ? formatCurrency(balanceData?.todaysGain) : "₹0"}
                 </div>
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white bg-opacity-20 rounded"></div>
+                <div className="w-6 h-6 sm:w-8 sm:h-8">
+                  <Image
+                    src={require("../assets/logo/Credit_Card_green.png")}
+                    alt="Card Image"
+                    width={24}
+                    height={24}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </div>
             </div>
 
@@ -1325,7 +1348,15 @@ export default function DashboardMainNew() {
                 <div className="text-white font-semibold text-base sm:text-sm md:text-base">
                   {result !== null ? balanceData?.weightedExpenseRatio : "₹0"}
                 </div>
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white bg-opacity-20 rounded"></div>
+                <div className="w-6 h-6 sm:w-8 sm:h-8">
+                  <Image
+                    src={require("../assets/logo/Credit_Card_yellow.png")}
+                    alt="Card Image"
+                    width={24}
+                    height={24}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -1348,7 +1379,15 @@ export default function DashboardMainNew() {
                 <div className="text-white font-semibold text-base">
                   {balanceData ? `${balanceData?.currentValueChanges}%` : "0 %"}
                 </div>
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white bg-opacity-20 rounded"></div>
+                <div className="w-6 h-6 sm:w-8 sm:h-8">
+                  <Image
+                    src={require("../assets/logo/Credit_Card_yellow.png")}
+                    alt="Card Image"
+                    width={24}
+                    height={24}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </div>
             </div>
 
@@ -1361,7 +1400,15 @@ export default function DashboardMainNew() {
                 <div className="text-white font-semibold text-base">
                   {result !== null ? `${balanceData?.BSE500Changes} %` : "0 %"}
                 </div>
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white bg-opacity-20 rounded"></div>
+                <div className="w-6 h-6 sm:w-8 sm:h-8">
+                  <Image
+                    src={require("../assets/logo/Credit_Card_yellow.png")}
+                    alt="Card Image"
+                    width={24}
+                    height={24}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </div>
             </div>
           </div>

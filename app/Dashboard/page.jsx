@@ -304,11 +304,11 @@ export default function Dashboard() {
           </span>
         ) : null} */}
 
-        {activeIndex === 0 && activeIndexSecond === 0 ? (
+        {/* {activeIndex === 0 && activeIndexSecond === 0 ? (
           <DashboardMain />
-        ) : null}
+        ) : null} */}
 
-        {/* {activeIndex === 0 && activeIndexSecond === 0 ? <DashboardMainNew /> : null} */}
+        {activeIndex === 0 && activeIndexSecond === 0 ? <DashboardMainNew /> : null}
 
         {activeIndex === 0 && activeIndexSecond === 1 ? <AnalysisMain /> : null}
 

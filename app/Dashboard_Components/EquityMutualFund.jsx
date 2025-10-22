@@ -93,6 +93,8 @@ export default function CombinedMutualFund() {
     "Net Rolling (3 Year Min)",
     "Net Tailing (1 Year)",
     "Net Tailing (3 Year)",
+    "Avg. Manager Tenure",
+    "Tenure Over Ratio",
     "Action",
   ];
 
@@ -592,6 +594,23 @@ export default function CombinedMutualFund() {
                               </div>
                             </td>
 
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {"N/A"}
+                              </div>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              style={{ minWidth: "120px" }}
+                            >
+                              <div className="text-sm text-gray-900">
+                                {"N/A"}
+                              </div>
+                            </td>
+
                             {/* Action column */}
                             <td
                               className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
@@ -836,7 +855,18 @@ export default function CombinedMutualFund() {
                         >
                           <div className="text-sm text-gray-900"></div>
                         </td>
-
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900"></div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900"></div>
+                        </td>
                         {/* Action column */}
                       </tr>
                     </>
