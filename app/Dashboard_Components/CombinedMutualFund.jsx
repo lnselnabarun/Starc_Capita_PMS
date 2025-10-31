@@ -91,8 +91,8 @@ export default function CombinedMutualFund() {
     "Net Rolling (3 Year Min)",
     "Net Tailing (1 Year)",
     "Net Tailing (3 Year)",
-    "Avg. Manager Tenure",
-    "Tenure Over Ratio",
+    "Turnover Ratio",
+    "Tenure Ratio",
     "Action",
   ];
 
@@ -611,7 +611,7 @@ export default function CombinedMutualFund() {
                                           style={{ minWidth: "120px" }}
                                         >
                                           <div className="text-sm text-gray-900">
-                                            {"N/A"}
+                                          {item?.annualReportFinancials?.AnnualReportTurnoverRatio || "N/A"}
                                           </div>
                                         </td>
                                         <td
@@ -619,7 +619,7 @@ export default function CombinedMutualFund() {
                                           style={{ minWidth: "120px" }}
                                         >
                                           <div className="text-sm text-gray-900">
-                                            {"N/A"}
+                                          {item?.FundManagerTenureAverage?.FundManagerTenureAverage || "N/A"}
                                           </div>
                                         </td>
 
@@ -938,7 +938,7 @@ export default function CombinedMutualFund() {
                                   style={{ minWidth: "120px" }}
                                 >
                                   <div className="text-sm text-gray-900">
-                                    {"N/A"}
+                                  {item?.annualReportFinancials?.AnnualReportTurnoverRatio || "N/A"}
                                   </div>
                                 </td>
                                 <td
@@ -946,7 +946,7 @@ export default function CombinedMutualFund() {
                                   style={{ minWidth: "120px" }}
                                 >
                                   <div className="text-sm text-gray-900">
-                                    {"N/A"}
+                                  {item?.FundManagerTenureAverage?.FundManagerTenureAverage || "N/A"}
                                   </div>
                                 </td>
 

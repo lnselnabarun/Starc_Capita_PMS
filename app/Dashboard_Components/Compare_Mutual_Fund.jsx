@@ -113,6 +113,21 @@ const MutualFundComparison = () => {
       details: apiData["TTR-ReturnSinceInception"] || "N/A",
     });
 
+
+  // ADD CALENDAR RETURNS HERE
+  detailsArray.push({
+    name: "Calendar Return 1YR",
+    details: fullData?.CalendarYearReturn?.Year1 || "N/A",
+  });
+  detailsArray.push({
+    name: "Calendar Return 3YR",
+    details: fullData?.CalendarYearReturn?.Year3 || "N/A",
+  });
+  detailsArray.push({
+    name: "Calendar Return 5YR",
+    details: fullData?.CalendarYearReturn?.Year5 || "N/A",
+  });
+
     // Rolling Returns - Now accessing from fullData instead of apiData
     detailsArray.push({
       name: "Rolling Return Avg 1YR",
@@ -437,6 +452,23 @@ const MutualFundComparison = () => {
           label: "Since Inception",
           isFirstDisplay: true,
         },
+        // ADD CALENDAR RETURNS HERE
+        {
+          key: "Calendar Return 1YR",
+          label: "1 Year Calendar",
+          isFirstDisplay: true,
+        },
+        {
+          key: "Calendar Return 3YR",
+          label: "3 Year Calendar",
+          isFirstDisplay: true,
+        },
+        {
+          key: "Calendar Return 5YR",
+          label: "5 Year Calendar",
+          isFirstDisplay: true,
+        },
+        // Rolling Returns - existing fields continue...
         { key: "Rolling Return Avg 1YR", label: "1 Year Avg Rolling" },
         { key: "Rolling Return Min 1YR", label: "1 Year Min Rolling" },
         { key: "Rolling Return Max 1YR", label: "1 Year Max Rolling" },

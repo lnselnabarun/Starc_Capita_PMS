@@ -93,8 +93,8 @@ export default function CombinedMutualFund() {
     "Net Rolling (3 Year Min)",
     "Net Tailing (1 Year)",
     "Net Tailing (3 Year)",
-    "Avg. Manager Tenure",
-    "Tenure Over Ratio",
+    "Turnover Ratio",
+    "Tenure Ratio",
     "Action",
   ];
 
@@ -599,7 +599,8 @@ export default function CombinedMutualFund() {
                               style={{ minWidth: "120px" }}
                             >
                               <div className="text-sm text-gray-900">
-                                {"N/A"}
+                                {item?.annualReportFinancials
+                                  ?.AnnualReportTurnoverRatio || "N/A"}
                               </div>
                             </td>
                             <td
@@ -607,7 +608,8 @@ export default function CombinedMutualFund() {
                               style={{ minWidth: "120px" }}
                             >
                               <div className="text-sm text-gray-900">
-                                {"N/A"}
+                                {item?.FundManagerTenureAverage
+                                  ?.FundManagerTenureAverage || "N/A"}
                               </div>
                             </td>
 
@@ -674,7 +676,7 @@ export default function CombinedMutualFund() {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900"></div>
-                        </td> 
+                        </td>
                         <td
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "150px" }}
@@ -684,7 +686,7 @@ export default function CombinedMutualFund() {
                               items?.summery?.totalCurrentValue
                             )}`}
                           </div>
-                        </td> 
+                        </td>
                         <td
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
@@ -692,7 +694,7 @@ export default function CombinedMutualFund() {
                           <div className="text-sm text-gray-900">
                             {items?.summery?.weightedExpenseRatio}
                           </div>
-                        </td> 
+                        </td>
                         <td
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}

@@ -18,13 +18,14 @@ import {
   ArrowUp,
   ArrowDown,
   Calendar,
-  PieChart
+  PieChart,
 } from "lucide-react";
 import Image from "next/image";
 import { Chart } from "react-google-charts";
 import { useRouter } from "next/navigation";
 
 export default function AnalysisMain() {
+  const router = useRouter();
   const [activeButton, setActiveButton] = useState("risk");
   const [PortFolioAssetAllocation, setPortFolioAssetAllocation] = useState([]);
   const [
@@ -67,7 +68,6 @@ export default function AnalysisMain() {
     others: "₹1,50,000",
     othersPercent: "5%",
   };
-  const router = useRouter();
 
   // Default data for Risk Ratios chart (will be replaced with API data)
   const riskRatioData = [
@@ -813,8 +813,6 @@ export default function AnalysisMain() {
 
                 {/* Data Grid */}
                 <div className="space-y-2">
-                 
-
                   {/* Market Cap Breakdown */}
                   <div className="grid grid-cols-3 gap-2">
                     <div className="bg-white rounded-lg p-2 border border-gray-100">
@@ -860,8 +858,6 @@ export default function AnalysisMain() {
                     </div>
                   </div>
 
-                 
-
                   {/* Total Row */}
                   <div className="bg-white rounded-lg p-2 border border-gray-100">
                     <div className="flex justify-between items-center">
@@ -874,7 +870,7 @@ export default function AnalysisMain() {
                     </div>
                   </div>
 
-                   {/* Others Row */}
+                  {/* Others Row */}
                   <div className="bg-white rounded-lg p-2 border border-gray-100">
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-gray-500">Others</span>
@@ -888,7 +884,6 @@ export default function AnalysisMain() {
                       </div>
                     </div>
                   </div>
-                   
                 </div>
               </div>
               <div className="p-4 h-[250px] flex items-center justify-center">

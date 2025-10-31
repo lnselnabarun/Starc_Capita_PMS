@@ -179,7 +179,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
           </div>
 
           {/* Statistics Cards */}
-          <div className="flex flex-wrap justify-between gap-6 mb-8">
+          {/* <div className="flex flex-wrap justify-between gap-6 mb-8">
             <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl hover:border-green-200 transition-all duration-300 group w-full md:w-[48%] lg:w-[32%]">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 bg-green-100 rounded-xl group-hover:bg-green-200 transition-colors duration-200">
@@ -230,7 +230,7 @@ const CombinedDetailsMutualFund = ({ params }) => {
                 XIRR
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Transactions Table */}
