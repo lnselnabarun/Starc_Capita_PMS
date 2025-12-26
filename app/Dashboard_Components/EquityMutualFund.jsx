@@ -666,9 +666,9 @@ export default function CombinedMutualFund() {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                            {`₹${formatMoney(
+                            {/* {`₹${formatMoney(
                               items?.summery?.totalCurrentCost
-                            )}`}
+                            )}`} */}
                           </div>
                         </td>
                         <td
@@ -682,9 +682,9 @@ export default function CombinedMutualFund() {
                           style={{ minWidth: "150px" }}
                         >
                           <div className="text-sm text-gray-900">
-                            {`₹${formatMoney(
+                            {/* {`₹${formatMoney(
                               items?.summery?.totalCurrentValue
-                            )}`}
+                            )}`} */}
                           </div>
                         </td>
                         <td
@@ -692,7 +692,7 @@ export default function CombinedMutualFund() {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900">
-                            {items?.summery?.weightedExpenseRatio}
+                            {/* {items?.summery?.weightedExpenseRatio}  */}
                           </div>
                         </td>
                         <td
@@ -741,114 +741,6 @@ export default function CombinedMutualFund() {
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
-                          <div className="text-sm text-gray-900">0</div>
-                        </td>
-                        <td
-                          className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
-                          <div className="text-sm text-gray-900"></div>
-                        </td>
-                        <td
-                          className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
-                          <div className="text-sm text-gray-900">
-                            {items?.summery?.weightedStdDev}
-                          </div>
-                        </td>
-                        <td
-                          className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
-                          <div className="text-sm text-gray-900">
-                            {items?.summery?.weightedSharpeRatio}
-                          </div>
-                        </td>
-                        <td
-                          className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
-                          <div className="text-sm text-gray-900">
-                            {items?.summery?.weightedUpsideCapture}
-                          </div>
-                        </td>
-                        <td
-                          className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
-                          <div className="text-sm text-gray-900">
-                            {items?.summery?.weightedDownsideCapture}
-                          </div>
-                        </td>
-                        <td
-                          className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
-                          <div className="text-sm text-gray-900">
-                            {items?.summery?.weightedBeta}
-                          </div>
-                        </td>
-                        <td
-                          className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
-                          <div className="text-sm text-gray-900">
-                            {items?.summery?.weightedAlpha}
-                          </div>
-                        </td>
-                        <td
-                          className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
-                          <div className="text-sm text-gray-900">
-                            {items?.summery?.weightedRolling1YrMax}
-                          </div>
-                        </td>
-                        <td
-                          className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
-                          <div className="text-sm text-gray-900">
-                            {items?.summery?.weightedRolling1YrAvg}
-                          </div>
-                        </td>
-                        <td
-                          className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
-                          <div className="text-sm text-gray-900">
-                            {items?.summery?.weightedRolling1YrMin}
-                          </div>
-                        </td>
-                        <td
-                          className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
-                          <div className="text-sm text-gray-900">
-                            {items?.summery?.weightedRolling3YrMax}
-                          </div>
-                        </td>
-                        <td
-                          className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
-                          <div className="text-sm text-gray-900">
-                            {items?.summery?.weightedRolling3YrAvg}
-                          </div>
-                        </td>
-                        <td
-                          className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
-                          <div className="text-sm text-gray-900">
-                            {items?.summery?.weightedRolling3YrMin}
-                          </div>
-                        </td>
-                        <td
-                          className="px-6 py-1 whitespace-nowrap"
-                          style={{ minWidth: "120px" }}
-                        >
                           <div className="text-sm text-gray-900"></div>
                         </td>
                         <td
@@ -861,6 +753,108 @@ export default function CombinedMutualFund() {
                           className="px-6 py-1 whitespace-nowrap"
                           style={{ minWidth: "120px" }}
                         >
+                          <div className="text-sm text-gray-900">
+                            {/* {items?.summery?.weightedStdDev} */}
+                            {items?.summery?.stdDev}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                            {/* {items?.summery?.weightedSharpeRatio} */}
+                            {items?.summery?.sharpeRatio1Yr}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                            {/* {items?.summery?.weightedUpsideCapture} */}
+                            {items?.summery?.captureRatiosUP}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                            {/* {items?.summery?.weightedDownsideCapture} */}
+                            {items?.summery?.captureRatiosDOWN}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                            {/* {items?.summery?.weightedBeta} */}
+                            {items?.summery?.beta}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                            {/* {items?.summery?.weightedAlpha} */}
+                            {items?.summery?.alpha}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                            {/* {items?.summery?.weightedRolling1YrMax} */}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                            {/* {items?.summery?.weightedRolling1YrAvg} */}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                            {/* {items?.summery?.weightedRolling1YrMin} */}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                            {/* {items?.summery?.weightedRolling3YrMax} */}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                            {/* {items?.summery?.weightedRolling3YrAvg} */}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900">
+                            {/* {items?.summery?.weightedRolling3YrMin} */}
+                          </div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
                           <div className="text-sm text-gray-900"></div>
                         </td>
                         <td
@@ -868,6 +862,18 @@ export default function CombinedMutualFund() {
                           style={{ minWidth: "120px" }}
                         >
                           <div className="text-sm text-gray-900"></div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                          <div className="text-sm text-gray-900"></div>
+                        </td>
+                        <td
+                          className="px-6 py-1 whitespace-nowrap"
+                          style={{ minWidth: "120px" }}
+                        >
+                           <div className="text-sm text-gray-900">{items?.summery?.tenureRatio}</div>
                         </td>
                         {/* Action column */}
                       </tr>

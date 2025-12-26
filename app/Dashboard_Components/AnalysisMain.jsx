@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   LineChart,
   Line,
@@ -27,382 +27,166 @@ import { useRouter } from "next/navigation";
 export default function AnalysisMain() {
   const router = useRouter();
   const [activeButton, setActiveButton] = useState("risk");
-  const [PortFolioAssetAllocation, setPortFolioAssetAllocation] = useState([]);
+  const [PortFolioAssetAllocation, setPortFolioAssetAllocation] = useState([
+    ["Category", "Amount"],
+    ["Equity", 0],
+    ["Debt", 0],
+    ["Others", 0],
+  ]);
   const [
     PortfolioMarketCapDistributionData,
     setPortfolioMarketCapDistributionData,
-  ] = useState([]);
-  const [AMC_Distribution_data, setAMC_Distribution_data] = useState([]);
-  const [Category_Distribution, setCategory_Distribution] = useState([]);
+  ] = useState([
+    ["Category", "Percentage"],
+    ["Large Cap", 0],
+    ["Mid Cap", 0],
+    ["Small Cap", 0],
+    ["Others", 0],
+  ]);
+  const [AMC_Distribution_data, setAMC_Distribution_data] = useState([
+    ["Category", "Percentage"],
+    ["No Data", 100],
+  ]);
+  const [Category_Distribution, setCategory_Distribution] = useState([
+    ["Category", "Percentage"],
+    ["No Data", 100],
+  ]);
   const [captureRatiosData, setCaptureRatiosData] = useState([]);
   const [
     captureRatiosDataForShowLastValue,
     setCaptureRatiosDataForShowLastValue,
-  ] = useState(); // New state for last capture ratio values
+  ] = useState(null);
   const [riskRatiosData, setRiskRatiosData] = useState([]);
   const [riskRatiosDataForShowLastValue, setriskRatiosDataForShowLastValue] =
-    useState();
+    useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dataLoadStatus, setDataLoadStatus] = useState({});
 
-  const assetAllocationData = {
-    date: "21 Oct 2024",
-    total: "₹50,00,000",
-    equity: "₹30,00,000",
-    equityPercent: "60%",
-    debt: "₹15,00,000",
-    debtPercent: "30%",
-    others: "₹5,00,000",
-    othersPercent: "10%",
+  // Asset allocation data state
+  const [assetAllocationData, setAssetAllocationData] = useState({
+    date: "",
+    total: "₹0",
+    equity: "₹0",
+    equityPercent: "0%",
+    debt: "₹0",
+    debtPercent: "0%",
+    others: "₹0",
+    othersPercent: "0%",
+  });
+
+  // Market cap data state
+  const [marketCapData, setMarketCapData] = useState({
+    date: "",
+    totalEquityAUM: "₹0",
+    largeCap: "₹0",
+    largeCapPercent: "0%",
+    midCapAUM: "₹0",
+    midCapPercent: "0%",
+    smallCapAUM: "₹0",
+    smallCapPercent: "0%",
+    others: "₹0",
+    othersPercent: "0%",
+  });
+
+  // Helper function to format currency
+  const formatCurrency = (value) => {
+    if (!value || isNaN(value)) return "₹0";
+    return `₹${parseFloat(value).toLocaleString("en-IN")}`;
   };
 
-  const marketCapData = {
-    date: "21 Oct 2024",
-    totalEquityAUM: "₹30,00,000",
-    largeCap: "₹18,00,000",
-    largeCapPercent: "60%",
-    midCapAUM: "₹7,50,000",
-    midCapPercent: "25%",
-    smallCapAUM: "₹3,00,000",
-    smallCapPercent: "10%",
-    others: "₹1,50,000",
-    othersPercent: "5%",
-  };
-
-  // Default data for Risk Ratios chart (will be replaced with API data)
-  const riskRatioData = [
-    {
-      date: "03/07/2024",
-      "Expense Ratio": 1.25,
-      "Std. Dev.": 9.2,
-      Sharpe: 1.3,
-      Beta: 0.65,
-      Alpha: 0.9,
-    },
-    {
-      date: "04/08/2024",
-      "Expense Ratio": 1.2,
-      "Std. Dev.": 9.1,
-      Sharpe: 1.4,
-      Beta: 0.7,
-      Alpha: 3.5,
-    },
-    {
-      date: "01/09/2024",
-      "Expense Ratio": 1.15,
-      "Std. Dev.": 9.15,
-      Sharpe: 1.45,
-      Beta: 0.75,
-      Alpha: 6.5,
-    },
-    {
-      date: "01/10/2024",
-      "Expense Ratio": 1.1,
-      "Std. Dev.": 9.2,
-      Sharpe: 1.48,
-      Beta: 0.78,
-      Alpha: 6.6,
-    },
-    {
-      date: "10/11/2024",
-      "Expense Ratio": 1.1,
-      "Std. Dev.": 9.25,
-      Sharpe: 1.5,
-      Beta: 0.8,
-      Alpha: 6.65,
-    },
-  ];
-
-  // Data for Capture Ratios chart
-  const captureRatioData = [
-    {
-      date: "03/07/2024",
-      Up: 90.5,
-      Down: 85.0,
-    },
-    {
-      date: "04/08/2024",
-      Up: 92.3,
-      Down: 78.0,
-    },
-    {
-      date: "01/09/2024",
-      Up: 93.5,
-      Down: 70.0,
-    },
-    {
-      date: "01/10/2024",
-      Up: 94.0,
-      Down: 65.0,
-    },
-    {
-      date: "10/11/2024",
-      Up: 94.2,
-      Down: 67.0,
-    },
-  ];
-
-  const portfolio_allocation_options = {
-    // title: "Portfolio Asset Allocation",
-    titleTextStyle: {
-      color: "#3F4765",
-      fontSize: 16,
-      fontName: "sans-serif",
-      bold: true,
-    },
-    is3D: false,
-    colors: ["#5C6BC0", "#EC407A", "#FFA726", "#60BC63"], // Using colors similar to your UI
-    backgroundColor: "transparent",
-    legend: {
-      position: "right",
-      alignment: "center",
-      textStyle: {
-        color: "#3F4765",
-        fontSize: 12,
-        fontName: "sans-serif",
-      },
-    },
-    pieSliceText: "percentage",
-    pieSliceTextStyle: {
-      color: "white",
-      fontSize: 14,
-      fontName: "sans-serif",
-    },
-    tooltip: {
-      showColorCode: true,
-      textStyle: {
-        color: "#3F4765",
-        fontSize: 12,
-        fontName: "sans-serif",
-      },
-    },
-    chartArea: {
-      left: 10,
-      top: 30,
-      width: "80%",
-      height: "80%",
-    },
-  };
-
-  const portfolio_MarketCap_options = {
-    // title: "Portfolio Market Cap Distribution",
-    titleTextStyle: {
-      color: "#3F4765",
-      fontSize: 16,
-      fontName: "sans-serif",
-      bold: true,
-    },
-    is3D: false,
-    colors: ["#5C6BC0", "#EC407A", "#FFA726", "#60BC63"], // Using colors similar to your UI
-    backgroundColor: "transparent",
-    legend: {
-      position: "right",
-      alignment: "center",
-      textStyle: {
-        color: "#3F4765",
-        fontSize: 12,
-        fontName: "sans-serif",
-      },
-    },
-    pieSliceText: "percentage",
-    pieSliceTextStyle: {
-      color: "white",
-      fontSize: 14,
-      fontName: "sans-serif",
-    },
-    tooltip: {
-      showColorCode: true,
-      textStyle: {
-        color: "#3F4765",
-        fontSize: 12,
-        fontName: "sans-serif",
-      },
-    },
-    chartArea: {
-      left: 10,
-      top: 30,
-      width: "80%",
-      height: "80%",
-    },
-  };
-  const portfolio_category_data = [
-    ["Category", "Percentage"],
-    ["Equity - Large Cap", 8.11],
-    ["Equity - Contra", 19.75],
-    ["Equity - Sectoral - Infrastructure", 16.78],
-    ["Hybrid - Multi Asset Allocation", 55.37],
-  ];
-
-  const portfolio_CATEGORY_options = {
-    title: "Category Distribution",
-    titleTextStyle: {
-      color: "#3F4765",
-      fontSize: 16,
-      fontName: "sans-serif",
-      bold: true,
-    },
-    is3D: false,
-    colors: ["#5C6BC0", "#EC407A", "#FFA726", "#60BC63"], // Using colors similar to your UI
-    backgroundColor: "transparent",
-    legend: {
-      position: "right",
-      alignment: "center",
-      textStyle: {
-        color: "#3F4765",
-        fontSize: 12,
-        fontName: "sans-serif",
-      },
-    },
-    pieSliceText: "percentage",
-    pieSliceTextStyle: {
-      color: "white",
-      fontSize: 14,
-      fontName: "sans-serif",
-    },
-    tooltip: {
-      showColorCode: true,
-      textStyle: {
-        color: "#3F4765",
-        fontSize: 12,
-        fontName: "sans-serif",
-      },
-    },
-    chartArea: {
-      left: 10,
-      top: 30,
-      width: "80%",
-      height: "80%",
-    },
-  };
-
-  const portfolio_AMC_Distribution_data = [
-    ["Task", "Hours per Day"],
-    ["ICICI", 80.25],
-    ["SBI", 19.75],
-  ];
-
-  const portfolio_AMC_Distribution_options = {
-    title: "AMC Distribution",
-    titleTextStyle: {
-      color: "#3F4765",
-      fontSize: 16,
-      fontName: "sans-serif",
-      bold: true,
-    },
-    is3D: false,
-    colors: ["#5C6BC0", "#EC407A", "#FFA726", "#60BC63"], // Using colors similar to your UI
-    backgroundColor: "transparent",
-    legend: {
-      position: "right",
-      alignment: "center",
-      textStyle: {
-        color: "#3F4765",
-        fontSize: 12,
-        fontName: "sans-serif",
-      },
-    },
-    pieSliceText: "percentage",
-    pieSliceTextStyle: {
-      color: "white",
-      fontSize: 14,
-      fontName: "sans-serif",
-    },
-    tooltip: {
-      showColorCode: true,
-      textStyle: {
-        color: "#3F4765",
-        fontSize: 12,
-        fontName: "sans-serif",
-      },
-    },
-    chartArea: {
-      left: 10,
-      top: 30,
-      width: "80%",
-      height: "80%",
-    },
-  };
-
-  // Get active data based on button selection
-  const getActiveData = () => {
-    // If risk button is active and we have API data, use it
-    if (activeButton === "risk" && riskRatiosData.length > 0) {
-      return riskRatiosData;
+  // Helper function to format percentage
+  const formatPercentage = (value) => {
+    if (!value) return "0%";
+    // If value already includes %, return as is
+    if (typeof value === "string" && value.includes("%")) {
+      return value;
     }
-    // Otherwise use the default data
-    return activeButton === "risk" ? riskRatioData : captureRatiosData;
+    // Otherwise format it
+    if (!isNaN(value)) {
+      return `${parseFloat(value).toFixed(2)}%`;
+    }
+    return "0%";
   };
 
-  // Get chart title based on active button
-  const getChartTitle = () => {
-    return activeButton === "risk"
-      ? "Risk Ratios over time"
-      : "Capture Ratios over time";
-  };
-
-  const tableData = [
-    {
-      currency: "Bitcoin / BTC",
-      price: "₹50,000",
-      cagr: "2%",
-      statistic: require("../assets/logo/Graph.png"),
-      exchange: "Binance",
-      coin: require("../assets/logo/Bitcoin.png"),
-    },
-    {
-      currency: "Ethereum / ETH",
-      price: "₹4,000",
-      cagr: "3%",
-      statistic: require("../assets/logo/Graph1.png"),
-      exchange: "Coinbase",
-      coin: require("../assets/logo/Icon1.png"),
-    },
-    {
-      currency: "Algorand / ALG",
-      price: "₹1.50",
-      cagr: "1.5%",
-      statistic: require("../assets/logo/Graph2.png"),
-      exchange: "Kraken",
-      coin: require("../assets/logo/Icon2.png"),
-    },
-  ];
-
-  const fetchPortFolioAssetAllocation = async (fundId) => {
+  // Helper function to safely get localStorage item
+  const getStorageItem = (key) => {
     try {
-      const response = await fetch(
-        "https://dev.netrumusa.com/starkcapital/api-backend/portfolio-asset-allocation-graph",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ user_id: fundId.toString() }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data?.status === "success") {
-        // Add a check to ensure details property exists
-        setPortFolioAssetAllocation(data?.data);
-      } else {
-        // localStorage.clear();
-        // router.push("/");
-      }
+      const item = localStorage.getItem(key);
+      return item ? JSON.parse(item) : null;
     } catch (error) {
-      // localStorage.clear();
-      // router.push("/");
+      return null;
     }
   };
 
-  const GetPortfolioMarketCapDistributionData = async (fundId, token) => {
+  // Portfolio Asset Allocation API
+  const fetchPortFolioAssetAllocationDatas = useCallback(
+    async (fundId, token) => {
+      try {
+        const response = await fetch(
+          "https://dev.netrumusa.com/starkcapital/api-backend/portfolio-asset-allocation",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ user_id: fundId.toString() }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data?.status === "success" && data?.data) {
+          const mybalance = data?.data?.mybalance || {};
+          const allocation = data?.data?.assetAllocation || {};
+
+          const formattedData = {
+            date:
+              mybalance?.date ||
+              new Date().toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              }),
+            total: formatCurrency(mybalance?.totalCost || 0),
+            equity: formatCurrency(allocation?.Equity || 0),
+            equityPercent: formatPercentage(allocation?.Equity_Percentage || 0),
+            debt: formatCurrency(allocation?.Debt || 0),
+            debtPercent: formatPercentage(allocation?.Debt_Percentage || 0),
+            others: formatCurrency(allocation?.Others || 0),
+            othersPercent: formatPercentage(allocation?.Others_Percentage || 0),
+          };
+
+          setAssetAllocationData(formattedData);
+
+          const chartData = [
+            ["Category", "Amount"],
+            ["Equity", parseFloat(allocation?.Equity || 0)],
+            ["Debt", parseFloat(allocation?.Debt || 0)],
+            ["Others", parseFloat(allocation?.Others || 0)],
+          ];
+          setPortFolioAssetAllocation(chartData);
+
+          return { success: true, data: formattedData };
+        }
+        return { success: false, error: "Invalid data structure" };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    },
+    []
+  );
+
+  // New Portfolio Market Cap API
+  const fetchPortfolioMarketCapData = useCallback(async (fundId, token) => {
     try {
       const response = await fetch(
-        "https://dev.netrumusa.com/starkcapital/api-backend/portfolio-market-cap-distribution-graph",
+        "https://dev.netrumusa.com/starkcapital/api-backend/portfolio-market-cap",
         {
           method: "POST",
           headers: {
@@ -413,40 +197,167 @@ export default function AnalysisMain() {
         }
       );
 
-      if (!response?.ok) {
-        throw new Error(`HTTP error! status: ${response?.status}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
 
-      if (data?.status === "success") {
-        // Transform the data into the required format for Google Charts
-        const formattedData = [["Category", "Percentage"]];
+      if (data?.status === "success" && data?.summary) {
+        const summary = data?.summary;
 
-        // Map through the received data and format it
-        data?.data?.forEach((item) => {
-          // Format category name to title case (e.g., "large_cap" to "Large Cap")
-          const formattedCategory = item?.category
-            .split("_")
-            .map((word) => word?.charAt(0).toUpperCase() + word?.slice(1))
-            .join(" ");
+        // Format the market cap display data
+        const formattedMarketCapData = {
+          date: data?.xirrData?.date
+            ? new Date(data?.xirrData?.date).toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })
+            : new Date().toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              }),
+          totalEquityAUM: formatCurrency(summary?.totalPortfolioValue || 0),
+          largeCap: formatCurrency(summary?.totallargeCapAUM || 0),
+          largeCapPercent: summary?.totallargeCapPercentage || "0%",
+          midCapAUM: formatCurrency(summary?.totalmidCapAUM || 0),
+          midCapPercent: summary?.totalmidCapPercentage || "0%",
+          smallCapAUM: formatCurrency(summary?.totalsmallCapAUM || 0),
+          smallCapPercent: summary?.totalsmallCapPercentage || "0%",
+          others: formatCurrency(summary?.totalotherAUM || 0),
+          othersPercent: summary?.totalotherPercentage || "0%",
+        };
 
-          // Add the category and percentage to the formatted data
-          formattedData?.push([formattedCategory, item?.percentage]);
-        });
+        setMarketCapData(formattedMarketCapData);
 
-        setPortfolioMarketCapDistributionData(data?.summary);
-      } else {
-        // localStorage.clear();
-        // router.push("/");
+        // Create chart data from the summary
+        const chartData = [["Category", "Percentage"]];
+
+        const largeCapPct = parseFloat(
+          summary?.totallargeCapPercentage?.replace("%", "") || 0
+        );
+        const midCapPct = parseFloat(
+          summary?.totalmidCapPercentage?.replace("%", "") || 0
+        );
+        const smallCapPct = parseFloat(
+          summary?.totalsmallCapPercentage?.replace("%", "") || 0
+        );
+        const otherPct = parseFloat(
+          summary?.totalotherPercentage?.replace("%", "") || 0
+        );
+
+        if (largeCapPct > 0) chartData.push(["Large Cap", largeCapPct]);
+        if (midCapPct > 0) chartData.push(["Mid Cap", midCapPct]);
+        if (smallCapPct > 0) chartData.push(["Small Cap", smallCapPct]);
+        if (otherPct > 0) chartData.push(["Others", otherPct]);
+
+        if (chartData.length > 1) {
+          setPortfolioMarketCapDistributionData(chartData);
+        }
+
+        return { success: true, data: formattedMarketCapData };
       }
+      return { success: false, error: "Invalid data structure" };
     } catch (error) {
-      // localStorage.clear();
-      // router.push("/");
+      return { success: false, error: error.message };
     }
-  };
+  }, []);
 
-  const fetchCategoryDistribution = async (userId) => {
+  // Portfolio Asset Allocation Graph API
+  const fetchPortFolioAssetAllocation = useCallback(async (fundId, token) => {
+    try {
+      const response = await fetch(
+        "https://dev.netrumusa.com/starkcapital/api-backend/portfolio-asset-allocation-graph",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : undefined,
+          },
+          body: JSON.stringify({ user_id: fundId.toString() }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data?.status === "success" && data?.data) {
+        setPortFolioAssetAllocation(data?.data);
+        return { success: true };
+      }
+      return { success: false };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }, []);
+
+  // Market Cap Distribution Graph API (existing)
+  const GetPortfolioMarketCapDistributionData = useCallback(
+    async (fundId, token) => {
+      try {
+        const response = await fetch(
+          "https://dev.netrumusa.com/starkcapital/api-backend/portfolio-market-cap-distribution-graph",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ user_id: fundId.toString() }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (
+          data?.status === "success" &&
+          data?.data &&
+          Array.isArray(data.data)
+        ) {
+          const formattedData = [["Category", "Percentage"]];
+
+          data?.data?.forEach((item) => {
+            if (item?.category && item?.percentage !== undefined) {
+              const formattedCategory = item?.category
+                .split("_")
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" ");
+
+              const percentageValue =
+                typeof item.percentage === "string"
+                  ? parseFloat(item?.percentage.replace("%", ""))
+                  : parseFloat(item?.percentage);
+
+              if (percentageValue > 0) {
+                formattedData.push([formattedCategory, percentageValue]);
+              }
+            }
+          });
+
+          if (formattedData.length > 1) {
+            setPortfolioMarketCapDistributionData(formattedData);
+          }
+          return { success: true };
+        }
+        return { success: false };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    },
+    []
+  );
+
+  // Category Distribution API
+  const fetchCategoryDistribution = useCallback(async (userId, token) => {
     try {
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/category-distribution-graph",
@@ -454,6 +365,7 @@ export default function AnalysisMain() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : undefined,
           },
           body: JSON.stringify({ user_id: userId.toString() }),
         }
@@ -465,29 +377,31 @@ export default function AnalysisMain() {
 
       const data = await response.json();
 
-      if (data?.status === "success") {
-        // Format the API response data for the chart
+      if (data?.status === "success" && data?.data) {
         const formattedData = [["Category", "Percentage"]];
 
-        // Map through the received data and format it
-        data?.data?.forEach((item) => {
-          if (item?.percentage > 0) {
-            // Only include categories with percentage > 0
-            formattedData?.push([item?.category, item?.percentage]);
+        data.data.forEach((item) => {
+          if (item?.category && item?.percentage > 0) {
+            formattedData.push([
+              item.category,
+              parseFloat(item.percentage) || 0,
+            ]);
           }
         });
 
-        setCategory_Distribution(formattedData);
-      } else {
+        if (formattedData.length > 1) {
+          setCategory_Distribution(formattedData);
+        }
+        return { success: true };
       }
+      return { success: false };
     } catch (error) {
-      // localStorage.clear();
-      // router.push("/");
+      return { success: false, error: error.message };
     }
-  };
+  }, []);
 
-  // New function to fetch risk ratios data
-  const fetchRiskRatiosData = async (userId) => {
+  // Risk Ratios API
+  const fetchRiskRatiosData = useCallback(async (userId, token) => {
     try {
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/risk-ratios-graph",
@@ -495,6 +409,7 @@ export default function AnalysisMain() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : undefined,
           },
           body: JSON.stringify({ user_id: userId.toString() }),
         }
@@ -506,34 +421,46 @@ export default function AnalysisMain() {
 
       const data = await response.json();
 
-      if (data?.status === "success") {
-        // Format the API response data for the chart
-        const formattedData = data?.summaries
-          .filter((item) => item?.currentValue > 0) // Only include records with values
+      if (
+        data?.status === "success" &&
+        data?.summaries &&
+        Array.isArray(data.summaries)
+      ) {
+        const formattedData = data.summaries
+          .filter((item) => item?.currentValue > 0)
           .map((item) => ({
-            date: item.date, // Use date as is
-            // "Current Value": item?.currentValue,
-            Sharpe: item?.weightedSharpeRatio,
-            Alpha: item?.weightedAlpha,
-            Beta: item?.weightedBeta,
-            "Std. Dev.": item?.weightedStdDev,
+            date: item.date || "",
+            Sharpe: parseFloat(item?.weightedSharpeRatio) || 0,
+            Alpha: parseFloat(item?.weightedAlpha) || 0,
+            Beta: parseFloat(item?.weightedBeta) || 0,
+            "Std. Dev.": parseFloat(item?.weightedStdDev) || 0,
           }));
 
         setRiskRatiosData(formattedData);
-        setriskRatiosDataForShowLastValue(
-          data.summaries?.[data?.summaries?.length - 1]
-        );
-      } else {
-        // localStorage.clear();
-        // router.push("/");
-      }
-    } catch (error) {
-      // localStorage.clear();
-      // router.push("/");
-    }
-  };
 
-  const fetchCaptureRatiosData = async (userId) => {
+        if (data.summaries.length > 0) {
+          const lastValue = data.summaries[data.summaries.length - 1];
+          setriskRatiosDataForShowLastValue({
+            weightedStdDev: parseFloat(lastValue?.weightedStdDev || 0).toFixed(
+              2
+            ),
+            weightedSharpeRatio: parseFloat(
+              lastValue?.weightedSharpeRatio || 0
+            ).toFixed(2),
+            weightedBeta: parseFloat(lastValue?.weightedBeta || 0).toFixed(2),
+            weightedAlpha: parseFloat(lastValue?.weightedAlpha || 0).toFixed(2),
+          });
+        }
+        return { success: true };
+      }
+      return { success: false };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }, []);
+
+  // Capture Ratios API
+  const fetchCaptureRatiosData = useCallback(async (userId, token) => {
     try {
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/capture-ratios-graph",
@@ -541,6 +468,7 @@ export default function AnalysisMain() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : undefined,
           },
           body: JSON.stringify({ user_id: userId.toString() }),
         }
@@ -552,68 +480,42 @@ export default function AnalysisMain() {
 
       const data = await response.json();
 
-      if (data?.status === "success") {
-        // Format the API response data for the chart
-        const formattedData = data?.summaries
+      if (
+        data?.status === "success" &&
+        data?.summaries &&
+        Array.isArray(data.summaries)
+      ) {
+        const formattedData = data.summaries
           .filter(
             (item) =>
               item?.weightedCaptureRatioUpside1Yr !== null &&
               item?.weightedCaptureRatioDownside1Yr !== null
-          ) // Only include records with values
+          )
           .map((item) => ({
-            date: item.date, // Use date as is
+            date: item.date || "",
             Up: parseFloat(item?.weightedCaptureRatioUpside1Yr) || 0,
             Down: parseFloat(item?.weightedCaptureRatioDownside1Yr) || 0,
           }));
 
         setCaptureRatiosData(formattedData);
-        setCaptureRatiosDataForShowLastValue(
-          formattedData?.[formattedData?.length - 1]
-        );
-      } else {
-        // localStorage.clear();
-        // router.push("/");
-      }
-    } catch (error) {
-      // localStorage.clear();
-      // router.push("/");
-    }
-  };
 
-  useEffect(() => {
-    const initializeData = async () => {
-      try {
-        setIsLoading(true);
-        const token = localStorage.getItem("myData");
-        const userId = localStorage.getItem("UserId");
-        if (!token) {
-          setError("No authentication token found");
-          return;
+        if (formattedData.length > 0) {
+          const lastValue = formattedData[formattedData.length - 1];
+          setCaptureRatiosDataForShowLastValue({
+            Up: lastValue.Up.toFixed(2),
+            Down: lastValue.Down.toFixed(2),
+          });
         }
-
-        // Parse the user ID
-        const parsedUserId = JSON.parse(userId);
-        const tokenParse = JSON.parse(token);
-        // Fetch all required data
-        await Promise.all([
-          fetchPortFolioAssetAllocation(parsedUserId),
-          GetPortfolioMarketCapDistributionData(parsedUserId, tokenParse),
-          fetchRiskRatiosData(parsedUserId),
-          fetchCategoryDistribution(parsedUserId),
-          fetchCaptureRatiosData(parsedUserId),
-          fetch_AMC_Distribution(parsedUserId, tokenParse),
-        ]);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
+        return { success: true };
       }
-    };
-
-    initializeData();
+      return { success: false };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
   }, []);
 
-  const fetch_AMC_Distribution = async (userId, token) => {
+  // AMC Distribution API
+  const fetch_AMC_Distribution = useCallback(async (userId, token) => {
     try {
       const response = await fetch(
         "https://dev.netrumusa.com/starkcapital/api-backend/amc-distribution-graph",
@@ -627,85 +529,302 @@ export default function AnalysisMain() {
         }
       );
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
 
-      if (data?.status === "success") {
-        // Format the API response data for the chart
+      if (
+        data?.status === "success" &&
+        data?.data &&
+        Array.isArray(data.data)
+      ) {
         const formattedData = [["Category", "Percentage"]];
 
         data?.data?.forEach((item) => {
-          const percentage = parseFloat(item?.percentage?.replace("%", ""));
-
-          // Only include items where percentage is greater than 0
-          if (percentage > 0) {
-            formattedData.push([item?.amc, percentage]);
+          if (item?.amc && item?.percentage) {
+            const percentage = parseFloat(item?.percentage.replace("%", ""));
+            if (percentage > 0) {
+              formattedData.push([item?.amc, percentage]);
+            }
           }
         });
 
-        setAMC_Distribution_data(formattedData);
-      } else {
-        // localStorage.clear();
-        // router.push("/");
+        if (formattedData.length > 1) {
+          setAMC_Distribution_data(formattedData);
+        }
+        return { success: true };
       }
+      return { success: false };
     } catch (error) {
-      // localStorage.clear();
-      // router.push("/");
+      return { success: false, error: error.message };
     }
+  }, []);
+
+  // Main data initialization
+  useEffect(() => {
+    const initializeData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const token = getStorageItem("myData");
+        const userId = getStorageItem("UserId");
+
+        if (!token || !userId) {
+          setError("Authentication required. Please login.");
+          router.push("/");
+          return;
+        }
+
+        // Call all APIs and track their status
+        const apiCalls = [
+          {
+            name: "Portfolio Asset Allocation",
+            fn: () => fetchPortFolioAssetAllocationDatas(userId, token),
+          },
+          {
+            name: "Portfolio Asset Graph",
+            fn: () => fetchPortFolioAssetAllocation(userId, token),
+          },
+          {
+            name: "Portfolio Market Cap",
+            fn: () => fetchPortfolioMarketCapData(userId, token),
+          },
+          {
+            name: "Market Cap Distribution Graph",
+            fn: () => GetPortfolioMarketCapDistributionData(userId, token),
+          },
+          { name: "Risk Ratios", fn: () => fetchRiskRatiosData(userId, token) },
+          {
+            name: "Category Distribution",
+            fn: () => fetchCategoryDistribution(userId, token),
+          },
+          {
+            name: "Capture Ratios",
+            fn: () => fetchCaptureRatiosData(userId, token),
+          },
+          {
+            name: "AMC Distribution",
+            fn: () => fetch_AMC_Distribution(userId, token),
+          },
+        ];
+
+        const results = await Promise.allSettled(
+          apiCalls.map((api) => api.fn())
+        );
+
+        const loadStatus = {};
+        results.forEach((result, index) => {
+          const apiName = apiCalls[index].name;
+          if (result.status === "fulfilled" && result.value?.success) {
+            loadStatus[apiName] = "success";
+          } else {
+            loadStatus[apiName] = "failed";
+          }
+        });
+
+        setDataLoadStatus(loadStatus);
+      } catch (err) {
+        setError("Failed to load dashboard data. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeData();
+  }, [
+    fetchPortFolioAssetAllocationDatas,
+    fetchPortFolioAssetAllocation,
+    fetchPortfolioMarketCapData,
+    GetPortfolioMarketCapDistributionData,
+    fetchRiskRatiosData,
+    fetchCategoryDistribution,
+    fetchCaptureRatiosData,
+    fetch_AMC_Distribution,
+    router,
+  ]);
+
+
+  // Default fallback data
+  const defaultRiskRatioData = [
+    {
+      date: "03/07/2024",
+      "Std. Dev.": 9.2,
+      Sharpe: 1.3,
+      Beta: 0.65,
+      Alpha: 0.9,
+    },
+    {
+      date: "04/08/2024",
+      "Std. Dev.": 9.1,
+      Sharpe: 1.4,
+      Beta: 0.7,
+      Alpha: 3.5,
+    },
+    {
+      date: "01/09/2024",
+      "Std. Dev.": 9.15,
+      Sharpe: 1.45,
+      Beta: 0.75,
+      Alpha: 6.5,
+    },
+    {
+      date: "01/10/2024",
+      "Std. Dev.": 9.2,
+      Sharpe: 1.48,
+      Beta: 0.78,
+      Alpha: 6.6,
+    },
+    {
+      date: "10/11/2024",
+      "Std. Dev.": 9.25,
+      Sharpe: 1.5,
+      Beta: 0.8,
+      Alpha: 6.65,
+    },
+  ];
+
+  const defaultCaptureRatioData = [
+    { date: "03/07/2024", Up: 90.5, Down: 85.0 },
+    { date: "04/08/2024", Up: 92.3, Down: 78.0 },
+    { date: "01/09/2024", Up: 93.5, Down: 70.0 },
+    { date: "01/10/2024", Up: 94.0, Down: 65.0 },
+    { date: "10/11/2024", Up: 94.2, Down: 67.0 },
+  ];
+
+  // Chart options
+  const portfolio_allocation_options = {
+    titleTextStyle: {
+      color: "#3F4765",
+      fontSize: 16,
+      fontName: "sans-serif",
+      bold: true,
+    },
+    is3D: false,
+    colors: ["#5C6BC0", "#EC407A", "#FFA726", "#60BC63"],
+    backgroundColor: "transparent",
+    legend: {
+      position: "right",
+      alignment: "center",
+      textStyle: { color: "#3F4765", fontSize: 12, fontName: "sans-serif" },
+    },
+    pieSliceText: "percentage",
+    pieSliceTextStyle: { color: "white", fontSize: 14, fontName: "sans-serif" },
+    tooltip: {
+      showColorCode: true,
+      textStyle: { color: "#3F4765", fontSize: 12, fontName: "sans-serif" },
+    },
+    chartArea: { left: 10, top: 30, width: "80%", height: "80%" },
+  };
+
+  const portfolio_MarketCap_options = { ...portfolio_allocation_options };
+  const portfolio_CATEGORY_options = {
+    ...portfolio_allocation_options,
+    title: "Category Distribution",
+  };
+  const portfolio_AMC_Distribution_options = {
+    ...portfolio_allocation_options,
+    title: "AMC Distribution",
+  };
+
+  // Get active chart data
+  const getActiveData = () => {
+    if (activeButton === "risk") {
+      return riskRatiosData.length > 0 ? riskRatiosData : defaultRiskRatioData;
+    }
+    return captureRatiosData.length > 0
+      ? captureRatiosData
+      : defaultCaptureRatioData;
+  };
+
+  const getChartTitle = () => {
+    return activeButton === "risk"
+      ? "Risk Ratios over time"
+      : "Capture Ratios over time";
   };
 
   const metrics = [
     {
       label: "STD. DEV",
-      value: riskRatiosDataForShowLastValue?.weightedStdDev,
+      value: riskRatiosDataForShowLastValue?.weightedStdDev || "0.00",
       icon: <Activity className="w-5 h-5 text-blue-500" />,
     },
     {
       label: "Sharpe Ratio",
-      value: riskRatiosDataForShowLastValue?.weightedSharpeRatio,
+      value: riskRatiosDataForShowLastValue?.weightedSharpeRatio || "0.00",
       icon: <TrendingUp className="w-5 h-5 text-green-500" />,
     },
     {
       label: "Beta",
-      value: riskRatiosDataForShowLastValue?.weightedBeta,
+      value: riskRatiosDataForShowLastValue?.weightedBeta || "0.00",
       icon: <BarChart3 className="w-5 h-5 text-purple-500" />,
     },
     {
       label: "Alpha",
-      value: riskRatiosDataForShowLastValue?.weightedAlpha,
+      value: riskRatiosDataForShowLastValue?.weightedAlpha || "0.00",
       icon: <Target className="w-5 h-5 text-orange-500" />,
     },
     {
       label: "Capture Ratio (Up)",
-      value: captureRatiosDataForShowLastValue?.Up,
+      value: captureRatiosDataForShowLastValue?.Up || "0.00",
       icon: <ArrowUp className="w-5 h-5 text-emerald-500" />,
     },
     {
       label: "Capture Ratio (Down)",
-      value: captureRatiosDataForShowLastValue?.Down,
+      value: captureRatiosDataForShowLastValue?.Down || "0.00",
       icon: <ArrowDown className="w-5 h-5 text-red-500" />,
     },
   ];
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading Analysis data Wait...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center bg-red-50 p-6 rounded-lg">
+          <p className="text-red-600 font-semibold">Error</p>
+          <p className="mt-2 text-gray-600">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="flex flex-col md:flex-row w-full justify-between px-4 sm:px-6 lg:px-28">
-        {/* First div with 70% width on medium and larger screens */}
         <div className="w-full md:w-[95%] flex flex-wrap gap-4 justify-between">
+          {/* Metrics Cards */}
           <div className="w-full md:w-[100%] flex flex-wrap gap-4 justify-between">
             {metrics.map((metric, index) => (
               <div
                 key={index}
                 className="relative flex-1 min-w-[160px] max-w-[275px] bg-white border border-[#D9D9D9] rounded-lg p-3 h-[100px] sm:h-[110px] md:h-[120px] hover:shadow-lg transition-shadow duration-200"
               >
-                {/* Row 1 - Icon and Label */}
                 <div className="flex items-center mb-3">
                   {metric.icon}
                   <p className="text-xs sm:text-sm font-medium text-[#6E7499] ml-2">
                     {metric.label}
                   </p>
                 </div>
-
-                {/* Row 2 - Value */}
                 <div className="mb-3">
                   <p className="text-lg sm:text-xl md:text-2xl font-semibold text-[#2B2B2B]">
                     {metric.value}
@@ -714,8 +833,9 @@ export default function AnalysisMain() {
               </div>
             ))}
           </div>
+
           <div className="w-full flex flex-wrap gap-4 justify-between">
-            {/* Card 1 */}
+            {/* Portfolio Asset Allocation Card */}
             <div className="flex-1 min-w-[400px] bg-white border border-[#D9D9D9] rounded-xl overflow-hidden">
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 border-b border-[#E5EBEF]">
                 <div className="flex items-center justify-between mb-3">
@@ -725,17 +845,16 @@ export default function AnalysisMain() {
                   </h3>
                   <div className="flex items-center gap-1 text-sm text-gray-600">
                     <Calendar className="w-4 h-4" />
-                    <span>{assetAllocationData.date}</span>
+                    <span>{assetAllocationData?.date}</span>
                   </div>
                 </div>
 
-                {/* Data Grid */}
                 <div className="grid grid-cols-2 gap-3 mt-3">
                   <div className="bg-white rounded-lg p-2 border border-gray-100">
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-gray-500">Total</span>
                       <span className="text-sm font-semibold text-[#2B2B2B]">
-                        {assetAllocationData.total}
+                        {assetAllocationData?.total}
                       </span>
                     </div>
                   </div>
@@ -745,10 +864,10 @@ export default function AnalysisMain() {
                       <span className="text-xs text-gray-500">Equity</span>
                       <div className="text-right">
                         <span className="text-sm font-semibold text-[#2B2B2B] block">
-                          {assetAllocationData.equity}
+                          {assetAllocationData?.equity}
                         </span>
                         <span className="text-xs text-green-600">
-                          {assetAllocationData.equityPercent}
+                          {assetAllocationData?.equityPercent}
                         </span>
                       </div>
                     </div>
@@ -761,10 +880,10 @@ export default function AnalysisMain() {
                       </span>
                       <div className="text-right">
                         <span className="text-sm font-semibold text-[#2B2B2B] block">
-                          {assetAllocationData.debt}
+                          {assetAllocationData?.debt}
                         </span>
                         <span className="text-xs text-blue-600">
-                          {assetAllocationData.debtPercent}
+                          {assetAllocationData?.debtPercent}
                         </span>
                       </div>
                     </div>
@@ -775,10 +894,10 @@ export default function AnalysisMain() {
                       <span className="text-xs text-gray-500">Others</span>
                       <div className="text-right">
                         <span className="text-sm font-semibold text-[#2B2B2B] block">
-                          {assetAllocationData.others}
+                          {assetAllocationData?.others}
                         </span>
                         <span className="text-xs text-orange-600">
-                          {assetAllocationData.othersPercent}
+                          {assetAllocationData?.othersPercent}
                         </span>
                       </div>
                     </div>
@@ -787,17 +906,21 @@ export default function AnalysisMain() {
               </div>
 
               <div className="p-4 h-[250px] flex items-center justify-center">
-                <Chart
-                  chartType="PieChart"
-                  data={PortFolioAssetAllocation}
-                  options={portfolio_allocation_options}
-                  width={"100%"}
-                  height={"220px"}
-                />
+                {PortFolioAssetAllocation.length > 1 ? (
+                  <Chart
+                    chartType="PieChart"
+                    data={PortFolioAssetAllocation}
+                    options={portfolio_allocation_options}
+                    width={"100%"}
+                    height={"220px"}
+                  />
+                ) : (
+                  <p className="text-gray-500">No data available</p>
+                )}
               </div>
             </div>
 
-            {/* Card 2 */}
+            {/* Portfolio Market Cap Distribution Card */}
             <div className="flex-1 min-w-[400px] bg-white border border-[#D9D9D9] rounded-xl overflow-hidden">
               <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 border-b border-[#E5EBEF]">
                 <div className="flex items-center justify-between mb-3">
@@ -811,9 +934,7 @@ export default function AnalysisMain() {
                   </div>
                 </div>
 
-                {/* Data Grid */}
                 <div className="space-y-2">
-                  {/* Market Cap Breakdown */}
                   <div className="grid grid-cols-3 gap-2">
                     <div className="bg-white rounded-lg p-2 border border-gray-100">
                       <div className="text-center">
@@ -852,13 +973,12 @@ export default function AnalysisMain() {
                           {marketCapData?.smallCapAUM}
                         </span>
                         <span className="text-xs text-orange-600">
-                          {marketCapData.smallCapPercent}
+                          {marketCapData?.smallCapPercent}
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Total Row */}
                   <div className="bg-white rounded-lg p-2 border border-gray-100">
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-gray-500">
@@ -870,35 +990,40 @@ export default function AnalysisMain() {
                     </div>
                   </div>
 
-                  {/* Others Row */}
                   <div className="bg-white rounded-lg p-2 border border-gray-100">
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-gray-500">Others</span>
                       <div className="text-right">
                         <span className="text-sm font-semibold text-[#2B2B2B]">
-                          {marketCapData.others}
+                          {marketCapData?.others}
                         </span>
                         <span className="text-xs text-purple-600 ml-2">
-                          {marketCapData.othersPercent}
+                          {marketCapData?.othersPercent}
                         </span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+
               <div className="p-4 h-[250px] flex items-center justify-center">
-                <Chart
-                  chartType="PieChart"
-                  data={PortfolioMarketCapDistributionData}
-                  options={portfolio_MarketCap_options}
-                  width={"100%"}
-                  height={"200px"}
-                />
+                {PortfolioMarketCapDistributionData &&
+                PortfolioMarketCapDistributionData.length > 1 ? (
+                  <Chart
+                    chartType="PieChart"
+                    data={PortfolioMarketCapDistributionData}
+                    options={portfolio_MarketCap_options}
+                    width={"100%"}
+                    height={"200px"}
+                  />
+                ) : (
+                  <p className="text-gray-500">No data available</p>
+                )}
               </div>
             </div>
 
+            {/* Risk/Capture Ratios Chart */}
             <div className="w-full flex flex-wrap gap-4 h-auto p-4 rounded-lg border-[1.5px] border-[#D9D9D9] bg-white">
-              {/* Header section with title and toggle buttons */}
               <div className="justify-between w-full flex flex-wrap gap-4 h-auto">
                 <div className="flex flex-col items-start space-y-2">
                   <div className="font-medium text-lg sm:text-xl md:text-2xl text-[#3F4765] font-sans">
@@ -906,7 +1031,6 @@ export default function AnalysisMain() {
                   </div>
                 </div>
 
-                {/* Toggle buttons */}
                 <div className="flex space-x-4">
                   <button
                     onClick={() => setActiveButton("risk")}
@@ -936,12 +1060,7 @@ export default function AnalysisMain() {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
                     data={getActiveData()}
-                    margin={{
-                      top: 10,
-                      right: 30,
-                      left: 20,
-                      bottom: 30,
-                    }}
+                    margin={{ top: 10, right: 30, left: 20, bottom: 30 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                     <XAxis
@@ -954,179 +1073,64 @@ export default function AnalysisMain() {
                     />
 
                     {activeButton === "risk" ? (
-                      // Risk Ratio view axes and lines
                       <>
                         <YAxis
                           yAxisId="left"
                           orientation="left"
                           domain={["auto", "auto"]}
                         />
-                        {riskRatiosData.length > 0 && (
-                          <YAxis
-                            yAxisId="currentValue"
-                            orientation="right"
-                            domain={["auto", "auto"]}
-                          />
-                        )}
-                        <Tooltip
-                          content={({ active, payload, label }) => {
-                            if (active && payload && payload.length) {
-                              return (
-                                <div className="bg-white p-4 border border-gray-200 rounded shadow-md">
-                                  <p className="font-bold">{label}</p>
-                                  {payload.map((entry, index) => (
-                                    <p
-                                      key={`tooltip-${index}`}
-                                      style={{ color: entry.color }}
-                                    >
-                                      {entry.name}: {entry.value}
-                                    </p>
-                                  ))}
-                                </div>
-                              );
-                            }
-                            return null;
-                          }}
-                        />
+                        <Tooltip />
                         <Legend />
-
-                        {riskRatiosData?.length > 0 ? (
-                          // Use API data when available
-                          <>
-                            {/* <Line
-                              type="monotone"
-                              dataKey="Current Value"
-                              name="Current Value"
-                              stroke="#4285F4"
-                              activeDot={{ r: 6 }}
-                              strokeWidth={2}
-                              yAxisId="currentValue"
-                              connectNulls={true}
-                            /> */}
-                            <Line
-                              type="monotone"
-                              dataKey="Std. Dev."
-                              name="Std. Dev."
-                              stroke="#EA4335"
-                              activeDot={{ r: 6 }}
-                              strokeWidth={2}
-                              yAxisId="left"
-                              connectNulls={true}
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="Sharpe"
-                              name="Sharpe"
-                              stroke="#FBBC05"
-                              activeDot={{ r: 6 }}
-                              strokeWidth={2}
-                              yAxisId="left"
-                              connectNulls={true}
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="Beta"
-                              name="Beta"
-                              stroke="#34A853"
-                              activeDot={{ r: 6 }}
-                              strokeWidth={2}
-                              yAxisId="left"
-                              connectNulls={true}
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="Alpha"
-                              name="Alpha"
-                              stroke="#FF6D01"
-                              activeDot={{ r: 6 }}
-                              strokeWidth={2}
-                              yAxisId="left"
-                              connectNulls={true}
-                            />
-                          </>
-                        ) : (
-                          // Use default data when API data is not available
-                          <>
-                            <Line
-                              type="monotone"
-                              dataKey="Expense Ratio"
-                              name="Expense Ratio"
-                              stroke="#4285F4"
-                              activeDot={{ r: 6 }}
-                              strokeWidth={2}
-                              yAxisId="left"
-                              connectNulls={true}
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="Std. Dev."
-                              name="Std. Dev."
-                              stroke="#EA4335"
-                              activeDot={{ r: 6 }}
-                              strokeWidth={2}
-                              yAxisId="left"
-                              connectNulls={true}
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="Sharpe"
-                              name="Sharpe"
-                              stroke="#FBBC05"
-                              activeDot={{ r: 6 }}
-                              strokeWidth={2}
-                              yAxisId="left"
-                              connectNulls={true}
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="Beta"
-                              name="Beta"
-                              stroke="#34A853"
-                              activeDot={{ r: 6 }}
-                              strokeWidth={2}
-                              yAxisId="left"
-                              connectNulls={true}
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="Alpha"
-                              name="Alpha"
-                              stroke="#FF6D01"
-                              activeDot={{ r: 6 }}
-                              strokeWidth={2}
-                              yAxisId="left"
-                              connectNulls={true}
-                            />
-                          </>
-                        )}
+                        <Line
+                          type="monotone"
+                          dataKey="Std. Dev."
+                          name="Std. Dev."
+                          stroke="#EA4335"
+                          activeDot={{ r: 6 }}
+                          strokeWidth={2}
+                          yAxisId="left"
+                          connectNulls={true}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="Sharpe"
+                          name="Sharpe"
+                          stroke="#FBBC05"
+                          activeDot={{ r: 6 }}
+                          strokeWidth={2}
+                          yAxisId="left"
+                          connectNulls={true}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="Beta"
+                          name="Beta"
+                          stroke="#34A853"
+                          activeDot={{ r: 6 }}
+                          strokeWidth={2}
+                          yAxisId="left"
+                          connectNulls={true}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="Alpha"
+                          name="Alpha"
+                          stroke="#FF6D01"
+                          activeDot={{ r: 6 }}
+                          strokeWidth={2}
+                          yAxisId="left"
+                          connectNulls={true}
+                        />
                       </>
                     ) : (
-                      // Capture Ratio view axes and lines
                       <>
                         <YAxis
                           yAxisId="left"
                           orientation="left"
-                          domain={[70, 120]} // This sets the range from 70% to 120%
+                          domain={[0, 120]}
                           tickFormatter={(value) => `${value}%`}
                         />
-                        <Tooltip
-                          content={({ active, payload, label }) => {
-                            if (active && payload && payload.length) {
-                              return (
-                                <div className="bg-white p-4 border border-gray-200 rounded shadow-md">
-                                  <p className="font-bold">{label}</p>
-                                  <p style={{ color: "#4285F4" }}>
-                                    Up Capture: {payload[0]?.value || 0}%
-                                  </p>
-                                  <p style={{ color: "#EA4335" }}>
-                                    Down Capture: {payload[1]?.value || 0}%
-                                  </p>
-                                </div>
-                              );
-                            }
-                            return null;
-                          }}
-                        />
+                        <Tooltip formatter={(value) => `${value}%`} />
                         <Legend />
                         <Line
                           type="monotone"
@@ -1156,31 +1160,39 @@ export default function AnalysisMain() {
             </div>
           </div>
 
+          {/* Category and AMC Distribution */}
           <div className="w-full md:w-[100%] flex flex-wrap gap-4 justify-between mb-5">
-            {/* Card 1 */}
             <div className="relative flex-1 w-1/2 bg-white border border-[#D9D9D9] rounded-xl p-4 z-10">
               <div className="pt-4">
-                <Chart
-                  chartType="PieChart"
-                  data={Category_Distribution}
-                  options={portfolio_CATEGORY_options}
-                  width={"100%"}
-                  height={"220px"}
-                />
+                {Category_Distribution.length > 1 &&
+                Category_Distribution[0][0] !== "No Data" ? (
+                  <Chart
+                    chartType="PieChart"
+                    data={Category_Distribution}
+                    options={portfolio_CATEGORY_options}
+                    width={"100%"}
+                    height={"220px"}
+                  />
+                ) : (
+                  <p className="text-gray-500 text-center">No data available</p>
+                )}
               </div>
             </div>
 
-            {/* Card 2 */}
             <div className="relative flex-1 w-1/2 bg-white border border-[#D9D9D9] rounded-xl p-4 z-10">
-              {/* Image Section */}
               <div className="pt-4">
-                <Chart
-                  chartType="PieChart"
-                  data={AMC_Distribution_data}
-                  options={portfolio_AMC_Distribution_options}
-                  width={"100%"}
-                  height={"220px"}
-                />
+                {AMC_Distribution_data.length > 1 &&
+                AMC_Distribution_data[0][0] !== "No Data" ? (
+                  <Chart
+                    chartType="PieChart"
+                    data={AMC_Distribution_data}
+                    options={portfolio_AMC_Distribution_options}
+                    width={"100%"}
+                    height={"220px"}
+                  />
+                ) : (
+                  <p className="text-gray-500 text-center">No data available</p>
+                )}
               </div>
             </div>
           </div>

@@ -130,14 +130,153 @@ const CombinedDetailsMutualFund = ({ params }) => {
           }
         );
         if (response.data?.status === "success") {
-          setDetailsData(response?.data?.data?.details || []);
-
-          // const fundNameDetail = response?.data?.data?.details.find(
-          //   (detail) => detail._key === "FSCBI-FundLegalName"
-          // );
+          // Get existing details array
+          const existingDetails = response?.data?.data?.details || [];
+          
+          // Create additional detail objects from CalendarYearReturn
+          const calendarYearData = response?.data?.data?.CalendarYearReturn;
+          const additionalDetails = [];
+          
+          if (calendarYearData) {
+            // Add Year1 Return
+            if (calendarYearData?.Year1) {
+              additionalDetails.push({
+                _key: "CalendarYearReturn-Year1",
+                name: "Calendar Year Return - Year 1",
+                details: calendarYearData?.Year1
+              });
+            }
+            
+            // Add Year2 Return
+            if (calendarYearData?.Year2) {
+              additionalDetails.push({
+                _key: "CalendarYearReturn-Year2",
+                name: "Calendar Year Return - Year 2",
+                details: calendarYearData?.Year2
+              });
+            }
+            
+            // Add Year3 Return
+            if (calendarYearData?.Year3) {
+              additionalDetails.push({
+                _key: "CalendarYearReturn-Year3",
+                name: "Calendar Year Return - Year 3",
+                details: calendarYearData?.Year3
+              });
+            }
+            
+            // Add Year4 Return
+            if (calendarYearData?.Year4) {
+              additionalDetails.push({
+                _key: "CalendarYearReturn-Year4",
+                name: "Calendar Year Return - Year 4",
+                details: calendarYearData?.Year4
+              });
+            }
+             // Add Year4 Return
+             if (calendarYearData?.Year5) {
+              additionalDetails.push({
+                _key: "CalendarYearReturn-Year5",
+                name: "Calendar Year Return - Year 5",
+                details: calendarYearData?.Year5
+              });
+            }
+            
+            // Add Calendar Year Return Date
+            if (calendarYearData?.CalendarYearReturnDate) {
+              additionalDetails.push({
+                _key: "CalendarYearReturn-Date",
+                name: "Calendar Year Return Date",
+                details: calendarYearData?.CalendarYearReturnDate
+              });
+            }
+          }
+          
+          // Add Annual Report Turnover Ratio
+          const annualReportData = response?.data?.data?.AnnualReportFinancials;
+          if (annualReportData) {
+            if (annualReportData?.AnnualReportTurnoverRatio) {
+              additionalDetails.push({
+                _key: "AnnualReportFinancials-TurnoverRatio",
+                name: "Annual Report Turnover Ratio",
+                details: annualReportData?.AnnualReportTurnoverRatio
+              });
+            }
+            
+            if (annualReportData?.AnnualReportTurnoverRatioDate) {
+              additionalDetails.push({
+                _key: "AnnualReportFinancials-TurnoverRatioDate",
+                name: "Annual Report Turnover Ratio Date",
+                details: annualReportData?.AnnualReportTurnoverRatioDate
+              });
+            }
+          }
+          
+          // Add Fund Manager Data
+          const fundManagerData = response?.data?.data?.FundManager;
+          if (fundManagerData) {
+            // Add Fund Manager Tenure Average
+            if (fundManagerData?.FundManagerTenureAverage) {
+              additionalDetails.push({
+                _key: "FundManager-TenureAverage",
+                name: "Fund Manager Tenure Average",
+                details: fundManagerData?.FundManagerTenureAverage
+              });
+            }
+            
+            // Add Manager Tenure Longest
+            // if (fundManagerData.ManagerTenureLongest) {
+            //   additionalDetails.push({
+            //     _key: "FundManager-TenureLongest",
+            //     name: "Manager Tenure Longest",
+            //     details: fundManagerData.ManagerTenureLongest
+            //   });
+            // }
+            
+            // Add Individual Manager Details
+            // if (fundManagerData.Managers && Array.isArray(fundManagerData.Managers)) {
+            //   fundManagerData.Managers.forEach((manager, index) => {
+            //     if (manager.Name) {
+            //       additionalDetails.push({
+            //         _key: `FundManager-Manager${index + 1}-Name`,
+            //         name: `Fund Manager ${index + 1} Name`,
+            //         details: manager.Name
+            //       });
+            //     }
+                
+            //     if (manager.Role) {
+            //       additionalDetails.push({
+            //         _key: `FundManager-Manager${index + 1}-Role`,
+            //         name: `Fund Manager ${index + 1} Role`,
+            //         details: manager.Role
+            //       });
+            //     }
+                
+            //     if (manager.StartDate) {
+            //       additionalDetails.push({
+            //         _key: `FundManager-Manager${index + 1}-StartDate`,
+            //         name: `Fund Manager ${index + 1} Start Date`,
+            //         details: manager.StartDate
+            //       });
+            //     }
+                
+            //     if (manager.Tenure) {
+            //       additionalDetails.push({
+            //         _key: `FundManager-Manager${index + 1}-Tenure`,
+            //         name: `Fund Manager ${index + 1} Tenure`,
+            //         details: `${manager.Tenure} years`
+            //       });
+            //     }
+            //   });
+            // }
+          }
+          
+          // Combine all details
+          const allDetails = [...existingDetails, ...additionalDetails];
+          setDetailsData(allDetails);
 
           // Set the fund name if found, otherwise use the scheme name as fallback
-          SetcurrentDataName( response?.data?.data?.scheme);
+          SetcurrentDataName(response?.data?.data?.scheme);
         } else {
           // localStorage.clear();
           // route.push("/");

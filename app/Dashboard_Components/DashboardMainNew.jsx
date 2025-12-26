@@ -576,8 +576,6 @@ export default function DashboardMainNew() {
         break;
     }
 
-    console.log(cutoffDate, filteredData, "cutoffDate");
-
     if (filteredData.length === 0) {
       filteredData = [allData[allData.length - 1]];
     }
@@ -687,14 +685,16 @@ export default function DashboardMainNew() {
           chartArea: { width: "90%", height: "75%", top: 20 },
           hAxis: {
             format: "MMM dd",
-            gridlines: { color: "transparent" }, // Changed from "#f0f0f0" to "transparent"
+            gridlines: { color: "transparent" },
             textStyle: { color: "#666", fontSize: 11 },
+            baselineColor: "transparent", // ✅ Add this to remove x-axis line
           },
           vAxis: {
             title: "",
-            gridlines: { color: "#f0f0f0" },
+            gridlines: { color: "transparent" },
             textStyle: { color: "#666", fontSize: 11 },
             format: "#'%'",
+            baselineColor: "transparent", // ✅ Add this to remove y-axis line
           },
           colors: ["#10b981"],
           lineWidth: 2,
@@ -707,19 +707,27 @@ export default function DashboardMainNew() {
           chartArea: { width: "90%", height: "75%", top: 20 },
           hAxis: {
             format: "MMM dd",
-            gridlines: { color: "transparent" }, // Changed from "#f0f0f0" to "transparent"
+            gridlines: { color: "transparent" },
             textStyle: { color: "#666", fontSize: 11 },
+            baselineColor: "transparent", // ✅ Add this to remove x-axis line
           },
           vAxis: {
             title: "",
-            gridlines: { color: "#f0f0f0" },
+            gridlines: { color: "transparent" },
             textStyle: { color: "#666", fontSize: 11 },
             format: "short",
+            baselineColor: "transparent", // ✅ Add this to remove y-axis line
           },
           colors: ["#1e40af", "#dc2626", "#f59e0b"],
           lineWidth: 2,
           backgroundColor: "white",
-          tooltip: { isHtml: true },
+          tooltip: {
+            isHtml: true,
+            trigger: "both",
+            showColorCode: true,
+            aggregationTarget: "auto",
+          },
+          focusTarget: "category",
         };
 
   const timeRanges = ["5D", "1M", "6M", "YTD", "1Y", "5Y", "MAX"];
