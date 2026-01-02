@@ -8,7 +8,7 @@ import {
   Activity,
   BarChart3,
   Filter,
-  IndianRupee
+  IndianRupee,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -74,6 +74,8 @@ const CombinedDetailsMutualFund = ({ params }) => {
     getStockTransactionSummary();
   }, [params?.slug]);
 
+  console.log(transactions, "transactionstransactions");
+  
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
@@ -146,11 +148,11 @@ const CombinedDetailsMutualFund = ({ params }) => {
     0
   );
   const totalTransactions = currentFundTransactions.length;
-  const avgPrice =
-    totalTransactions > 0
-      ? currentFundTransactions.reduce((sum, t) => sum + t.net_rate, 0) /
-        totalTransactions
-      : 0;
+  // const avgPrice =
+  //   totalTransactions > 0
+  //     ? currentFundTransactions.reduce((sum, t) => sum + t.net_rate, 0) /
+  //       totalTransactions
+  //     : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
@@ -179,14 +181,14 @@ const CombinedDetailsMutualFund = ({ params }) => {
           </div>
 
           {/* Statistics Cards */}
-          {/* <div className="flex flex-wrap justify-between gap-6 mb-8">
+          <div className="flex flex-wrap justify-between gap-6 mb-8">
             <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl hover:border-green-200 transition-all duration-300 group w-full md:w-[48%] lg:w-[32%]">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 bg-green-100 rounded-xl group-hover:bg-green-200 transition-colors duration-200">
                   <TrendingUp className="w-6 h-6 text-green-600" />
                 </div>
                 <span className="text-xs text-gray-500 font-semibold uppercase tracking-wider">
-                  Total Investment
+                  Total Ammount
                 </span>
               </div>
               <div className="text-2xl font-bold text-gray-900 mb-1">
@@ -226,11 +228,9 @@ const CombinedDetailsMutualFund = ({ params }) => {
               <div className="text-2xl font-bold text-gray-900 mb-1">
                 {totalTransactions}
               </div>
-              <div className="text-sm text-purple-600 font-medium">
-                XIRR
-              </div>
+              <div className="text-sm text-purple-600 font-medium">XIRR</div>
             </div>
-          </div> */}
+          </div>
         </div>
 
         {/* Transactions Table */}
